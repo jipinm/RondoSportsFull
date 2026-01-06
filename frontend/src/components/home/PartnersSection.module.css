@@ -1,0 +1,153 @@
+.partnersSection {
+  padding: 4rem 0 6rem;
+  background-color: var(--white);
+}
+
+.container {
+  width: 100%;
+  max-width: 1175px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.partnersContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  border: 1px solid #e2e8f0;
+  padding: 3rem 2rem 2rem;
+}
+
+.partnersTitle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 27px;
+  font-weight: 700;
+  color: #6A89A7;
+  background-color: white;
+  padding: 0 2rem;
+  text-align: center;
+  letter-spacing: 3px;
+  white-space: nowrap;
+}
+
+.partnersLogos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.partnerLogo {
+  height: 100px;
+  width: auto;
+  filter: grayscale(0%);
+  opacity: 1;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.logoHovered {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+/* Slider Dots for Mobile */
+.sliderDots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.sliderDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #cbd5e0;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.sliderDot:hover {
+  background-color: #94a3b8;
+}
+
+.sliderDotActive {
+  background-color: #6A89A7;
+  width: 12px;
+  height: 12px;
+}
+
+@media (max-width: 768px) {
+  .partnersSection {
+    padding: 3rem 0 4rem;
+  }
+
+  .partnersContent {
+    padding: 2.5rem 1.5rem 1.5rem;
+  }
+
+  .partnersTitle {
+    font-size: 18px;
+    padding: 0 1rem;
+    letter-spacing: 1.5px;
+    line-height: 1.4;
+    word-spacing: 0.2rem;
+  }
+
+  .partnersLogos {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .logoWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .partnerLogo {
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .partnersSection {
+    padding: 2rem 0 3rem;
+  }
+
+  .partnersContent {
+    padding: 2rem 0.75rem 1rem;
+  }
+
+  .partnersTitle {
+    font-size: 15px;
+    padding: 0 0.75rem;
+    letter-spacing: 1px;
+    line-height: 1.5;
+    word-spacing: 0.15rem;
+  }
+
+  .partnersLogos {
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .partnerLogo {
+    height: 100px;
+  }
+}

@@ -1,0 +1,126 @@
+.container {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: white;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4dabf7;
+  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.1);
+}
+
+.input:disabled {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.inputError {
+  border-color: #dc3545;
+}
+
+.inputError:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 2px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.optionsList {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.option {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.option:last-child {
+  border-bottom: none;
+}
+
+.option:hover {
+  background-color: #f8f9fa;
+}
+
+.option.selected {
+  background-color: #4dabf7;
+  color: white;
+}
+
+.countryName {
+  font-weight: 500;
+  flex: 1;
+}
+
+.countryCode {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 400;
+}
+
+.option.selected .countryCode {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.noResults {
+  padding: 16px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.errorMessage {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.error {
+  border-color: #dc3545;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .input {
+    font-size: 16px; /* Prevents zoom on iOS Safari */
+  }
+  
+  .dropdown {
+    max-height: 150px;
+  }
+  
+  .option {
+    padding: 10px 14px;
+  }
+}

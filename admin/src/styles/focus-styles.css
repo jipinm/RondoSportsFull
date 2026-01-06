@@ -1,0 +1,42 @@
+/* Focus styles for Rondo Sports Admin Panel */
+
+/* Remove default focus outline from tab navigation elements across all sections */
+.tabButton,
+.sidebarButton,
+.reportTab,
+.tabButton.activeTab,
+.sidebarButton.activeButton,
+.reportTab.activeTab,
+button[class*="tab"], 
+button[class*="Tab"],
+[class*="tabButton"],
+[class*="Tab"],
+[role="tab"],
+[aria-selected="true"],
+[aria-selected="false"] {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Add focus styles for accessibility without showing outlines */
+.tabButton:focus,
+.sidebarButton:focus,
+.reportTab:focus,
+button[class*="tab"]:focus, 
+button[class*="Tab"]:focus,
+[class*="tabButton"]:focus,
+[class*="Tab"]:focus,
+[role="tab"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure that interactive elements in tab panels also have consistent focus behavior */
+.tabPanel button:focus,
+.tabContent button:focus,
+.settingsContent button:focus,
+.reportContent button:focus,
+[role="tabpanel"] button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}

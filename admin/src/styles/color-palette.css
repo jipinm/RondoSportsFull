@@ -1,0 +1,90 @@
+/* Rondo Sports Admin Panel color palette - Updated to match website */
+:root {
+  /* Main palette */
+  --color-primary: #668baa;
+  --color-secondary: #57b9ff;
+  --color-tertiary: #bcddfd;
+  --color-background: #f9fafc;
+  --color-headings: #3e352e;
+  --color-text: #8598bb;
+  
+  /* Accent colors */
+  --color-accent-1: #6a89a6;
+  --color-accent-2: #384959;
+  --color-accent-3: #3598db;
+  
+  /* Primary color shades */
+  --color-primary-50: #f0f4f8;
+  --color-primary-100: #d9e2ec;
+  --color-primary-200: #bccddc;
+  --color-primary-300: #9fb3c8;
+  --color-primary-400: #829eb7;
+  --color-primary-500: #668baa;
+  --color-primary-600: #5c7d9a;
+  --color-primary-700: #4c6a84;
+  --color-primary-800: #40596e;
+  --color-primary-900: #384959;
+  
+  /* Secondary color shades */
+  --color-secondary-50: #edf7ff;
+  --color-secondary-100: #d6eaff;
+  --color-secondary-200: #bcddfd;
+  --color-secondary-300: #9aceff;
+  --color-secondary-400: #78c1ff;
+  --color-secondary-500: #57b9ff;
+  --color-secondary-600: #3598db;
+  --color-secondary-700: #267bba;
+  --color-secondary-800: #1a5e91;
+  --color-secondary-900: #124a74;
+  
+  /* Tertiary color shades */
+  --color-tertiary-50: #f8fbff;
+  --color-tertiary-100: #edf5fe;
+  --color-tertiary-200: #dbeafe;
+  --color-tertiary-300: #bcddfd;
+  --color-tertiary-400: #9aceff;
+  --color-tertiary-500: #78c1ff;
+  --color-tertiary-600: #57b9ff;
+  --color-tertiary-700: #3598db;
+  --color-tertiary-800: #267bba;
+  --color-tertiary-900: #1a5e91;
+  
+  /* Neutral color shades for text and headings */
+  --color-neutral-50: #f9fafc;
+  --color-neutral-100: #f0f1f5;
+  --color-neutral-200: #e4e7ed;
+  --color-neutral-300: #d3d8e2;
+  --color-neutral-400: #b1bccf;
+  --color-neutral-500: #8598bb;
+  --color-neutral-600: #667995;
+  --color-neutral-700: #4e5c72;
+  --color-neutral-800: #3e4857;
+  --color-neutral-900: #3e352e;
+    /* Chart Colors */
+  --chart-colors-1: var(--color-primary);
+  --chart-colors-2: var(--color-secondary);
+  --chart-colors-3: var(--color-tertiary);
+  --chart-colors-4: var(--color-accent-1);
+  --chart-colors-5: var(--color-accent-3);
+  
+  /* Animation timing */
+  --animation-slow: 0.5s;
+  --animation-medium: 0.3s;
+  --animation-fast: 0.15s;
+  
+  /* Animation easing */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  
+  /* Gradient backgrounds */
+  --gradient-primary: linear-gradient(120deg, var(--color-primary), var(--color-secondary));
+  --gradient-secondary: linear-gradient(120deg, var(--color-accent-1), var(--color-accent-3));
+  --gradient-accent: linear-gradient(120deg, var(--color-secondary), var(--color-tertiary));
+  
+  /* Shadows with color tints */
+  --shadow-primary: 0 8px 16px rgba(102, 139, 170, 0.12);
+  --shadow-secondary: 0 8px 16px rgba(87, 185, 255, 0.12);
+  --shadow-tertiary: 0 8px 16px rgba(188, 221, 253, 0.12);
+  --shadow-accent: 0 8px 16px rgba(53, 152, 219, 0.12);
+}

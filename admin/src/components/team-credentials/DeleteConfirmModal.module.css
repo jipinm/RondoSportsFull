@@ -1,0 +1,92 @@
+.content {
+  padding: 1rem 0;
+}
+
+.warningIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.warningIcon svg {
+  width: 64px;
+  height: 64px;
+  color: #ef4444;
+}
+
+.message {
+  text-align: center;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.75rem 0;
+}
+
+.description {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.description strong {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.warningBox {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: left;
+  margin-top: 1rem;
+}
+
+.warningText {
+  font-size: 0.875rem;
+  color: #991b1b;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.warningList {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  color: #991b1b;
+}
+
+.warningList li {
+  margin-bottom: 0.25rem;
+}
+
+.warningList li:last-child {
+  margin-bottom: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.deleteButton {
+  background-color: #ef4444 !important;
+  color: white !important;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #dc2626 !important;
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

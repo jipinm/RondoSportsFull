@@ -1,0 +1,835 @@
+/* Checkout Flow Styles */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+}
+
+.checkoutPanel {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  bottom: 2rem;
+  width: 100%;
+  max-width: 900px;
+  height: calc(100vh - 4rem);
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  z-index: 2001;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.checkoutHeader {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 2rem 2rem 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  flex-shrink: 0;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.headerContent h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #384959;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background: #f1f5f9;
+  color: #57B9FF;
+}
+
+/* Step Indicator */
+.stepIndicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 400px;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  position: relative;
+}
+
+.stepItem::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: calc(50% + 20px);
+  right: calc(-50% + 20px);
+  height: 2px;
+  background: #e2e8f0;
+  z-index: -1;
+}
+
+.stepItem:last-child::after {
+  display: none;
+}
+
+.stepItem.completed::after {
+  background: #10b981;
+}
+
+.stepIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.stepItem.active .stepIcon {
+  border-color: #57B9FF;
+  background: #57B9FF;
+  color: white;
+}
+
+.stepItem.completed .stepIcon {
+  border-color: #10b981;
+  background: #10b981;
+  color: white;
+}
+
+.stepLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.stepItem.active .stepLabel {
+  color: #57B9FF;
+  font-weight: 600;
+}
+
+.stepItem.completed .stepLabel {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Content Area */
+.checkoutContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  background-color: #f9fafb;
+}
+
+.stepContent {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.stepHeader {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.stepHeader h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #384959;
+  margin: 0 0 0.5rem 0;
+}
+
+.stepHeader p {
+  color: #64748b;
+  margin: 0;
+}
+
+/* Guest Forms - Redesigned for proper display */
+.guestForms {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 1rem 0.5rem 1rem 0;
+  
+  /* Clean scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+.guestForms::-webkit-scrollbar {
+  width: 6px;
+}
+
+.guestForms::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 3px;
+}
+
+.guestForms::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.guestForms::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.guestForm {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.guestForm:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.guestHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.guestHeader h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.leadBadge {
+  background: #57B9FF;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.formGroup.required label::after {
+  content: ' *';
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.formGroup label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: white;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #57B9FF;
+  box-shadow: 0 0 0 3px rgba(87, 185, 255, 0.1);
+}
+
+.formGroup input.inputError,
+.formGroup select.inputError {
+  border-color: #ef4444;
+}
+
+.formGroup input.inputError:focus,
+.formGroup select.inputError:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.formGroup input::placeholder {
+  color: #9ca3af;
+}
+
+/* Inline field error message */
+.fieldError {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* Required field indicator */
+.formGroup label::after {
+  content: '';
+}
+
+.formGroup.required label::after {
+  content: ' *';
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* Event Summary */
+.eventSummary {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #bae6fd;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.eventSummary h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0c4a6e;
+  margin: 0 0 1rem 0;
+}
+
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.eventDetail {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #0369a1;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Summaries */
+.ticketsSummary,
+.guestsSummary {
+  margin-bottom: 2rem;
+}
+
+.ticketsSummary h4,
+.guestsSummary h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #384959;
+  margin: 0 0 1rem 0;
+}
+
+.ticketItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ticketInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ticketTitle {
+  font-weight: 500;
+  color: #384959;
+}
+
+.ticketDetails {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.ticketPrice {
+  font-weight: 600;
+  color: #384959;
+}
+
+.guestItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 0.375rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Price Summary */
+.priceSummary {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 2px solid #e2e8f0;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #1e293b;
+}
+
+/* Payment Form */
+.paymentForm {
+  margin-bottom: 2rem;
+}
+
+.paymentCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+}
+
+.paymentCard h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #384959;
+  margin: 0 0 0.5rem 0;
+}
+
+.paymentCard p {
+  color: #64748b;
+  margin: 0 0 1rem 0;
+}
+
+.reservationInfo {
+  background: white;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e2e8f0;
+}
+
+.reservationInfo p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.reservationInfo p:last-child {
+  margin-bottom: 0;
+}
+
+/* Confirmation */
+.confirmationHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.successIcon {
+  width: 64px;
+  height: 64px;
+  background: #10b981;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0 auto 1rem auto;
+}
+
+.confirmationHeader h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #384959;
+  margin: 0 0 0.5rem 0;
+}
+
+.bookingDetails {
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.detailRow:last-child {
+  margin-bottom: 0;
+}
+
+.bookingId,
+.confirmationCode {
+  font-family: monospace;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.nextSteps {
+  margin-bottom: 2rem;
+}
+
+.nextSteps h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #384959;
+  margin: 0 0 1rem 0;
+}
+
+.nextSteps ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nextSteps li {
+  padding: 0.5rem 0;
+  color: #64748b;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.nextSteps li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #57B9FF;
+  font-weight: bold;
+}
+
+/* Step Actions */
+.stepActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding: 1.5rem 0 1rem;
+  border-top: 1px solid #e5e7eb;
+  background: white;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 0.875rem;
+  min-width: 140px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #57B9FF 0%, #3b82f6 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(87, 185, 255, 0.4);
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4aa8ee 0%, #2563eb 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(87, 185, 255, 0.5);
+}
+
+.primaryButton:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.secondaryButton {
+  background: white;
+  color: #64748b;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.secondaryButton:hover {
+  background: #f8fafc;
+  border-color: #57B9FF;
+  color: #57B9FF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(87, 185, 255, 0.15);
+}
+
+/* Error Message */
+.errorMessage {
+  background: linear-gradient(135deg, #fef2f2 0%, #fdf2f8 100%);
+  border: 2px solid #fecaca;
+  color: #dc2626;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .checkoutPanel {
+    top: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    width: calc(100vw - 2rem);
+    max-width: none;
+    height: calc(100vh - 2rem);
+  }
+
+  .checkoutContent {
+    padding: 16px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .guestForm {
+    padding: 20px;
+  }
+
+  .stepActions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .guestForms {
+    max-height: 50vh;
+  }
+
+  .checkoutHeader {
+    padding: 16px;
+  }
+
+  .stepIndicator {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .stepItem {
+    min-width: 80px;
+  }
+}
+
+/* Authentication Step Styles */
+.authPrompt, .authSuccess {
+  text-align: center;
+  padding: 2rem;
+}
+
+.authIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 50%;
+  color: white;
+}
+
+.authPrompt h3, .authSuccess h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 1rem 0;
+}
+
+.authPrompt p, .authSuccess p {
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+.authBenefits {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.authBenefits h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 1rem 0;
+}
+
+.authBenefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.authBenefits li {
+  color: #4b5563;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.authBenefits li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.customerInfo {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.customerInfo p {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #065f46;
+}
+
+.customerInfo p:first-child {
+  margin-top: 0;
+}
+
+.customerInfo p:last-child {
+  margin-bottom: 0;
+}
+
+/* Inline Auth Form Container */
+.authFormContainer {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.authFormContainer .authForm {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.authFormContainer .formHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.authFormContainer .formHeader h2 {
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.authFormContainer .formHeader p {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0;
+}

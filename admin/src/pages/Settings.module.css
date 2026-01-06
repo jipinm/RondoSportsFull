@@ -1,0 +1,544 @@
+/* Settings Page Styles */
+.settingsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-headings);
+  margin: 0 0 1.5rem 0;
+}
+
+.settingsLayout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+
+.settingsSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: var(--color-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  padding: 1rem;
+  height: fit-content;
+}
+
+.sidebarButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--color-text);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+  text-align: left;
+  outline: none;
+}
+
+.sidebarButton:hover {
+  background-color: rgba(102, 139, 170, 0.05);
+  color: var(--color-primary-600);
+}
+
+.activeButton {
+  background-color: rgba(102, 139, 170, 0.1);
+  color: var(--color-primary-600);
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  position: relative;
+}
+
+.activeButton::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: var(--gradient-primary);
+  border-radius: 0 3px 3px 0;
+}
+
+.settingsContent {
+  background: var(--color-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  padding: 2rem 3rem;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.formSection {
+  margin-bottom: 3rem;
+  width: 100%;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-headings);
+  margin: 0 0 2rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-gray-200);
+  width: 100%;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  padding-left: 0.125rem;
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #d1d5db !important;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s var(--ease-out);
+  box-sizing: border-box;
+  height: 42px;
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.inputWithIcon {
+  position: relative;
+  display: block;
+  width: 100%;
+  flex: 1;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-neutral-500);
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputWithIcon .formInput {
+  padding-left: 2.5rem !important;
+  width: 100%;
+}
+
+.formInput:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+.formInput:hover {
+  border-color: #9ca3af !important;
+}
+
+input:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+.readOnly {
+  background-color: var(--color-gray-100);
+  cursor: not-allowed;
+  color: var(--color-gray-600);
+  border-color: var(--color-gray-200) !important;
+  box-shadow: none !important;
+}
+
+.imageUploadContainer {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.currentImage {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploadControls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadButton {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.2s var(--ease-out);
+  height: 42px;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.uploadButton:hover {
+  background-color: var(--color-primary-700);
+}
+
+.fileName {
+  color: var(--color-text);
+  font-size: 0.875rem;
+  padding: 0.375rem 0;
+}
+
+.passwordRequirements {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background-color: var(--color-gray-100);
+  border-radius: 4px;
+  margin-bottom: 2rem;
+  width: calc(100% - 1rem);
+  box-sizing: border-box;
+}
+
+.passwordRequirements h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: var(--color-headings);
+}
+
+.passwordRequirements ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--color-text);
+}
+
+.passwordRequirements li {
+  margin-bottom: 0.25rem;
+}
+
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 1.5rem 0.5rem 0;
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-gray-300);
+  transition: .3s var(--ease-out);
+  border-radius: 24px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+.toggleSwitch input:checked + .toggleSlider {
+  background-color: var(--color-primary);
+}
+
+.toggleSwitch input:checked + .toggleSlider:before {
+  transform: translateX(22px);
+}
+
+.toggleLabel {
+  flex: 1;
+  padding-top: 0.125rem;
+}
+
+.toggleLabel h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: var(--color-headings);
+}
+
+.toggleLabel p {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.permissionCard {
+  padding: 1rem;
+  background-color: var(--color-gray-100);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.permissionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.permissionHeader h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-headings);
+}
+
+.permissionHeader svg {
+  color: var(--color-primary);
+}
+
+.formActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-gray-200);
+  margin-top: 1rem;
+}
+
+.saveButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 0 1.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-out);
+  height: 42px;
+}
+
+.saveButton:hover {
+  background-color: var(--color-primary-700);
+}
+
+.successMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 6px;
+  color: #c33;
+  font-weight: 500;
+}
+
+/* Ensure all form fields have consistent sizing and appearance */
+input[type=text], 
+input[type=email], 
+input[type=password],
+input[type=tel],
+input[type=number],
+select,
+textarea {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  height: 42px !important;
+  line-height: normal !important;
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 6px !important;
+  padding: 0.75rem !important;
+  font-size: 0.875rem !important;
+  transition: all 0.2s var(--ease-out) !important;
+  margin: 0 !important;
+}
+
+input[type=text]:hover,
+input[type=email]:hover,
+input[type=password]:hover,
+input[type=tel]:hover,
+input[type=number]:hover,
+select:hover,
+textarea:hover {
+  border-color: #9ca3af !important;
+}
+
+input[type=text]:focus,
+input[type=email]:focus,
+input[type=password]:focus,
+input[type=tel]:focus,
+input[type=number]:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Style placeholder text */
+input::placeholder {
+  color: var(--color-gray-400);
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 900px) {
+  .settingsLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .settingsSidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0.75rem;
+  }
+
+  .sidebarButton {
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .sidebarButton span {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: 100%;
+  }
+  
+  .settingsContent {
+    padding: 1.5rem 2rem;
+  }
+  
+  .formGroup {
+    margin-bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+  }
+  
+  .imageUploadContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .toggleContainer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

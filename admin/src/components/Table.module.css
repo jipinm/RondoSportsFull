@@ -1,0 +1,121 @@
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  margin-top: 1rem;
+}
+
+:root.dark .tableWrapper {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.875rem;
+}
+
+/* Header */
+.tableHead {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.headerRow {
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.tableHeaderCell {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  color: #475569;
+  font-weight: 600;
+  white-space: nowrap;
+  position: relative;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.sortable {
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.sortable:hover {
+  color: var(--color-primary);
+}
+
+.sortIcon {
+  margin-left: var(--spacing-2);
+  opacity: 0.5;
+  transition: var(--transition-all);
+}
+
+.sortIcon.asc, .sortIcon.desc {
+  opacity: 1;
+  color: var(--color-primary);
+}
+
+/* Table body */
+.tableBody .tableRow:not(:last-child) {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tableCell {
+  padding: 1rem 1rem;
+  color: #1e293b;
+  transition: all 0.2s ease;
+  vertical-align: top;
+}
+
+/* Striped style */
+.striped .tableBody .tableRow:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* Hoverable style */
+.hoverable .tableBody .tableRow:hover {
+  background-color: #f0f9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Status badge styles */
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.statusSuccess {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-600);
+}
+
+.statusWarning {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.statusError {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.statusInfo {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-600);
+}

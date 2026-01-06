@@ -1,0 +1,474 @@
+// filepath: e:\RondoSportsAdminCopilot\src\pages\Content.tsx
+import React, { useState } from 'react';
+import { File, Edit, Save, X, Image, Link, Upload, ToggleLeft, ToggleRight, AlertCircle } from 'lucide-react';
+import { cmsPages, banners } from '../mock-data/data';
+import styles from './Content.module.css';
+
+const Content: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'pages' | 'banners'>('pages');
+  const [selectedPage, setSelectedPage] = useState<'terms' | 'privacy' | 'about'>('terms');
+  const [isEditing, setIsEditing] = useState(false);
+  const [pageContent, setPageContent] = useState(cmsPages);
+  const [currentContent, setCurrentContent] = useState(cmsPages.terms);
+  const [bannersList, setBannersList] = useState(banners);
+  const [selectedBanner, setSelectedBanner] = useState<any | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [isTestingImage, setIsTestingImage] = useState(false);
+  
+  // Function to validate image URL
+  const validateImageUrl = async (url: string): Promise<boolean> => {
+    if (!url) return false;
+    
+    setIsTestingImage(true);
+    setImageError(null);
+    
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        setImageError(null);
+        setIsTestingImage(false);
+        resolve(true);
+      };
+      img.onerror = () => {
+        setImageError('The image URL may be invalid or inaccessible. Try another URL.');
+        setIsTestingImage(false);
+        resolve(false);
+      };
+      img.src = url;
+      
+      // Set a timeout to handle very slow loading images
+      setTimeout(() => {
+        if (img.complete === false) {
+          setIsTestingImage(false);
+          resolve(true); // Assume it's valid, but just slow
+        }
+      }, 5000);
+    });
+  };
+  
+  const handleTabChange = (tab: 'pages' | 'banners') => {
+    setActiveTab(tab);
+    setIsEditing(false);
+    
+    if (tab === 'pages') {
+      handlePageSelect(selectedPage);
+    }
+  };
+  
+  const handlePageSelect = (page: 'terms' | 'privacy' | 'about') => {
+    setSelectedPage(page);
+    setCurrentContent(pageContent[page]);
+    setIsEditing(false);
+  };
+  
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+  
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCurrentContent(e.target.value);
+  };
+  
+  const handleSaveContent = () => {
+    const updatedPages = { ...pageContent, [selectedPage]: currentContent };
+    setPageContent(updatedPages);
+    setIsEditing(false);
+  };
+  
+  const handleBannerToggle = (id: number) => {
+    const updatedBanners = bannersList.map(banner => 
+      banner.id === id ? { ...banner, active: !banner.active } : banner
+    );
+    setBannersList(updatedBanners);
+  };
+  
+  const handleEditBanner = (banner: any) => {
+    setSelectedBanner({ ...banner });
+    setImageError(null);
+  };
+  
+  const handleBannerInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (selectedBanner) {
+      setSelectedBanner({ ...selectedBanner, [name]: value });
+      
+      // If the image URL was changed, clear any previous errors
+      if (name === 'imageUrl') {
+        setImageError(null);
+      }
+    }
+  };
+  
+  const handleTestImageUrl = async () => {
+    if (selectedBanner && selectedBanner.imageUrl) {
+      const isValid = await validateImageUrl(selectedBanner.imageUrl);
+      if (!isValid) {
+        // Error will be set by validateImageUrl
+      }
+    } else {
+      setImageError('Please enter an image URL first');
+    }
+  };
+  
+  const handleSaveBanner = async () => {
+    if (selectedBanner) {
+      // Validate the image URL before saving
+      if (selectedBanner.imageUrl) {
+        const isValid = await validateImageUrl(selectedBanner.imageUrl);
+        if (!isValid) {
+          return; // Don't save if the image URL is invalid
+        }
+      }
+      
+      // Check if this is an existing banner or a new one
+      const existingBanner = bannersList.find(banner => banner.id === selectedBanner.id);
+      
+      if (existingBanner) {
+        // Update existing banner
+        const updatedBanners = bannersList.map(banner => 
+          banner.id === selectedBanner.id ? selectedBanner : banner
+        );
+        setBannersList(updatedBanners);
+      } else {
+        // Add new banner
+        setBannersList([...bannersList, selectedBanner]);
+      }
+      
+      setSelectedBanner(null);
+      setImageError(null);
+    }
+  };
+  
+  return (
+    <div className={styles.contentContainer}>
+      <h1 className={styles.pageTitle}>Content Management</h1>
+      
+      <div className={styles.tabsContainer}>
+        <button 
+          className={`${styles.tabButton} ${activeTab === 'pages' ? styles.activeTab : ''}`}
+          onClick={() => handleTabChange('pages')}
+        >
+          <File size={18} />
+          <span>Pages</span>
+        </button>
+        <button 
+          className={`${styles.tabButton} ${activeTab === 'banners' ? styles.activeTab : ''}`}
+          onClick={() => handleTabChange('banners')}
+        >
+          <Image size={18} />
+          <span>Banners & Promotions</span>
+        </button>
+      </div>
+      
+      {activeTab === 'pages' ? (
+        <div className={styles.pagesContent}>
+          <div className={styles.pagesSidebar}>
+            <h2 className={styles.sidebarTitle}>Static Pages</h2>
+            <div className={styles.pagesList}>
+              <button 
+                className={`${styles.pageItem} ${selectedPage === 'terms' ? styles.activePage : ''}`}
+                onClick={() => handlePageSelect('terms')}
+              >
+                Terms & Conditions
+              </button>
+              <button 
+                className={`${styles.pageItem} ${selectedPage === 'privacy' ? styles.activePage : ''}`}
+                onClick={() => handlePageSelect('privacy')}
+              >
+                Privacy Policy
+              </button>
+              <button 
+                className={`${styles.pageItem} ${selectedPage === 'about' ? styles.activePage : ''}`}
+                onClick={() => handlePageSelect('about')}
+              >
+                About Us
+              </button>
+            </div>
+          </div>
+          
+          <div className={styles.pageContentSection}>
+            <div className={styles.contentHeader}>
+              <h2 className={styles.contentTitle}>
+                {selectedPage === 'terms' && 'Terms & Conditions'}
+                {selectedPage === 'privacy' && 'Privacy Policy'}
+                {selectedPage === 'about' && 'About Us'}
+              </h2>
+              <button 
+                className={isEditing ? styles.saveButton : styles.editButton}
+                onClick={isEditing ? handleSaveContent : handleEditToggle}
+              >
+                {isEditing ? (
+                  <>
+                    <Save size={16} /> Save
+                  </>
+                ) : (
+                  <>
+                    <Edit size={16} /> Edit
+                  </>
+                )}
+              </button>
+            </div>
+            
+            <div className={styles.editorContainer}>
+              {isEditing ? (
+                <textarea
+                  className={styles.contentEditor}
+                  value={currentContent}
+                  onChange={handleContentChange}
+                />
+              ) : (
+                <div 
+                  className={styles.contentPreview}
+                  dangerouslySetInnerHTML={{ __html: currentContent }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.bannersContent}>
+          <h2 className={styles.sectionTitle}>Banners & Promotions</h2>
+          
+          <div className={styles.bannersGrid}>
+            {bannersList.map(banner => (
+              <div key={banner.id} className={styles.bannerCard}>
+                <div className={styles.bannerImage}>
+                  <img 
+                    src={banner.imageUrl || 'https://images.unsplash.com/photo-1610296669228-602fa827fc1f?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=400&ixlib=rb-4.0.3&q=80&w=1200'} 
+                    alt={banner.title}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      console.log('Image failed to load:', target.src);
+                      target.src = 'https://images.unsplash.com/photo-1610296669228-602fa827fc1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&h=400&q=80';
+                      target.onerror = null; // Prevent infinite loop if fallback also fails
+                    }}
+                  />
+                </div>
+                <div className={styles.bannerInfo}>
+                  <h3 className={styles.bannerTitle}>{banner.title}</h3>
+                  <p className={styles.bannerSubtitle}>{banner.subtitle}</p>
+                  <div className={styles.bannerMeta}>
+                    <div className={styles.bannerStatus}>
+                      <span className={styles.statusLabel}>Status:</span>
+                      <span className={`${styles.statusValue} ${banner.active ? styles.statusActive : styles.statusInactive}`}>
+                        {banner.active ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                    <div className={styles.bannerLink}>
+                      <Link size={14} />
+                      <span className={styles.linkText}>{banner.linkUrl}</span>
+                    </div>
+                  </div>
+                  <div className={styles.bannerActions}>
+                    <button 
+                      className={styles.editBannerButton}
+                      onClick={() => handleEditBanner(banner)}
+                    >
+                      <Edit size={16} /> Edit
+                    </button>
+                    <button 
+                      className={`${styles.toggleButton} ${banner.active ? styles.activeToggle : styles.inactiveToggle}`}
+                      onClick={() => handleBannerToggle(banner.id)}
+                    >
+                      {banner.active ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
+                      {banner.active ? 'Active' : 'Inactive'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div 
+              className={styles.addBannerCard}
+              onClick={() => setSelectedBanner({
+                id: bannersList.length + 1,
+                title: 'New Banner',
+                subtitle: 'Enter banner subtitle here',
+                imageUrl: 'https://images.unsplash.com/photo-1610296669228-602fa827fc1f?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=400&ixlib=rb-4.0.3&q=80&w=1200',
+                linkUrl: '/events/new-event',
+                active: false
+              })}
+            >
+              <div className={styles.addBannerContent}>
+                <span className={styles.addIcon}>+</span>
+                <span className={styles.addText}>Add New Banner</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {selectedBanner && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>Edit Banner</h2>
+              <button className={styles.closeButton} onClick={() => setSelectedBanner(null)}>
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className={styles.modalContent}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Banner Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={selectedBanner.title}
+                  onChange={handleBannerInputChange}
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Subtitle</label>
+                <input
+                  type="text"
+                  name="subtitle"
+                  value={selectedBanner.subtitle}
+                  onChange={handleBannerInputChange}
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Link URL</label>
+                <input
+                  type="text"
+                  name="linkUrl"
+                  value={selectedBanner.linkUrl}
+                  onChange={handleBannerInputChange}
+                  className={styles.formInput}
+                />
+              </div>
+              
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Image</label>
+                <div className={styles.imageUploadContainer}>
+                  <div className={styles.currentImagePreview}>
+                    <img 
+                      src={selectedBanner.imageUrl || 'https://images.unsplash.com/photo-1610296669228-602fa827fc1f?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=400&ixlib=rb-4.0.3&q=80&w=1200'} 
+                      alt={selectedBanner.title}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        console.log('Image failed to load in preview:', target.src);
+                        target.src = 'https://images.unsplash.com/photo-1610296669228-602fa827fc1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&h=400&q=80';
+                        target.onerror = null; // Prevent infinite loop if fallback also fails
+                      }}
+                    />
+                  </div>
+                  <div className={styles.imageInputContainer}>
+                    <div className={styles.imageUrlInputWrapper}>
+                      <input
+                        type="text"
+                        name="imageUrl"
+                        value={selectedBanner.imageUrl}
+                        onChange={handleBannerInputChange}
+                        className={`${styles.formInput} ${imageError ? styles.inputError : ''}`}
+                        placeholder="Enter Unsplash image URL"
+                      />
+                      {imageError && (
+                        <div className={styles.errorMessage}>
+                          <AlertCircle size={14} />
+                          <span>{imageError}</span>
+                        </div>
+                      )}
+                      {isTestingImage && (
+                        <div className={styles.loadingMessage}>
+                          Testing image URL...
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className={styles.predefinedImages}>
+                      <p className={styles.predefinedImagesTitle}>Select from sports images:</p>
+                      <div className={styles.imageOptions}>
+                        <div 
+                          className={styles.imageOption}
+                          onClick={() => setSelectedBanner({
+                            ...selectedBanner,
+                            imageUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=400&ixlib=rb-4.0.3&q=80&w=1200'
+                          })}
+                        >
+                          <img 
+                            src="https://images.unsplash.com/photo-1546519638-68e109498ffc?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixlib=rb-4.0.3&q=80&w=150" 
+                            alt="Basketball"
+                          />
+                          <span>Basketball</span>
+                        </div>
+                        <div 
+                          className={styles.imageOption}
+                          onClick={() => setSelectedBanner({
+                            ...selectedBanner,
+                            imageUrl: 'https://images.unsplash.com/photo-1504707748692-419802cf939d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=400&ixlib=rb-4.0.3&q=80&w=1200'
+                          })}
+                        >
+                          <img 
+                            src="https://images.unsplash.com/photo-1504707748692-419802cf939d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixlib=rb-4.0.3&q=80&w=150" 
+                            alt="Formula 1"
+                          />
+                          <span>Racing</span>
+                        </div>
+                        <div 
+                          className={styles.imageOption}
+                          onClick={() => setSelectedBanner({
+                            ...selectedBanner,
+                            imageUrl: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=400&ixlib=rb-4.0.3&q=80&w=1200'
+                          })}
+                        >
+                          <img 
+                            src="https://images.unsplash.com/photo-1517649763962-0c623066013b?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixlib=rb-4.0.3&q=80&w=150" 
+                            alt="Summer Sports"
+                          />
+                          <span>Summer Sports</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className={styles.switchGroup}>
+                <span className={styles.switchLabel}>Status</span>
+                <div className={styles.switch}>
+                  <input 
+                    type="checkbox" 
+                    id={`switch-${selectedBanner.id}`} 
+                    className={styles.switchInput}
+                    checked={selectedBanner.active}
+                    onChange={() => {
+                      setSelectedBanner({
+                        ...selectedBanner,
+                        active: !selectedBanner.active
+                      });
+                    }}
+                  />
+                  <label htmlFor={`switch-${selectedBanner.id}`} className={styles.switchLabel}>
+                    {selectedBanner.active ? 'Active' : 'Inactive'}
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div className={styles.modalFooter}>
+              <button className={styles.cancelButton} onClick={() => setSelectedBanner(null)}>
+                Cancel
+              </button>
+              <button 
+                className={styles.testImageButton} 
+                onClick={handleTestImageUrl}
+                disabled={isTestingImage}
+              >
+                {isTestingImage ? 'Testing...' : 'Test Image URL'}
+              </button>
+              <button className={styles.saveButton} onClick={handleSaveBanner}>
+                <Save size={16} /> Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Content;

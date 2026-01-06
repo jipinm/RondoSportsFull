@@ -1,0 +1,18 @@
+# CORS is handled by the PHP CorsMiddleware
+# Do not set CORS headers here to avoid duplicate headers
+
+RewriteEngine On
+
+# Handle Authorization header for JWT tokens
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+# Handle OPTIONS requests for CORS preflight
+# Pass ALL OPTIONS requests to index.php so Slim's CORS middleware can handle them
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule .* index.php [QSA,L]
+
+# Standard routing - pass all non-file requests to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

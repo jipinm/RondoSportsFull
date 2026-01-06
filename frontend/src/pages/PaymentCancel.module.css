@@ -1,0 +1,322 @@
+/* Payment Cancel Page Styles */
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+}
+
+.cancelCard {
+  max-width: 800px;
+  width: 100%;
+  padding: 3rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  animation: slideUp 0.6s ease-out;
+}
+
+.cancelIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounceIn 0.8s ease-out 0.3s both;
+}
+
+.crossmark {
+  font-size: 2.5rem;
+  color: white;
+  font-weight: bold;
+}
+
+.cancelCard h1 {
+  margin: 0 0 1rem 0;
+  color: #1e293b;
+  font-size: 2.25rem;
+  font-weight: 700;
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.subtitle {
+  margin: 0 0 2rem 0;
+  color: #64748b;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  animation: fadeInUp 0.6s ease-out 0.5s both;
+}
+
+.infoBox {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border: 1px solid #f59e0b;
+  text-align: left;
+  animation: fadeInUp 0.6s ease-out 0.6s both;
+}
+
+.infoBox h3 {
+  margin: 0 0 1rem 0;
+  color: #d97706;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.infoBox p {
+  margin: 0;
+  color: #92400e;
+  line-height: 1.6;
+}
+
+.bookingInfo {
+  background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border: 1px solid #a78bfa;
+  animation: fadeInUp 0.6s ease-out 0.7s both;
+}
+
+.bookingInfo p {
+  margin: 0 0 0.5rem 0;
+  color: #5b21b6;
+  font-weight: 500;
+}
+
+.warning {
+  color: #dc2626 !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.options {
+  margin: 3rem 0 2rem 0;
+  animation: fadeInUp 0.6s ease-out 0.8s both;
+}
+
+.options h3 {
+  margin: 0 0 2rem 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.optionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.optionCard {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.optionCard:hover {
+  transform: translateY(-4px);
+  border-color: #3b82f6;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+}
+
+.optionIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.optionCard h4 {
+  margin: 0 0 0.5rem 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.optionCard p {
+  margin: 0 0 1.5rem 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.secondaryButton {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.secondaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.tertiaryButton {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: white;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tertiaryButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-2px);
+}
+
+.helpSection {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border: 1px solid #0ea5e9;
+  text-align: left;
+  animation: fadeInUp 0.6s ease-out 0.9s both;
+}
+
+.helpSection h4 {
+  margin: 0 0 0.75rem 0;
+  color: #0369a1;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.helpSection p {
+  margin: 0;
+  color: #0c4a6e;
+  line-height: 1.6;
+}
+
+.helpSection a {
+  color: #0ea5e9;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.helpSection a:hover {
+  text-decoration: underline;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .cancelCard {
+    padding: 2rem;
+  }
+
+  .optionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cancelCard h1 {
+    font-size: 1.875rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .cancelCard,
+  .cancelIcon,
+  .infoBox,
+  .bookingInfo,
+  .options,
+  .helpSection {
+    animation: none;
+  }
+}
+
+/* Focus states */
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.tertiaryButton:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

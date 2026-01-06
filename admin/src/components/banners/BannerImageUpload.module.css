@@ -1,0 +1,182 @@
+.uploadContainer {
+  position: relative;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.previewContainer {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f9fafb;
+  border: 2px solid #e5e7eb;
+}
+
+.previewImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.previewContainer:hover .imageOverlay {
+  opacity: 1;
+}
+
+.changeButton,
+.removeButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.changeButton {
+  background-color: #3b82f6;
+}
+
+.changeButton:hover {
+  background-color: #2563eb;
+}
+
+.removeButton {
+  background-color: #ef4444;
+}
+
+.removeButton:hover {
+  background-color: #dc2626;
+}
+
+.dropZone {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropZone:hover {
+  border-color: #3b82f6;
+  background-color: #f0f9ff;
+}
+
+.dragOver {
+  border-color: #3b82f6;
+  background-color: #dbeafe;
+  transform: scale(1.02);
+}
+
+.dropZoneContent {
+  max-width: 300px;
+}
+
+.uploadIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+.uploadText {
+  font-size: 16px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.uploadSubtext {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.errorMessage {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.uploadHints {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.hint:last-child {
+  margin-bottom: 0;
+}
+
+.hint strong {
+  color: #334155;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .dropZone {
+    padding: 30px 15px;
+    min-height: 150px;
+  }
+  
+  .uploadIcon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  
+  .uploadText {
+    font-size: 15px;
+  }
+  
+  .uploadSubtext {
+    font-size: 13px;
+  }
+  
+  .imageOverlay {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .changeButton,
+  .removeButton {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}

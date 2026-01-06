@@ -1,0 +1,439 @@
+openapi: 3.0.3
+info:
+  title: XS2Event Proxy API
+  description: A production-ready PHP proxy for the XS2Event REST API.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: Proprietary
+    url: https://www.example.com/terms/
+
+servers:
+  - url: /v1
+    description: API v1 (current)
+  - url: http://rondoapi.local/v1
+    description: Local development server (recommended)
+  - url: http://localhost:8080/v1
+    description: Local development server (PHP built-in)
+
+tags:
+  - name: Sports
+    description: Operations related to sports
+  - name: Tournaments
+    description: Operations related to tournaments
+  - name: Events
+    description: Operations related to events
+  - name: Venues
+    description: Operations related to venues
+  - name: Health
+    description: Health check endpoints
+
+paths:
+  /sports:
+    get:
+      tags: [Sports]
+      summary: List all supported sports
+      operationId: getSports
+      parameters:
+        - $ref: '#/components/parameters/sportTypeFilter'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SportsResponse'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=21600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security:
+        - apiKey: []
+
+  /tournaments:
+    get:
+      tags: [Tournaments]
+      summary: List tournaments
+      operationId: listTournaments
+      parameters:
+        - $ref: '#/components/parameters/sportTypeFilter'
+        - $ref: '#/components/parameters/dateStopFilter'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentsResponse'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=21600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security:
+        - apiKey: []
+
+  /tournaments/{sport_type}:
+    get:
+      tags: [Tournaments]
+      summary: List tournaments by sport type
+      operationId: listTournamentsBySport
+      parameters:
+        - name: sport_type
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/dateStopFilter'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TournamentsResponse'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=21600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security:
+        - apiKey: []
+
+  /tournament/{tournament_id}:
+    get:
+      tags: [Tournaments]
+      summary: Get tournament by ID
+      operationId: getTournament
+      parameters:
+        - name: tournament_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tournament'
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=21600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security:
+        - apiKey: []
+
+  /tournament/{tournament_id}/events:
+    get:
+      tags: [Tournaments, Events]
+      summary: Get events for a tournament
+      operationId: getTournamentEvents
+      parameters:
+        - name: tournament_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/dateStopFilter'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security:
+        - apiKey: []
+
+  /events:
+    get:
+      tags: [Events]
+      summary: List events
+      operationId: listEvents
+      parameters:
+        - name: tournament_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/sportTypeFilter'
+        - $ref: '#/components/parameters/dateStopFilter'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security:
+        - apiKey: []
+
+  /venues:
+    get:
+      tags: [Venues]
+      summary: List venues
+      operationId: listVenues
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/perPage'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VenuesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      security:
+        - apiKey: []
+
+  /healthz:
+    get:
+      tags: [Health]
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckResponse'
+        '503':
+          description: API is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /:
+    get:
+      tags: [Documentation]
+      summary: API Information
+      operationId: getApiInfo
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiInfo'
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      name: X-Api-Key
+      in: header
+
+  parameters:
+    sportTypeFilter:
+      name: sport_type
+      in: query
+      description: Filter by sport type (e.g., soccer, formula1)
+      schema:
+        type: string
+    
+    dateStopFilter:
+      name: date_stop
+      in: query
+      description: Filter by end date (e.g., "ge:2025-06-02")
+      schema:
+        type: string
+    
+    page:
+      name: page
+      in: query
+      description: Page number for pagination
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    
+    perPage:
+      name: per_page
+      in: query
+      description: Number of items per page (1-100)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+
+  schemas:
+    Pagination:
+      type: object
+      properties:
+        current_page: { type: integer, example: 1 }
+        per_page: { type: integer, example: 50 }
+        total: { type: integer, example: 123 }
+        last_page: { type: integer, example: 3 }
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: integer, example: 400 }
+            message: { type: string, example: "Invalid request parameters" }
+
+    SportsResponse:
+      type: object
+      properties:
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Sport'
+        meta:
+          $ref: '#/components/schemas/Pagination'
+
+    TournamentsResponse:
+      type: object
+      properties:
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Tournament'
+        meta:
+          $ref: '#/components/schemas/Pagination'
+
+    EventsResponse:
+      type: object
+      properties:
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+        meta:
+          $ref: '#/components/schemas/Pagination'
+
+    VenuesResponse:
+      type: object
+      properties:
+        data: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Venue'
+        meta:
+          $ref: '#/components/schemas/Pagination'
+
+    HealthCheckResponse:
+      type: object
+      properties:
+        status: { type: string, enum: [ok, error], example: "ok" }
+        timestamp: { type: string, format: date-time }
+        version: { type: string, example: "1.0.0" }
+        services:
+          type: object
+          properties:
+            api: { type: boolean, example: true }
+            database: { type: boolean, example: true }
+            cache: { type: boolean, example: true }
+
+    Sport:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string, example: "Soccer" }
+        slug: { type: string, example: "soccer" }
+        active: { type: boolean, example: true }
+
+    Tournament:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string, example: "UEFA Champions League" }
+        slug: { type: string, example: "uefa-champions-league" }
+        sport_type: { type: string, example: "soccer" }
+        country: { type: string, nullable: true, example: "Europe" }
+        country_code: { type: string, nullable: true, example: "EU" }
+        active: { type: boolean, example: true }
+
+    Event:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string, example: "Real Madrid vs Barcelona" }
+        status: { type: string, enum: ["not_started", "in_play", "finished"] }
+        start_time: { type: string, format: date-time }
+        sport_type: { type: string, example: "soccer" }
+
+    Venue:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string, example: "Santiago Bernabéu" }
+        city: { type: string, example: "Madrid" }
+        country: { type: string, example: "Spain" }
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

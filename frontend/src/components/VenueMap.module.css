@@ -1,0 +1,469 @@
+/* Venue Map Component Styles */
+.venueMapContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mapControls {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.mapTitle h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+}
+
+.mapTitle p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.svgContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.svgContainer svg {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  cursor: pointer;
+}
+
+/* Loading States */
+.loadingState,
+.errorState,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  text-align: center;
+  color: #64748b;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorIcon,
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.errorState p,
+.emptyState p {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.errorState small {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+/* Category Legend */
+.categoryLegend {
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem;
+  background: #f8fafc;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.categoryLegend h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.75rem 0;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.categoryItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  border: 1px solid #e2e8f0;
+}
+
+.categoryItem:hover,
+.categoryItem.active {
+  background: rgba(87, 185, 255, 0.1); /* Light primary brand blue background */
+  border-color: #57B9FF; /* Primary brand blue border */
+  transform: translateX(4px);
+}
+
+.categoryColor {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.categoryName {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.categoryPrice {
+  font-size: 0.8rem;
+  color: #FF6200; /* Brand accent orange for price */
+  font-weight: 600;
+}
+
+/* Category Type Colors - Using specified seat color */
+.category_grandstand,
+.category_default {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+.category_suite {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+.category_general_admission {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+.category_hospitality {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+.category_premium {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+.category_vip {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+/* Additional category variations using seat color */
+.category_terrace {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+.category_club {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+.category_family {
+  background: #BDDDFC; /* Seats color as specified */
+}
+
+/* SVG Styling for Venue Elements */
+.svgContainer :global(.soccerfield) {
+  fill: #4dabf7; /* Ground color as specified */
+}
+
+.svgContainer :global(.svg-background) {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2px;
+}
+
+.svgContainer :global(.stadium-ring) {
+  fill: #8a8582;
+}
+
+.svgContainer :global(.svg-background-soccerstadiums) {
+  fill: white;
+}
+
+.svgContainer :global(.track-drive) {
+  stroke: #455159;
+  fill: none;
+  stroke-width: 12.72px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.svgContainer :global(.track-border) {
+  stroke: #8a8582;
+  fill: none;
+  stroke-width: 25.44px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.svgContainer :global(.track-overlay) {
+  stroke: white;
+  fill: none;
+  stroke-width: 15.26px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.svgContainer :global(.grandstand) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+.svgContainer :global(.suite) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+.svgContainer :global(.general-admission) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+.svgContainer :global(.hospitality) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+.svgContainer :global(.premium) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+.svgContainer :global(.vip) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+/* Additional category variations */
+.svgContainer :global(.terrace) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+.svgContainer :global(.club) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+.svgContainer :global(.family) {
+  fill: #BDDDFC; /* Seats color as specified */
+  transition: fill 0.2s ease;
+}
+
+.svgContainer :global(.unavailable) {
+  fill: #a3a9af;
+  opacity: 0.6;
+}
+
+/* Hover and Highlight Effects - Using brand accent color */
+.svgContainer :global(.grandstand):hover,
+.svgContainer :global(.suite):hover,
+.svgContainer :global(.general-admission):hover,
+.svgContainer :global(.hospitality):hover,
+.svgContainer :global(.premium):hover,
+.svgContainer :global(.vip):hover,
+.svgContainer :global(.terrace):hover,
+.svgContainer :global(.club):hover,
+.svgContainer :global(.family):hover {
+  fill: #FF6200; /* Brand accent orange for hover */
+  stroke: #fff;
+  stroke-width: 2px;
+}
+
+.svgContainer :global(.highlighted) {
+  fill: #FF6200 !important; /* Brand accent orange for highlight */
+  stroke: #fff !important;
+  stroke-width: 3px !important;
+  filter: drop-shadow(0 0 8px rgba(255, 98, 0, 0.6)); /* Orange glow effect */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mapControls {
+    padding: 0.75rem;
+  }
+  
+  .mapTitle h3 {
+    font-size: 1rem;
+  }
+  
+  .mapTitle p {
+    font-size: 0.8rem;
+  }
+  
+  .svgContainer {
+    padding: 0.75rem;
+  }
+  
+  .categoryLegend {
+    padding: 0.75rem;
+    max-height: 150px;
+  }
+  
+  .categoryItem {
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .categoryName {
+    font-size: 0.8rem;
+  }
+  
+  .categoryPrice {
+    font-size: 0.75rem;
+  }
+}
+
+/* Skeleton Loading Styles */
+@keyframes loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeletonVenueMapContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+}
+
+.skeletonMapControls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.skeletonMapTitle {
+  height: 20px;
+  width: 120px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonMapSubtitle {
+  height: 14px;
+  width: 180px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonSvgContainer {
+  flex: 1;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.skeletonVenueMapPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skeletonVenueIcon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 12px;
+}
+
+.skeletonCategoryLegend {
+  padding: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.skeletonLegendTitle {
+  height: 18px;
+  width: 80px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.skeletonCategoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeletonCategoryItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeletonCategoryColor {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 2px;
+}
+
+.skeletonCategoryName {
+  height: 14px;
+  width: 120px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonCategoryPrice {
+  height: 14px;
+  width: 60px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-left: auto;
+}

@@ -1,0 +1,435 @@
+.searchBarContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 1175px;
+  padding: 0 1rem;
+}
+
+.searchBar {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.searchTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin-right: 1.5rem;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.buyText {
+  color: #384959;
+  margin-right: 0.25rem;
+}
+
+.ticketsText {
+  color: #57B9FF;
+}
+
+.searchFields {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .searchFields {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.searchField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dateInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.calendarIconWrapper {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  background-color: #f5f5f5;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-left: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendarIconWrapper:hover {
+  background-color: #e0f2fe;
+}
+
+.calendarIcon {
+  color: #777;
+  font-size: 16px;
+  transition: color 0.2s ease;
+}
+
+.calendarIconWrapper:hover .calendarIcon {
+  color: #57B9FF;
+}
+
+
+
+.searchInput {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  background-color: #f5f5f5;
+  height: 44px;
+  width: 100%;
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+}
+
+.searchButton {
+  background-color: #3498db;
+  color: white;
+  padding: 0 1.5rem;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+}
+
+
+
+.searchButton:hover {
+  background-color: #4aa8ee;
+}
+
+/* Custom Date Picker Styles */
+.datePickerContainer {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  margin-bottom: 4px;
+  padding: 16px;
+  min-width: 280px;
+}
+
+.datePickerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.monthYear {
+  font-weight: 600;
+  font-size: 16px;
+  color: #384959;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #57B9FF;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+}
+
+.navButton:hover:not(:disabled) {
+  background-color: #57B9FF;
+  color: white;
+}
+
+.navButton:disabled {
+  color: #cbd5e0;
+  cursor: not-allowed;
+}
+
+.weekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.weekDay {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 8px 4px;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendarDay {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 36px;
+}
+
+.calendarDay.empty {
+  cursor: default;
+}
+
+.calendarDay.available {
+  color: #384959;
+  background-color: transparent;
+}
+
+.calendarDay.available:hover {
+  background-color: #e0f2fe;
+  color: #57B9FF;
+}
+
+.calendarDay.selected {
+  background-color: #57B9FF;
+  color: white;
+  font-weight: 600;
+}
+
+.calendarDay.disabled {
+  color: #cbd5e0;
+  cursor: not-allowed;
+  background-color: #f8fafc;
+}
+
+.datePickerFooter {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: center;
+}
+
+.clearButton {
+  background: none;
+  border: 1px solid #ff6b35;
+  color: #ff6b35;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+  background-color: #ff6b35;
+  color: white;
+}
+
+/* Tournament Typeahead Styles */
+.tournamentInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.tournamentDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.tournamentDropdownItem {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tournamentDropdownItem:last-child {
+  border-bottom: none;
+}
+
+.tournamentDropdownItem:hover {
+  background-color: #f8fafc;
+  border-left: 3px solid #57B9FF;
+}
+
+.tournamentName {
+  font-weight: 600;
+  color: #384959;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tournamentSport {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .searchBarContainer {
+    position: relative;
+    bottom: auto;
+    margin-top: -2rem;
+    z-index: 20;
+  }
+
+  .searchBar {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .searchTitle {
+    font-size: 20px;
+    margin-right: 0;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .searchFields {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .searchButton {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .datePickerContainer {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchBarContainer {
+    padding: 0 0.5rem;
+  }
+
+  .wrapper {
+    padding: 0 0.5rem;
+  }
+
+  .searchBar {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .searchTitle {
+    font-size: 18px;
+  }
+
+  .searchInput {
+    font-size: 13px;
+    padding: 0.65rem 0.85rem;
+    height: 40px;
+  }
+
+  .searchButton {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .calendarIconWrapper {
+    width: 45px;
+  }
+
+  .datePickerContainer {
+    padding: 12px;
+  }
+
+  .monthYear {
+    font-size: 14px;
+  }
+
+  .navButton {
+    width: 28px;
+    height: 28px;
+  }
+
+  .weekDay {
+    font-size: 11px;
+    padding: 6px 2px;
+  }
+
+  .calendarDay {
+    font-size: 13px;
+    min-height: 32px;
+  }
+}

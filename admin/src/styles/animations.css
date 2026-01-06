@@ -1,0 +1,170 @@
+/* Animations and transitions for Rondo Sports Admin Panel */
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide in animations */
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Loading animations */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Hover effect for cards */
+@keyframes softGlow {
+  0% {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.18);
+  }
+  100% {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Counter animation */
+@keyframes countUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Button press effect */
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Progress bar fill animation */
+@keyframes progressFill {
+  from {
+    width: 0;
+  }
+}
+
+/* Border glow effect */
+@keyframes borderGlow {
+  0% {
+    border-color: var(--rondo-sky-500);
+    box-shadow: 0 0 5px var(--rondo-sky-300);
+  }
+  33% {
+    border-color: var(--rondo-teal-500);
+    box-shadow: 0 0 5px var(--rondo-teal-300);
+  }
+  66% {
+    border-color: var(--rondo-purple-500);
+    box-shadow: 0 0 5px var(--rondo-purple-300);
+  }
+  100% {
+    border-color: var(--rondo-sky-500);
+    box-shadow: 0 0 5px var(--rondo-sky-300);
+  }
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* CSS classes to apply animations */
+.fadeIn {
+  animation: fadeIn var(--animation-medium) var(--ease-out) forwards;
+}
+
+.slideInUp {
+  animation: slideInUp var(--animation-medium) var(--ease-out) forwards;
+}
+
+.slideInRight {
+  animation: slideInRight var(--animation-medium) var(--ease-out) forwards;
+}
+
+.pulse {
+  animation: pulse 2s var(--ease-in-out) infinite;
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.softGlow {
+  animation: softGlow 3s var(--ease-in-out) infinite;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}

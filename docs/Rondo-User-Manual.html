@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rondo Sports Admin Panel - User Manual</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #faf9f6;
+            --bg-secondary: #ffffff;
+            --color-primary: #2563eb;
+            --color-secondary: #7c3aed;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-info: #06b6d4;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .version {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .nav-container {
+            position: sticky;
+            top: 7rem;
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: var(--shadow);
+            z-index: 99;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav a {
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav a:hover {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .nav a.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-header i {
+            font-size: 2rem;
+            color: var(--color-primary);
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            color: var(--text-primary);
+        }
+
+        .subsection {
+            margin-top: 2rem;
+        }
+
+        .subsection h3 {
+            font-size: 1.25rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subsection h4 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.75rem;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .alert i {
+            font-size: 1.25rem;
+            margin-top: 0.1rem;
+        }
+
+        .alert-info {
+            background: rgba(6, 182, 212, 0.1);
+            border-left: 4px solid var(--color-info);
+            color: #0e7490;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--color-warning);
+            color: #92400e;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--color-danger);
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--color-success);
+            color: #065f46;
+        }
+
+        .steps {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            background: var(--color-primary);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: #92400e; }
+        .badge-confirmed { background: rgba(16, 185, 129, 0.2); color: #065f46; }
+        .badge-cancelled { background: rgba(239, 68, 68, 0.2); color: #991b1b; }
+        .badge-refunded { background: rgba(6, 182, 212, 0.2); color: #0e7490; }
+        .badge-expired { background: rgba(107, 114, 128, 0.2); color: #374151; }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card h4 {
+            margin: 0.5rem 0;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3rem;
+            height: 3rem;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 98;
+        }
+
+        .back-to-top:hover {
+            background: var(--color-secondary);
+            transform: translateY(-4px);
+        }
+
+        .back-to-top.visible {
+            display: flex;
+        }
+
+        code {
+            background: rgba(37, 99, 235, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--color-primary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--color-primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .faq-item {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            padding-left: 2rem;
+        }
+
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .nav {
+                padding: 0 1rem;
+            }
+
+            .nav a {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-to-top {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1><i class="fas fa-book"></i> Rondo Sports Admin Panel</h1>
+            <p class="version">User Manual - Version 1.0.0 | November 19, 2025</p>
+        </div>
+    </header>
+
+    <nav class="nav-container">
+        <div class="nav">
+            <a href="#getting-started"><i class="fas fa-rocket"></i> Getting Started</a>
+            <a href="#dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="#bookings"><i class="fas fa-ticket-alt"></i> Bookings</a>
+            <a href="#customers"><i class="fas fa-users"></i> Customers</a>
+            <a href="#cancellations"><i class="fas fa-ban"></i> Cancellations</a>
+            <a href="#refunds"><i class="fas fa-money-bill-wave"></i> Refunds</a>
+            <a href="#content"><i class="fas fa-file-alt"></i> Content</a>
+            <a href="#banners"><i class="fas fa-image"></i> Banners</a>
+            <a href="#users"><i class="fas fa-user-shield"></i> Users</a>
+            <a href="#reports"><i class="fas fa-chart-bar"></i> Reports</a>
+            <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
+            <a href="#faq"><i class="fas fa-question-circle"></i> FAQ</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Getting Started -->
+        <section id="getting-started" class="section">
+            <div class="section-header">
+                <i class="fas fa-rocket"></i>
+                <h2>Getting Started</h2>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-sign-in-alt"></i> Accessing the Admin Panel</h3>
+                <ol class="steps">
+                    <li>Open your web browser</li>
+                    <li>Navigate to: <code>https://admin.yourdomain.com</code></li>
+                    <li>You will see the login page</li>
+                </ol>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-key"></i> Logging In</h3>
+                <ol class="steps">
+                    <li><strong>Enter your credentials:</strong> Email and Password</li>
+                    <li>Click <strong>"Login"</strong></li>
+                    <li>You will be redirected to the Dashboard</li>
+                </ol>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Change Password:</strong> You can change your password anytime. Choose a strong password (at least 8 characters, including uppercase, lowercase, numbers, and symbols).
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Dashboard -->
+        <section id="dashboard" class="section">
+            <div class="section-header">
+                <i class="fas fa-chart-line"></i>
+                <h2>Dashboard</h2>
+            </div>
+
+            <p>The Dashboard provides an overview of your ticket booking system's performance at a glance. All metrics are sourced from the protected <code>/admin/dashboard</code> API endpoint and compare current performance with the previous equivalent period.</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <i class="fas fa-calendar-day"></i>
+                    <h4>Today's Bookings</h4>
+                    <p>Confirmed bookings created today with a trend indicator against yesterday.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-calendar-week"></i>
+                    <h4>Weekly Bookings</h4>
+                    <p>Total confirmed bookings for the current week compared with the previous week.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h4>Monthly Bookings</h4>
+                    <p>Bookings captured during the current month versus the prior month.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h4>Total Revenue</h4>
+                    <p>Revenue from completed bookings with percentage change against last month.</p>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-signal"></i> Understanding Trend Indicators</h3>
+                <ul>
+                    <li><strong>Green upward arrow:</strong> Current period has grown compared to the previous period.</li>
+                    <li><strong>Red downward arrow:</strong> Current period has decreased compared to the previous period.</li>
+                    <li><strong>Gray dash:</strong> Insufficient data to calculate change (both periods are zero).</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-chart-area"></i> Charts and Activity</h3>
+                <ul>
+                    <li><strong>Bookings Over Time:</strong> Area chart showing the last 30 days of booking volume.</li>
+                    <li><strong>Revenue Trend:</strong> Area chart illustrating daily revenue for the past 30 days.</li>
+                    <li><strong>Top Events by Bookings:</strong> Bar chart of the five events with the highest booking counts.</li>
+                    <li><strong>Recent Activities:</strong> Feed of the latest ten booking, refund, and registration actions.</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-success">
+                <i class="fas fa-sync-alt"></i>
+                <div>
+                    <strong>Refreshing Dashboard Data:</strong> The dashboard data loads on page entry and can be refreshed manually. To manually refresh, click the refresh icon at the top right.
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Management -->
+        <section id="bookings" class="section">
+            <div class="section-header">
+                <i class="fas fa-ticket-alt"></i>
+                <h2>Booking Management</h2>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-list"></i> Booking Statuses</h3>
+                <div>
+                    <span class="badge badge-pending"><i class="fas fa-circle"></i> Pending</span>
+                    <span class="badge badge-confirmed"><i class="fas fa-check-circle"></i> Confirmed</span>
+                    <span class="badge badge-cancelled"><i class="fas fa-times-circle"></i> Cancelled</span>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-search"></i> Finding Bookings</h3>
+                <p>Use the search bar to find bookings by:</p>
+                <ul>
+                    <li>Booking ID (e.g., "BK-2025-179982")</li>
+                    <li>Customer name</li>
+                    <li>Event name</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-filter"></i> Filtering Bookings</h3>
+                <p>Apply filters to narrow down results:</p>
+                <ul>
+                    <li><strong>Booking Status:</strong> Pending, Confirmed, Cancelled</li>
+                    <li><strong>Payment Status:</strong> Pending, Completed, Failed, Refunded</li>
+                    <li><strong>Cancellation Request:</strong> Requested, Approved, Declined, Cancelled</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-check-circle"></i> View a Booking</h3>
+                <ol class="steps">
+                    <li>Open the booking details by clicking on the 'View' button</li>
+                    <li>Review all information carefully</li>
+                </ol>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-money-bill-wave"></i> Processing Refunds</h3>
+                <ol class="steps">
+                    <li>Open booking details and click <strong>"Process Refund"</strong></li>
+                    <li>Enter refund amount (full or partial)</li>
+                    <li>Enter refund reason (required)</li>
+                    <li>Enter Admin notes (optional)</li>
+                    <li>Click <strong>"Process Refund"</strong></li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Customer Management -->
+        <section id="customers" class="section">
+            <div class="section-header">
+                <i class="fas fa-users"></i>
+                <h2>Customer Management</h2>
+            </div>
+
+            <p>Use the Customer Management screen to review registered customers, update their account status, and export filtered lists for reporting.</p>
+
+            <div class="subsection">
+                <h3><i class="fas fa-table"></i> What You Can See</h3>
+                <p>Each row in the customer table displays:</p>
+                <ul>
+                    <li>Customer name and email verification badge (✅ Verified / ⚠️ Unverified)</li>
+                    <li>Email address and phone number</li>
+                    <li>Account status (Active, Blocked, Pending Verification)</li>
+                    <li>Date the customer joined the platform</li>
+                </ul>
+                <div class="alert alert-info">
+                    <i class="fas fa-user-shield"></i>
+                    <div><strong>Access Control:</strong> Only users with Admin or Super Admin roles (or the <code>customers.view</code>/<code>customers.manage</code> permissions) can access this screen.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-search"></i> Searching & Filtering</h3>
+                <ul>
+                    <li><strong>Search:</strong> Use the search box to find customers by name or email.</li>
+                    <li><strong>Status Filter:</strong> Filter the table to show All, Active, Blocked, or Pending Verification accounts.</li>
+                    <li><strong>Pagination:</strong> Results are shown 20 per page—use the Previous/Next buttons to browse.</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-id-badge"></i> Status Badges</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Active</strong></td>
+                                <td>Customer can sign in and make bookings.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Blocked</strong></td>
+                                <td>Access revoked—customer cannot log in or place new bookings.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pending Verification</strong></td>
+                                <td>Awaiting email verification or admin approval.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-user-lock"></i> Blocking a Customer</h3>
+                <ol class="steps">
+                    <li>Click the <strong>Block</strong> icon on an Active customer.</li>
+                    <li>Provide a detailed reason in the confirmation modal (required, max 1000 characters).</li>
+                    <li>Confirm to immediately revoke access.</li>
+                </ol>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div><strong>Auditing:</strong> Blocking actions are logged with the admin user ID and reason for compliance tracking.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-user-check"></i> Re-activating a Customer</h3>
+                <ol class="steps">
+                    <li>Locate a Blocked customer in the table.</li>
+                    <li>Click the <strong>Activate</strong> icon to restore access.</li>
+                    <li>The account status updates immediately; no additional confirmation is required.</li>
+                </ol>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-file-export"></i> Exporting Customers</h3>
+                <ol class="steps">
+                    <li>Apply any search terms or status filters.</li>
+                    <li>Click <strong>Export</strong> to download a CSV snapshot of the filtered list.</li>
+                    <li>The file includes IDs, contact information, status, and booking spend totals.</li>
+                </ol>
+                <div class="alert alert-info">
+                    <i class="fas fa-database"></i>
+                    <div>The export endpoint also supports JSON output (<code>?format=json</code>) and strips sensitive fields such as password hashes before delivery.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cancellation Requests -->
+        <section id="cancellations" class="section">
+            <div class="section-header">
+                <i class="fas fa-ban"></i>
+                <h2>Cancellation Requests</h2>
+            </div>
+
+            <p>Monitor and act on customer cancellation requests. The header includes a manual <strong>Refresh</strong> button to pull the latest queue from the API.</p>
+
+            <div class="subsection">
+                <h3><i class="fas fa-chart-bar"></i> Queue Overview</h3>
+                <ul>
+                    <li><strong>Stats Cards:</strong> Summaries for Total, Pending Review, Approved, and Declined requests update after each action.</li>
+                    <li><strong>Status Badges:</strong> Table rows display Pending ⏳, Approved ✅, or Declined ❌ indicators for quick scanning.</li>
+                    <li><strong>Pagination:</strong> Requests are listed 20 per page with Previous/Next navigation.</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-filter"></i> Filtering & Search</h3>
+                <ul>
+                    <li>Filter by status (All, Pending, Approved, Declined) to focus on the queue that matters.</li>
+                    <li>Use the search box to match booking references, event names, or customer details.</li>
+                    <li>Filters are sent to <code>/admin/cancellation-requests</code> with pagination parameters, so the results and counters stay in sync.</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-eye"></i> Reviewing a Request</h3>
+                <ol class="steps">
+                    <li>Click the <strong>View</strong> icon in the table to open the detailed modal.</li>
+                    <li>Review booking details (event, amounts, payment status), customer contact information, and the customer’s cancellation reason.</li>
+                    <li>If the request was previously handled, you will also see the reviewer, timestamps, and prior admin notes.</li>
+                </ol>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-check"></i> Approving a Request</h3>
+                <ol class="steps">
+                    <li>In the modal, choose <strong>Approve Cancellation</strong>.</li>
+                    <li>Add optional admin notes to explain the decision (stored with the request record).</li>
+                    <li>Click <strong>Confirm Approval</strong>. The system records the reviewer, applies the configured refund policy, and updates the booking’s cancellation status.</li>
+                </ol>
+                <div class="alert alert-success">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Approval triggers <code>PATCH /admin/cancellation-requests/{id}/approve</code>, which calculates default refund amounts and marks the request as approved while leaving refund processing in a "pending" state until settled.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-times"></i> Declining a Request</h3>
+                <ol class="steps">
+                    <li>Select <strong>Decline Request</strong> from the modal.</li>
+                    <li>Provide a reason of at least 10 characters—this is required by the API for auditing.</li>
+                    <li>Confirm the decline to notify the customer and reset the booking’s cancellation status.</li>
+                </ol>
+                <div class="alert alert-warning">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>Declines are validated server-side via <code>PATCH /admin/cancellation-requests/{id}/reject</code>; missing or short notes are rejected before anything changes.</div>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-notes-medical"></i>
+                <div>For exceptional cases (medical, force majeure, organizer cancellations), capture detailed admin notes so the activity log clearly explains the resolution.</div>
+            </div>
+        </section>
+
+        <!-- Refund Management -->
+        <section id="refunds" class="section">
+            <div class="section-header">
+                <i class="fas fa-money-bill-wave"></i>
+                <h2>Refund Management</h2>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-table"></i> Refund Queue Overview</h3>
+                <ul>
+                    <li>Monitor all customer refund requests in a paginated table that shows refund reference, booking reference, customer details, reason, amount, status, and request date.</li>
+                    <li>Use the search box to instantly filter by refund reference, booking reference, customer name, or refund reason.</li>
+                    <li>Status chips and action buttons let you understand queue health at a glance and respond without leaving the table.</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-list-ul"></i> Refund Statuses</h3>
+                <div>
+                    <span class="badge badge-pending"><i class="fas fa-circle"></i> Pending</span>
+                    <span class="badge badge-refunded"><i class="fas fa-hourglass-half"></i> Under Review</span>
+                    <span class="badge badge-confirmed"><i class="fas fa-check-circle"></i> Approved</span>
+                    <span class="badge badge-confirmed"><i class="fas fa-shipping-fast"></i> Processed</span>
+                    <span class="badge badge-refunded"><i class="fas fa-check-double"></i> Completed</span>
+                    <span class="badge badge-expired"><i class="fas fa-ban"></i> Rejected</span>
+                    <span class="badge badge-cancelled"><i class="fas fa-times-circle"></i> Failed</span>
+                </div>
+                <p class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span><strong>Status flow:</strong> Pending → Under Review → Approved → Processed/Completed or Failed. Rejected requests end the workflow. Failed refunds can be re-tried from the API and will move back into Approved/Processed once successful.</span>
+                </p>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-search"></i> Searching & Filtering</h3>
+                <ul>
+                    <li><strong>Status Filter:</strong> Narrow the queue to Pending, Under Review, Approved, Rejected, Processed, Completed, or Failed requests.</li>
+                    <li><strong>Date Range:</strong> Apply start/end dates to focus on refunds requested within a specific period.</li>
+                    <li><strong>Keyword Search:</strong> Match refund reference, booking reference, event name, or customer name in real time.</li>
+                    <li>Filters are sent to the <code>/admin/refunds</code> endpoint with pagination parameters so totals stay accurate.</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-eye"></i> Reviewing Refund Requests</h3>
+                <ol class="steps">
+                    <li>Click <strong>View</strong> on any refund row to open the detailed modal.</li>
+                    <li>Review booking information, customer contact details, refund history, and any existing admin notes.</li>
+                    <li>Add internal admin notes to document context or follow-up actions before making a decision.</li>
+                </ol>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-random"></i> Updating Refund Statuses</h3>
+                <ul>
+                    <li><strong>Under Review:</strong> Move pending refunds into triage to signal another admin is investigating.</li>
+                    <li><strong>Approve:</strong> Approvals can optionally include an <em>approved amount</em>. Approved values must be numeric, non-negative, and cannot exceed the customer’s requested amount.</li>
+                    <li><strong>Reject:</strong> A rejection reason (up to 1000 characters) is mandatory. Customers will see this explanation in their notification.</li>
+                    <li><strong>Processed / Failed:</strong> Stripe webhooks or manual follow-up updates move approved refunds into their final state. Failed attempts can be retried after correcting the root cause.</li>
+                    <li>All status changes are captured in the activity log with admin ID, timestamps, and metadata for auditing.</li>
+                </ul>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div><strong>Field limits:</strong> Admin notes support up to 2000 characters. Approved amounts over 999,999.99 or negative values are rejected by the API.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <p>From the table view, Pending refunds expose inline <strong>Approve</strong> and <strong>Reject</strong> buttons for rapid triage. These apply standard validation rules and refresh the queue once complete.</p>
+            </div>
+
+        </section>
+
+        <!-- Content Management -->
+        <section id="content" class="section">
+            <div class="section-header">
+                <i class="fas fa-file-alt"></i>
+                <h2>Content Management</h2>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-pager"></i> Static Pages</h3>
+                <p>Manage pages displayed on the customer-facing website:</p>
+                <ul>
+                    <li>Terms & Conditions</li>
+                    <li>Privacy Policy</li>
+                    <li>FAQ</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-edit"></i> Using the Rich Text Editor</h3>
+                <p><strong>Formatting Options:</strong></p>
+                <ul>
+                    <li><strong>Bold, Italic, Underline:</strong> Select text and click formatting buttons</li>
+                    <li><strong>Headings:</strong> Use H1 for page title, H2 for sections, H3 for subsections</li>
+                    <li><strong>Lists:</strong> Bulleted or numbered lists for easy reading</li>
+                    <li><strong>Links:</strong> Select text, click link icon, enter URL</li>
+                    <li><strong>Images:</strong> Click image icon, upload or enter URL</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-success">
+                <i class="fas fa-lightbulb"></i>
+                <div>
+                    <strong>Best Practices:</strong> Use H1 once per page, keep paragraphs short (3-4 sentences), and use lists for easy scanning.
+                </div>
+            </div>
+        </section>
+
+        <!-- Banners & Promotions -->
+        <section id="banners" class="section">
+            <div class="section-header">
+                <i class="fas fa-image"></i>
+                <h2>Banners & Promotions</h2>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-info-circle"></i> Overview</h3>
+                <p>The Banners & Promotions module allows you to manage promotional banners displayed throughout the customer-facing website. Create eye-catching promotions for events, special offers, and announcements with full control over scheduling, placement, and performance tracking.</p>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-map-marker-alt"></i> Banner Locations</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-home"></i>
+                        <h4>Homepage Hero</h4>
+                        <p>Large hero banner displayed prominently on the homepage. Ideal for major promotions and featured events.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-layer-group"></i>
+                        <h4>Homepage Secondary</h4>
+                        <p>Smaller banners below the hero section. Perfect for secondary promotions and additional announcements.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-tags"></i>
+                        <h4>Category Page</h4>
+                        <p>Banners displayed on specific category pages. Target promotions to relevant event categories.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h4>Event Page</h4>
+                        <p>Banners shown on individual event pages. Promote related events or upsell opportunities.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-plus"></i> Creating a New Banner</h3>
+                <ol class="steps">
+                    <li>Navigate to <strong>Content Management → Banners & Promotions</strong></li>
+                    <li>Click the <strong>"➕ Create Banner"</strong> button</li>
+                    <li><strong>Basic Information:</strong> Enter a descriptive title and optional description</li>
+                    <li><strong>Location:</strong> Choose where the banner will be displayed</li>
+                    <li><strong>Image Upload:</strong> Upload banner image (JPG, PNG, or GIF - max 2MB)</li>
+                    <li><strong>Link Settings:</strong> Add destination URL and choose link target (same/new window)</li>
+                    <li><strong>Scheduling:</strong> Set start date and optional end date for automatic display</li>
+                    <li><strong>Display Order:</strong> Set position number (lower numbers appear first)</li>
+                    <li><strong>Status:</strong> Set to Active, Inactive, or Scheduled</li>
+                    <li><strong>Price Tag (Optional):</strong> Add promotional pricing text</li>
+                    <li>Click <strong>"Save"</strong> to create the banner</li>
+                </ol>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb"></i>
+                    <div><strong>Pro Tip:</strong> Use descriptive titles for easy identification in the admin panel. Titles are not visible to customers.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-edit"></i> Managing Existing Banners</h3>
+                <p><strong>View Options:</strong></p>
+                <ul>
+                    <li><strong>Search:</strong> Find banners by title or description</li>
+                    <li><strong>Filter by Status:</strong> Active, Inactive, or Scheduled</li>
+                    <li><strong>Filter by Location:</strong> Show banners for specific display areas</li>
+                    <li><strong>Pagination:</strong> Navigate through large banner collections</li>
+                </ul>
+                <p><strong>Quick Actions:</strong></p>
+                <ul>
+                    <li><strong>Edit:</strong> Modify banner details, image, or scheduling</li>
+                    <li><strong>Delete:</strong> Remove banners permanently (requires confirmation)</li>
+                    <li><strong>Toggle Status:</strong> Quickly activate/deactivate banners</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-arrows-alt"></i> Drag & Drop Sorting</h3>
+                <p>Easily reorder your banners using the intuitive drag and drop interface:</p>
+                <ol class="steps">
+                    <li>Hover over the handle (<i class="fas fa-grip-lines"></i>) on the left side of any banner in the list</li>
+                    <li>Click and hold the handle, then drag the banner to its new position</li>
+                    <li>A visual guide will show the new position as you drag</li>
+                    <li>Release to drop the banner in its new position</li>
+                    <li>The display order will update automatically</li>
+                </ol>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb"></i>
+                    <div><strong>Tip:</strong> The banner at the top of the list will appear first in the frontend. Use the preview function to see your changes in real-time.</div>
+                </div>
+                <p><strong>Sorting Behavior:</strong></p>
+                <ul>
+                    <li>Banners are sorted by their display order (ascending)</li>
+                    <li>Banners with the same display order are sorted by creation date (newest first)</li>
+                    <li>Changes are saved automatically when you drop a banner</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-clock"></i> Banner Scheduling</h3>
+                <p><strong>Status Types:</strong></p>
+                <ul>
+                    <li><strong>Active:</strong> Currently displayed to customers (within schedule dates)</li>
+                    <li><strong>Inactive:</strong> Not displayed, regardless of schedule</li>
+                    <li><strong>Scheduled:</strong> Will automatically display based on start/end dates</li>
+                </ul>
+                <p><strong>Automatic Scheduling:</strong></p>
+                <ul>
+                    <li>Set <strong>Start Date</strong> to automatically activate banners at specific times</li>
+                    <li>Set <strong>End Date</strong> to automatically deactivate banners</li>
+                    <li>Banners outside their scheduled dates remain hidden even if set to Active</li>
+                </ul>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div><strong>Important:</strong> Always review end dates for time-sensitive promotions to avoid displaying expired offers.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-image"></i> Image Management</h3>
+                <p><strong>Technical Requirements:</strong></p>
+                <ul>
+                    <li><strong>File Formats:</strong> JPG, PNG, GIF</li>
+                    <li><strong>Maximum Size:</strong> 2MB per image</li>
+                    <li><strong>Recommended Dimensions:</strong> 1920x600 pixels for optimal display</li>
+                    <li><strong>Mobile Optimization:</strong> System automatically generates mobile-optimized versions</li>
+                </ul>
+                <p><strong>Best Practices:</strong></p>
+                <ul>
+                    <li>Use high-quality images with clear, readable text</li>
+                    <li>Maintain consistent branding and color schemes</li>
+                    <li>Include clear call-to-action elements</li>
+                    <li>Optimize file size for fast loading</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-external-link-alt"></i> Link Configuration</h3>
+                <p><strong>Link Targets:</strong></p>
+                <ul>
+                    <li><strong>Same Window (_self):</strong> Opens in the current browser tab</li>
+                    <li><strong>New Window (_blank):</strong> Opens in a new browser tab</li>
+                </ul>
+                <p><strong>Common Link Destinations:</strong></p>
+                <ul>
+                    <li>Event booking pages</li>
+                    <li>Category pages</li>
+                    <li>External partner websites</li>
+                    <li>Landing pages for special promotions</li>
+                    <li>Social media profiles</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-tags"></i> Price Tags & Promotions</h3>
+                <p>Use the price tag field to highlight special offers:</p>
+                <ul>
+                    <li><strong>Examples:</strong> "50% OFF", "Early Bird: $99", "Limited Time: $149"</li>
+                    <li><strong>Display:</strong> Prominently shown on the banner overlay</li>
+                    <li><strong>Formatting:</strong> Keep text short and impactful (max 50 characters)</li>
+                    <li><strong>Best Practice:</strong> Use action-oriented language with clear value propositions</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-palette"></i> Design Best Practices</h3>
+                <p><strong>Visual Design:</strong></p>
+                <ul>
+                    <li>Use high-contrast colors for text readability</li>
+                    <li>Maintain brand consistency with colors and fonts</li>
+                    <li>Include clear, compelling calls-to-action</li>
+                    <li>Leave space for text overlays and buttons</li>
+                </ul>
+                <p><strong>Content Strategy:</strong></p>
+                <ul>
+                    <li>Align promotions with current events and seasons</li>
+                    <li>Create urgency with limited-time offers</li>
+                    <li>Test different messaging approaches</li>
+                    <li>Rotate banners regularly to maintain freshness</li>
+                </ul>
+                <p><strong>Technical Optimization:</strong></p>
+                <ul>
+                    <li>Compress images without sacrificing quality</li>
+                    <li>Use web-friendly formats (WebP when supported)</li>
+                    <li>Test display across different screen sizes</li>
+                    <li>Ensure fast loading times</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-exclamation-triangle"></i> Common Issues & Solutions</h3>
+                <p><strong>Banner Not Displaying:</strong></p>
+                <ul>
+                    <li>Check if status is set to "Active"</li>
+                    <li>Verify start/end dates are correct</li>
+                    <li>Ensure position number doesn't conflict with other banners</li>
+                    <li>Confirm location is appropriate for the page being viewed</li>
+                </ul>
+                <p><strong>Image Not Loading:</strong></p>
+                <ul>
+                    <li>Verify image file size is under 2MB</li>
+                    <li>Check image format (JPG, PNG, GIF only)</li>
+                    <li>Try re-uploading the image</li>
+                    <li>Clear browser cache and refresh</li>
+                </ul>
+                <p><strong>Low Click-Through Rate:</strong></p>
+                <ul>
+                    <li>Review banner design and call-to-action clarity</li>
+                    <li>Check if link destination is relevant and working</li>
+                    <li>Consider banner positioning and visibility</li>
+                    <li>A/B test different designs and messaging</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-success">
+                <i class="fas fa-trophy"></i>
+                <div>
+                    <strong>Success Strategy:</strong> Effective banner management combines compelling visuals, strategic placement, precise scheduling, and continuous performance optimization. Regular analytics review helps identify what resonates with your audience.
+                </div>
+            </div>
+        </section>
+
+        <!-- User Management -->
+        <section id="users" class="section">
+            <div class="section-header">
+                <i class="fas fa-user-shield"></i>
+                <h2>User Management</h2>
+            </div>
+
+            <div class="alert alert-warning">
+                <i class="fas fa-lock"></i>
+                <div>
+                    <strong>Note:</strong> User management typically requires "Admin" or "Super Admin" role.
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-user-tag"></i> User Roles Explained</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Access Level</th>
+                                <th>Capabilities</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Super Admin</strong></td>
+                                <td>Full system access</td>
+                                <td>All features, manage users and roles</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Admin</strong></td>
+                                <td>Most features</td>
+                                <td>Manage bookings, customers, refunds, view reports</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Support Agent</strong></td>
+                                <td>Limited access</td>
+                                <td>View bookings and customers only</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Content Manager</strong></td>
+                                <td>Content only</td>
+                                <td>Manage pages and banners</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-user-plus"></i> Creating a New Admin User</h3>
+                <ol class="steps">
+                    <li>Click <strong>"New User"</strong> button</li>
+                    <li>Enter email, temporary password, first and last name</li>
+                    <li>Select appropriate role</li>
+                    <li>Set status to Active</li>
+                    <li>Click <strong>"Create User"</strong></li>
+                    <li>User receives welcome email with login instructions</li>
+                </ol>
+                <div class="alert alert-success">
+                    <i class="fas fa-shield-alt"></i>
+                    <div><strong>Security Tip:</strong> Give new users least privilege initially. Upgrade if needed.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-key"></i> Resetting User Passwords</h3>
+                <p><strong>Option 1 - User Self-Service:</strong> User clicks "Forgot Password?" and follows email instructions</p>
+                <p><strong>Option 2 - Admin Reset:</strong></p>
+                <ol class="steps">
+                    <li>Open user details</li>
+                    <li>Click <strong>"Reset Password"</strong></li>
+                    <li>Generate temporary password</li>
+                    <li>Send password to user securely</li>
+                </ol>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-cogs"></i> Managing Roles and Permissions</h3>
+                <p><strong>Common Permissions:</strong></p>
+                <ul>
+                    <li><code>view_dashboard</code> - See dashboard</li>
+                    <li><code>manage_bookings</code> - Edit/cancel bookings</li>
+                    <li><code>process_refunds</code> - Issue refunds</li>
+                    <li><code>manage_customers</code> - Edit/block customers</li>
+                    <li><code>manage_content</code> - Edit static pages</li>
+                    <li><code>view_reports</code> - Access reports</li>
+                    <li><code>manage_users</code> - Add/edit admin users</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Reports & Analytics -->
+        <section id="reports" class="section">
+            <div class="section-header">
+                <i class="fas fa-chart-bar"></i>
+                <h2>Reports & Analytics</h2>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-file-invoice-dollar"></i> Revenue Report</h3>
+                <p>Track financial performance with the following metrics:</p>
+                <ul>
+                    <li>Total revenue and refunded amounts</li>
+                    <li>Average order value</li>
+                    <li>Total number of bookings</li>
+                    <li>Refund rate percentage</li>
+                </ul>
+                <div class="alert alert-info">
+                    <i class="fas fa-chart-line"></i>
+                    <div><strong>Tip:</strong> Use the time frame filter to analyze revenue trends over different periods.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-clipboard-list"></i> Booking Report</h3>
+                <p>Analyze booking patterns and performance:</p>
+                <ul>
+                    <li>Total bookings by status (completed, cancelled, pending)</li>
+                    <li>Cancellation rate calculation</li>
+                    <li>Event performance metrics</li>
+                    <li>Top performing events by bookings and revenue</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-user-chart"></i> User Activity Report</h3>
+                <p>Monitor user engagement and growth:</p>
+                <ul>
+                    <li>Total users and active user counts</li>
+                    <li>User status breakdown (active, inactive, suspended)</li>
+                    <li>New user acquisition trend</li>
+                    <li>Booking frequency distribution</li>
+                </ul>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-calendar-check"></i> Filtering Options</h3>
+                <p><strong>Date Range:</strong> Custom date range selection for all reports</p>
+                <p><strong>Time Frame:</strong> View data in daily, weekly, or monthly intervals (where applicable)</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-sync-alt"></i>
+                    <div><strong>Note:</strong> Reports update automatically when filters are changed.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-download"></i> Data Export</h3>
+                <p>Export report data in the following formats:</p>
+                <ul>
+                    <li><strong>CSV:</strong> Comma-separated values for spreadsheet analysis</li>
+                    <li><strong>JSON:</strong> Structured data for further processing</li>
+                </ul>
+                <p>To export data, click the download icon (<i class="fas fa-file-export"></i>) in the top-right corner of each report section.</p>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-bullseye"></i>
+                <div>
+                    <strong>Industry Benchmarks:</strong> Cancellation Rate: 5-10% | Refund Rate: 2-5% | Repeat Customer Rate: 30-40% | Conversion Rate: 60-80%
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings -->
+        <section id="settings" class="section">
+            <div class="section-header">
+                <i class="fas fa-cog"></i>
+                <h2>Settings</h2>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-user"></i> Profile</h3>
+                <p>View and manage your profile information:</p>
+                <ul>
+                    <li><strong>Name:</strong> Your full name (read-only)</li>
+                    <li><strong>Email:</strong> Your registered email address (read-only)</li>
+                    <li><strong>Role:</strong> Your assigned system role (read-only)</li>
+                </ul>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>For security reasons, profile information can only be updated by an administrator.</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3><i class="fas fa-lock"></i> Change Password</h3>
+                <p>Update your account password with these requirements:</p>
+                <ul>
+                    <li>Minimum 8 characters in length</li>
+                    <li>Must include at least one uppercase letter, one lowercase letter, and one number</li>
+                    <li>Cannot be the same as your current password</li>
+                </ul>
+                
+                <p>To change your password:</p>
+                <ol class="steps">
+                    <li>Enter your current password</li>
+                    <li>Enter your new password</li>
+                    <li>Confirm your new password</li>
+                    <li>Click <strong>Save Changes</strong></li>
+                </ol>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>Make sure to keep your password secure and don't share it with anyone. If you forget your password, please contact your system administrator.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Best Practices -->
+        <section id="best-practices" class="section">
+            <div class="section-header">
+                <i class="fas fa-star"></i>
+                <h2>Best Practices</h2>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h4>Booking Management</h4>
+                    <p><strong>✅ Do:</strong> Review daily, confirm within 24h, document reasons</p>
+                    <p><strong>❌ Don't:</strong> Leave pending, cancel without reason</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-users"></i>
+                    <h4>Customer Management</h4>
+                    <p><strong>✅ Do:</strong> Respond quickly, document interactions, maintain privacy</p>
+                    <p><strong>❌ Don't:</strong> Block without investigation, share data externally</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-ban"></i>
+                    <h4>Cancellation Handling</h4>
+                    <p><strong>✅ Do:</strong> Follow policy, be empathetic, communicate clearly</p>
+                    <p><strong>❌ Don't:</strong> Make arbitrary decisions, delay refunds</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Security</h4>
+                    <p><strong>✅ Do:</strong> Use strong passwords, log out, review logs</p>
+                    <p><strong>❌ Don't:</strong> Share credentials, use public computers</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Help -->
+        <section id="help" class="section">
+            <div class="section-header">
+                <i class="fas fa-life-ring"></i>
+                <h2>Getting Help</h2>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <i class="fas fa-headset"></i>
+                    <h4>Technical Support</h4>
+                    <p>Email: jipinm@gmail.com</p>
+                    <p>Include: Error message, screenshot, steps to reproduce</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-user-cog"></i>
+                    <h4>Account Issues</h4>
+                    <p>Email: jipinm@gmail.com</p>
+                    <p>Include: Your email address, issue description</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-phone"></i>
+                    <h4>Urgent Issues</h4>
+                    <p>Phone: +91 8129836080</p>
+                    <p>Available: 9 AM - 6 PM (Monday to Friday)</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h4>Training Resources</h4>
+                    <p>User Manual</p>
+                    <p>Documentations</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <section class="section" style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%); color: white;">
+            <div style="text-align: center;">
+                <h3 style="color: white; margin-bottom: 1rem;">Thank you for using Rondo Sports Admin Panel!</h3>
+                <p><strong>Version:</strong> 1.0.0 | <strong>Last Updated:</strong> November 19, 2025</p>
+                <p style="margin-top: 1rem; opacity: 0.9;">Maintained by Rondo Development Team</p>
+            </div>
+        </section>
+    </div>
+
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Active nav link on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scrolling for nav links
+        document.querySelectorAll('.nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                const offset = 150;
+                const bodyRect = document.body.getBoundingClientRect().top;
+                const elementRect = target.getBoundingClientRect().top;
+                const elementPosition = elementRect - bodyRect;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

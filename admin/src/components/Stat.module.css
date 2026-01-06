@@ -1,0 +1,114 @@
+.stat {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+  background-color: var(--background-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-all);
+  height: 100%;
+  animation: slideInUp var(--animation-speed-medium) var(--ease-out);
+  border-left: 3px solid transparent;
+}
+
+.stat:hover {
+  box-shadow: var(--shadow-colored);
+  border-left-color: var(--icon-color, var(--color-primary-600));
+  transform: translateY(-3px);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  background-color: var(--icon-bg, var(--color-primary-100));
+  color: var(--icon-color, var(--color-primary-600));
+  transition: var(--transition-all);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+.stat:hover .icon {
+  transform: scale(1.1);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--spacing-1);
+}
+
+.value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-2);
+}
+
+.trend {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  width: fit-content;
+}
+
+.positive {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-600);
+}
+
+.negative {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.neutral {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-600);
+}
+
+/* Variants */
+.default .icon {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-600);
+}
+
+.success .icon {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-600);
+}
+
+.warning .icon {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.danger .icon {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.info .icon {
+  background-color: var(--color-tertiary-100);
+  color: var(--color-tertiary-600);
+}
+
+:root.dark .stat {
+  background-color: var(--background-primary);
+}
+
+:root.dark .icon {
+  background-color: rgba(255, 255, 255, 0.1);
+}

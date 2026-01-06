@@ -1,0 +1,556 @@
+.loginPageWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #f0f4f8;
+  margin: 0 auto;
+}
+
+.loginPage {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background-color: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginContainer {
+  display: flex;
+  height: 80vh; /* Fixed height */
+  width: 85%;
+  max-width: 1100px;
+  position: relative; /* Changed from absolute to relative */
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  margin: 0 auto; /* Center horizontally */
+}
+
+/* Left side - Slider Section */
+.sliderSection {
+  position: relative;
+  flex: 1;
+  width: 50%;
+  max-width: 50%;
+  overflow: hidden;
+  background-color: #000; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%; /* Changed from 100vh to 100% to match parent container */
+  border-top-left-radius: 12px; /* Match container border radius */
+  border-bottom-left-radius: 12px; /* Match container border radius */
+}
+
+.sliderContainer {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #000; /* Ensure background is visible */
+}
+
+/* Blue stripe removed as it's not needed in the design */
+.blueStripe {
+  display: none; /* Hide the blue stripe */
+}
+
+.sliderVisibleWindow {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: #000; /* Pure black background as shown in the image */
+  display: block; /* Ensure it's displayed */
+  z-index: 1; /* Ensure proper stacking */
+}
+
+.slideshow {
+  position: relative;
+  will-change: opacity;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+  height: 100%; /* Full height */
+  width: 100%;
+  display: block; /* Ensure it's displayed */
+  z-index: 1; /* Ensure proper stacking */
+}
+
+.slide {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  transition: all 0.8s ease-in-out;
+  display: none; /* Hide by default */
+}
+
+.slideContent {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  box-sizing: border-box;
+  overflow: hidden; /* Ensure content stays within boundaries */
+  padding: 20px; /* Add some padding to prevent content touching edges */
+}
+
+.slideImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: brightness(0.85) contrast(1.05); /* Match the player image in design */
+  z-index: 1;
+}
+
+/* Removing overlay for cleaner image display as required */
+
+/* Removed for cleaner layout as per requirements */
+
+.slideTitle {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 50%; /* Adjust from 40% to 50% to center vertically */
+  transform: translateY(-50%); /* Center element at its position */
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  z-index: 5;
+}
+
+.titleText {
+  display: block;
+  background-color: transparent;
+  font-size: 2.8rem; /* Reduced from 3.5rem to 2.8rem */
+  font-family: sans-serif;
+  font-weight: 700;
+  line-height: 0.95;
+  color: white;
+  letter-spacing: -1px;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+  text-align: left;
+  margin-bottom: -5px;
+}
+
+/* Subtitle removed as per new design requirements */
+
+.slideIndicators {
+  position: absolute;
+  bottom: 10px; /* Reduced from 20px to 10px */
+  left: 0;
+  right: 0;
+  display: none; /* Hide indicators as they don't appear in the design */
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
+  z-index: 5;
+  padding: 10px 0;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+  position: relative;
+  margin: 0 6px;
+}
+
+.indicator:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.2);
+}
+
+.activeIndicator {
+  background-color: white;
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* Right side - Form Section */
+.formSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem; /* Further reduced padding */
+  background-color: #f0f4f8; /* Light blue-gray background */
+  height: 100%;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+.loginFormWrapper {
+  width: 100%;
+  max-width: 320px; /* Further reduced from 340px to 320px */
+  padding: 0;
+  background: transparent;
+  animation: fadeIn 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logoContainer {
+  text-align: center; /* Center aligned as shown in the design */
+  margin-bottom: 1.25rem; /* Further reduced from 1.75rem to 1.25rem */
+}
+
+.logo {
+  color: #121d66; /* Dark blue to match design in image */
+  margin: 0;
+  font-size: 1.35rem; /* Further reduced from 1.5rem to 1.35rem */
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.tagline {
+  color: #64748b; /* Gray color to match design in image */
+  margin: 0.25rem 0 0 0; /* Reduced from 0.4rem to 0.25rem */
+  font-size: 0.75rem; /* Reduced from 0.85rem to 0.75rem */
+  font-weight: 400;
+}
+
+.loginTitle {
+  font-size: 1.3rem; /* Further reduced from 1.4rem to 1.3rem */
+  font-weight: 700;
+  margin-bottom: 0.9rem; /* Further reduced from 1.25rem to 0.9rem */
+  color: #111827;
+  letter-spacing: -0.5px;
+  text-align: center; /* Center aligned as shown in the design */
+}
+
+.errorMessage {
+  background-color: var(--color-error-light, #fee2e2);
+  color: var(--color-error, #ef4444);
+  padding: 0.6rem 0.8rem; /* Reduced from 1rem 1.25rem to 0.6rem 0.8rem */
+  border-radius: 6px; /* Reduced from 8px to 6px */
+  margin-bottom: 0.8rem; /* Reduced from 1.5rem to 0.8rem */
+  font-size: 0.8rem; /* Reduced from 0.9rem to 0.8rem */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Reduced from 0.75rem to 0.5rem */
+  border-left: 2px solid var(--color-error, #ef4444); /* Reduced from 3px to 2px */
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem; /* Further reduced from 0.75rem to 0.6rem */
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem; /* Further reduced from 0.3rem to 0.2rem */
+}
+
+.formLabel {
+  font-size: 0.8rem; /* Reduced from 0.85rem to 0.8rem */
+  font-weight: 500;
+  color: #384959; /* Darker blue-gray color for labels */
+  margin-bottom: 0.25rem; /* Reduced from 0.5rem to 0.25rem */
+  display: block;
+}
+
+.formInput {
+  padding: 0.5rem 0.75rem; /* Further reduced from 0.6rem 0.9rem to 0.5rem 0.75rem */
+  border: 1px solid #e2e8f0; /* Lighter border */
+  border-radius: 4px; /* Less rounded corners to match design */
+  font-size: 0.85rem; /* Further reduced from 0.95rem to 0.85rem */
+  transition: border 0.2s ease;
+  height: 36px; /* Further reduced from 40px to 36px */
+  width: 100%;
+  box-shadow: none; /* No shadow on inputs */
+  background-color: white;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #121d66; /* Dark blue focus color matching the image */
+  box-shadow: 0 0 0 1px rgba(18, 29, 102, 0.15); /* Dark blue focus ring */
+}
+
+.formInput::placeholder {
+  color: #a0aec0;
+  font-size: 0.95rem;
+}
+
+.loginButton {
+  background-color: #121d66; /* Dark navy blue color matching the design image */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 0.8rem; /* Further reduced from 0.75rem 0.9rem to 0.6rem 0.8rem */
+  font-size: 0.9rem; /* Further reduced from 0.95rem to 0.9rem */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.9rem; /* Further reduced from 1.25rem to 0.9rem */
+  height: 38px; /* Further reduced from 40px to 38px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Full width button */
+  letter-spacing: 0.2px;
+}
+
+.loginButton:hover {
+  background-color: #1a2980; /* Slightly lighter blue on hover */
+  transform: translateY(-1px);
+}
+
+.loginButton:active {
+  transform: translateY(0);
+}
+
+.loginButton:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loginHelp {
+  margin-top: 1.25rem; /* Reduced from 2rem to 1.25rem */
+  text-align: left;
+}
+
+.testCredentials {
+  font-size: 0.8rem; /* Reduced from 0.85rem to 0.8rem */
+  color: #64748b;
+  margin: 0;
+  padding-top: 0.5rem; /* Reduced from 1rem to 0.5rem */
+  line-height: 1.4; /* Reduced from 1.5 to 1.4 */
+  text-align: center;
+}
+
+/* Logo removed as per new design requirements */
+
+/* Animation for slide transitions */
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 1200px) {
+  .slideTitle {
+    font-size: 1.8rem;
+    max-width: 90%;
+    bottom: 70px;
+  }
+  
+  .formSection {
+    padding: 2.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  /* Switch to single column on medium screens */
+  .loginPageWrapper,
+  .loginPage {
+    overflow: hidden;
+  }
+  
+  .loginContainer {
+    flex-direction: column;
+    max-height: 85vh;
+    height: auto;
+    width: 90%;
+    max-width: 380px;
+    border-radius: 8px;
+  }
+  
+  .sliderSection {
+    display: none; /* Hide the slider section on smaller screens */
+  }
+  
+  .formSection {
+    padding: 1.25rem 1rem;
+    height: auto;
+    min-height: 0;
+    max-height: 85vh;
+    border-radius: 8px;
+    background-color: white;
+    overflow: hidden; /* Prevent scrolling */
+  }
+  
+  .loginFormWrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .loginFormWrapper {
+    max-width: 500px;
+    padding: 0;
+    margin: auto;
+  }
+  
+  .loginTitle {
+    margin-top: 2rem; /* More space at top on mobile */
+  }
+  
+  /* Center the form on medium screens */
+  .logoContainer {
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .loginContainer {
+    width: 98%;
+    margin: 1vh auto;
+  }
+
+  .formSection {
+    padding: 1.5rem 1rem;
+  }
+  
+  .loginFormWrapper {
+    width: 100%;
+  }
+  
+  .loginTitle {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .logo {
+    font-size: 1.75rem;
+  }
+  
+  .tagline {
+    font-size: 0.9rem;
+  }
+  
+  .formInput {
+    height: 48px; /* Slightly smaller on mobile */
+  }
+  
+  .loginButton {
+    height: 52px; /* Slightly smaller on mobile */
+  }
+  
+  /* Center the error message on mobile */
+  .errorMessage {
+    justify-content: center;
+  }
+}
+
+/* Animation for slide transition */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(5px);
+  }
+  50% {
+    opacity: 0.8;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide.active {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 5;
+  animation: fadeSlide 1s ease-in-out forwards;
+}

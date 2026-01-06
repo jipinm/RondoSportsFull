@@ -1,0 +1,283 @@
+.bannerCard {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  position: relative;
+  cursor: grab;
+}
+
+.bannerCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.bannerCard:active {
+  cursor: grabbing;
+}
+
+.bannerCard.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+  border: 2px dashed #3b82f6;
+  background-color: #eff6ff;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  margin-bottom: 12px;
+  background-color: #f9fafb;
+  border-radius: 6px;
+  cursor: grab;
+  user-select: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragIcon {
+  font-size: 14px;
+  color: #9ca3af;
+  letter-spacing: 2px;
+}
+
+.positionBadge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  background-color: #e5e7eb;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.bannerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.bannerInfo {
+  flex: 1;
+}
+
+.bannerTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+.bannerDescription {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bannerStatus {
+  margin-left: 16px;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bannerImageContainer {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f9fafb;
+}
+
+.bannerImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.bannerDetails {
+  margin-bottom: 16px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.detailValue {
+  color: #6b7280;
+  font-size: 14px;
+  text-align: right;
+  flex: 1;
+  margin-left: 16px;
+}
+
+.bannerLink {
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.bannerLink:hover {
+  text-decoration: underline;
+}
+
+.bannerStats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.bannerActions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.actionButton {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.editButton {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #2563eb;
+}
+
+.toggleButton {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.toggleButton:hover {
+  background-color: #d97706;
+}
+
+.deleteButton {
+  background-color: #ef4444;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #dc2626;
+}
+
+.bannerMeta {
+  text-align: center;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.metaText {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .bannerCard {
+    padding: 16px;
+  }
+  
+  .bannerHeader {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .bannerStatus {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+  
+  .bannerStats {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .statItem {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .bannerActions {
+    flex-direction: column;
+  }
+  
+  .detailRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .detailValue {
+    text-align: left;
+    margin-left: 0;
+  }
+}

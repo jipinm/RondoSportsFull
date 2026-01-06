@@ -1,0 +1,192 @@
+/* Booking Confirmation Page Styles - Matches EventsPage structure exactly */
+.confirmationPage {
+  min-height: calc(100vh - 120px);
+  background-color: #EEF3F8;
+  padding: 0;
+}
+
+.container {
+  max-width: 1175px;
+  margin: 0 auto;
+  padding: 24px 1rem;
+  display: flex;
+  gap: 32px;
+}
+
+/* Full width container - matches EventsPage fullWidth */
+.fullWidth {
+  justify-content: center;
+}
+
+.fullWidth .mainContent {
+  max-width: 100%;
+}
+
+/* Main content area */
+.mainContent {
+  flex: 1;
+}
+
+.confirmationCard {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  max-width: 1140px;
+  width: 100%;
+}
+
+.confirmationCard h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #384959;
+  margin-bottom: 2rem;
+}
+
+.confirmationDetails {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.confirmationDetails h2 {
+  color: #384959;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.confirmationDetails p {
+  margin: 0.5rem 0;
+  color: #64748b;
+}
+
+.nextSteps {
+  background: #ecfdf5;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  border-left: 4px solid #10b981;
+}
+
+.nextSteps h3 {
+  color: #065f46;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.nextSteps ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nextSteps li {
+  color: #047857;
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.nextSteps li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: center;
+}
+
+.primaryButton {
+  background: #57B9FF;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primaryButton:hover {
+  background: #4aa8ee;
+}
+
+.secondaryButton {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondaryButton:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.loadingState, .errorState {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.loadingState p, .errorState p {
+  font-size: 1.125rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+}
+
+.errorState p {
+  color: #dc2626;
+}
+
+/* Responsive Design - matches EventsPage exactly */
+@media (max-width: 1024px) {
+  .container {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .confirmationCard {
+    padding: 1.5rem;
+  }
+  
+  .confirmationCard h1 {
+    font-size: 2rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .primaryButton,
+  .secondaryButton {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+  
+  .confirmationCard {
+    padding: 1rem;
+  }
+}

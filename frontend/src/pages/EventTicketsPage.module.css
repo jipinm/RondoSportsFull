@@ -1,0 +1,1110 @@
+/* Event Tickets Page Styles */
+.eventTicketsPage {
+  min-height: 100vh;
+  background-color: #EEF3F8;
+}
+
+.container {
+  max-width: 1175px;
+  margin: 0 auto;
+  padding: 24px 1rem;
+}
+
+/* Loading and Error States */
+.loadingState,
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Skeleton Loading Animations */
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Skeleton Event Details */
+.skeletonEventTitle {
+  height: 32px;
+  width: 80%;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 6px;
+}
+
+.skeletonEventInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeletonInfoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeletonIcon {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.skeletonInfoText {
+  height: 16px;
+  width: 150px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonInfoTextLong {
+  height: 16px;
+  width: 250px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonEventMeta {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.skeletonTournament {
+  height: 16px;
+  width: 200px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonTeamVs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skeletonTeamName {
+  height: 20px;
+  width: 120px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonVs {
+  height: 16px;
+  width: 20px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Skeleton Venue Map Section */
+.skeletonVenueMapContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+}
+
+.skeletonMapControls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.skeletonMapTitle {
+  height: 20px;
+  width: 120px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonMapSubtitle {
+  height: 14px;
+  width: 180px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonSvgContainer {
+  flex: 1;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.skeletonVenueMapPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skeletonVenueIcon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 12px;
+}
+
+.skeletonCategoryLegend {
+  padding: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.skeletonLegendTitle {
+  height: 18px;
+  width: 80px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.skeletonCategoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeletonCategoryItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeletonCategoryColor {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 2px;
+}
+
+.skeletonCategoryName {
+  height: 14px;
+  width: 120px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonCategoryPrice {
+  height: 14px;
+  width: 60px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+/* Skeleton Tickets Section */
+.skeletonTicketsTitle {
+  height: 24px;
+  width: 180px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skeletonCheckboxInput {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 3px;
+}
+
+.skeletonCheckboxLabel {
+  height: 14px;
+  width: 120px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonTicketCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.skeletonTicketInfo {
+  flex: 1;
+}
+
+.skeletonTicketHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeletonTicketTitle {
+  height: 18px;
+  width: 180px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonCategoryType {
+  height: 20px;
+  width: 80px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 12px;
+}
+
+.skeletonTicketDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeletonTicketMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skeletonCategoryName {
+  height: 14px;
+  width: 100px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonTicketStatus {
+  height: 18px;
+  width: 70px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonStockInfo {
+  height: 14px;
+  width: 90px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonTicketPrice {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeletonPriceAmount {
+  height: 20px;
+  width: 80px;
+  margin-left: auto;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonAddButton {
+  height: 36px;
+  width: 120px;
+  margin-left: auto;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 6px;
+}
+
+/* Skeleton Registration Form */
+.skeletonRegistrationTitle {
+  height: 24px;
+  width: 90%;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonRegistrationText {
+  height: 16px;
+  width: 80%;
+  margin-bottom: 2rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeletonRegistrationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeletonFormInput {
+  height: 48px;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.2) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 6px;
+}
+
+.skeletonSubmitButton {
+  height: 48px;
+  width: 100%;
+  margin-top: 0.5rem;
+  background: linear-gradient(90deg, rgba(30,64,175,0.6) 25%, rgba(30,64,175,0.8) 50%, rgba(30,64,175,0.6) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 6px;
+}
+
+/* Two Column Flexbox Layout */
+.pageGrid {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.leftColumn,
+.rightColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Event Details Section (Top Left) */
+.eventDetails {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.eventTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.eventInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.infoIcon {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.eventMeta {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tournament {
+  font-size: 1rem;
+  color: #64748b;
+}
+
+.teamVs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.homeTeam,
+.awayTeam {
+  color: #1e293b;
+}
+
+.vs {
+  color: #64748b;
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+.eventDescription {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.venueDataSection {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.venueDataSection p {
+  margin: 0 0 1rem 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.venueDataSection p:last-child {
+  margin-bottom: 0;
+}
+
+.venueDataSection strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.validityNotice {
+  font-size: 0.9rem;
+  color: #16a34a;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  background: #f0fdf4;
+  border-left: 4px solid #16a34a;
+  border-radius: 0 6px 6px 0;
+  margin-top: 1rem !important;
+}
+
+/* Venue Images Section (Top Right) */
+.venueImages {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.venueMapContainer {
+  height: 600px;
+  width: 100%;
+}
+
+.imagePlaceholder {
+  text-align: center;
+  color: #64748b;
+}
+
+.placeholderIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+/* Tickets Section (Bottom Left) */
+.ticketsSection {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ticketsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.ticketsTitle h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+}
+
+.ticketsSubtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+  font-style: italic;
+}
+
+.ticketsSubtitle svg {
+  color: #BDDDFC;
+}
+
+.ticketFilters {
+  display: flex;
+  gap: 1rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  accent-color: #3b82f6;
+}
+
+.ticketsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+/* Custom scrollbar for tickets list */
+.ticketsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ticketsList::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.ticketsList::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.ticketsList::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.ticketCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 1.75rem 2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: white;
+  margin-bottom: 1rem;
+  min-height: 140px;
+}
+
+.ticketCard:hover {
+  border-color: #BDDDFC;
+  background-color: rgba(189, 221, 252, 0.03);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(189, 221, 252, 0.2);
+}
+
+.ticketInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 1.5rem;
+}
+
+.ticketHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.ticketTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.3;
+  flex: 1;
+}
+
+
+
+/* Seat Features Styles */
+.seatFeatures {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.featureIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: help;
+  transition: all 0.2s ease;
+  position: relative;
+  border: 1px solid #e2e8f0;
+}
+
+.featureIcon:hover {
+  background: #e2e8f0;
+  color: #374151;
+  transform: scale(1.05);
+}
+
+.featureIcon:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #374151;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 250px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.featureIcon:hover::before {
+  content: '';
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #374151;
+  z-index: 20;
+}
+
+/* Simplified special styling */
+.featureIcon[data-tooltip*="hospitality"] {
+  background: #fef3f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.featureIcon[data-tooltip*="hospitality"]:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.featureIcon[data-tooltip*="grandstand"] {
+  background: #f0f9ff;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+
+.featureIcon[data-tooltip*="grandstand"]:hover {
+  background: #dbeafe;
+  color: #075985;
+}
+
+/* Category type styles removed - now using feature icons only */
+
+.ticketDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ticketMeta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.categoryName {
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  flex: 1;
+}
+
+.ticketStatus {
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.ticketStatus[data-status="available"] {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.ticketStatus[data-status="disabled"] {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.stockInfo {
+  color: #059669;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ticketPrice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  min-width: 150px;
+}
+
+.priceDisplay {
+  text-align: right;
+}
+
+.priceAmount {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3b82f6;
+  line-height: 1.2;
+}
+
+.addTicketButton {
+  background: #f97316;
+  color: white;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 110px;
+  white-space: nowrap;
+}
+
+.addTicketButton:hover:not(:disabled) {
+  background: #ea580c;
+}
+
+.addTicketButton:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.emptyTickets {
+  text-align: center;
+  color: #64748b;
+  padding: 2rem;
+}
+
+/* Registration Section (Bottom Right) */
+.registrationSection {
+  background-color: #4dabf7;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.registrationCard {
+  color: white;
+}
+
+.registrationCard h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.registrationCard p {
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+.registrationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formInput {
+  padding: 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.formInput::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.submitButton {
+  background: #1e40af;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.submitButton:hover {
+  background: #1d4ed8;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .pageGrid {
+    flex-direction: column;
+  }
+  
+  .leftColumn,
+  .rightColumn {
+    width: 100%;
+  }
+  
+  .container {
+    padding: 24px 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px 1rem;
+  }
+  
+  .eventTitle {
+    font-size: 1.5rem;
+  }
+  
+  .teamVs {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .ticketsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .ticketCard {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    min-height: auto;
+  }
+  
+  .ticketInfo {
+    padding-right: 0;
+  }
+  
+  .ticketPrice {
+    align-items: stretch;
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .priceDisplay {
+    text-align: left;
+  }
+  
+  .titleRow {
+    align-items: flex-start;
+  }
+  
+  .ticketTitle {
+    font-size: 1rem;
+  }
+  
+  .seatFeatures {
+    gap: 0.5rem;
+  }
+  
+  .featureIcon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .featureIcon:hover::after {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    bottom: calc(100% + 6px);
+    max-width: 200px;
+  }
+  
+  .addTicketButton {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  /* Skeleton responsive adjustments */
+  .skeletonTeamVs {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .skeletonTicketCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .skeletonTicketPrice {
+    text-align: left;
+    width: 100%;
+  }
+  
+  .skeletonPriceAmount,
+  .skeletonAddButton {
+    margin-left: 0;
+  }
+  
+  .skeletonEventTitle {
+    width: 90%;
+  }
+  
+  .skeletonInfoTextLong {
+    width: 200px;
+  }
+  
+  .venueDataSection {
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .validityNotice {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}

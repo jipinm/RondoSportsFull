@@ -1,0 +1,30 @@
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: var(--transition-all);
+}
+
+.themeToggle:hover {
+  background-color: var(--background-tertiary);
+}
+
+.themeToggle:focus {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.icon {
+  transition: transform 0.3s ease;
+}
+
+.themeToggle:hover .icon {
+  transform: rotate(15deg);
+}

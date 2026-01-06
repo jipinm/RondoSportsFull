@@ -1,0 +1,250 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Base colors */
+  --color-white: #ffffff;
+  --color-black: #111827;
+  
+  /* Using updated brand color palette */
+  /* These are already defined in color-palette.css but referenced here for clarity */
+  /* Primary colors */
+  --color-primary: #668baa;
+  
+  /* Secondary colors */
+  --color-secondary: #57b9ff;
+  
+  /* Tertiary colors */
+  --color-tertiary: #bcddfd;
+  
+  /* Accent colors */
+  --color-accent-1: #6a89a6;
+  --color-accent-2: #384959;
+  --color-accent-3: #3598db;
+  
+  /* Text colors - Define these properly */
+  --color-headings: #111827;
+  --color-text: #6b7280;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-50: #eff6ff;
+  
+  /* Neutral colors for grays */
+  --color-neutral-50: #f9fafb;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-300: #d1d5db;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
+  
+  /* Background colors */
+  --color-background: #f8fafc;
+  
+  /* Status colors */
+  --color-success: var(--color-secondary-600);
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: var(--color-accent-3);
+  
+  /* Status background colors */
+  --color-success-light: var(--color-tertiary);
+  --color-warning-light: #fef3c7;
+  --color-error-light: #fee2e2;
+  --color-info-light: var(--color-secondary-100);
+  
+  /* Typography */
+  --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-heading: 'Poppins', var(--font-family-base);
+  
+  /* Font sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Spacing system */
+  --spacing-0: 0;
+  --spacing-px: 1px;
+  --spacing-0-5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1-5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2-5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-3-5: 0.875rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-9: 2.25rem;
+  --spacing-10: 2.5rem;
+  --spacing-11: 2.75rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+    /* Border radius */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+    /* Enhanced shadows with color tints - Updated with brand colors */
+  --shadow-sm: 0 1px 2px 0 rgba(102, 139, 170, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(102, 139, 170, 0.08), 0 2px 4px -1px rgba(102, 139, 170, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(102, 139, 170, 0.06), 0 4px 6px -2px rgba(102, 139, 170, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(102, 139, 170, 0.06), 0 10px 10px -5px rgba(102, 139, 170, 0.03);
+  --shadow-2xl: 0 25px 50px -12px rgba(102, 139, 170, 0.12);
+  --shadow-inner: inset 0 2px 4px 0 rgba(102, 139, 170, 0.05);
+  --shadow-colored: 0 4px 12px var(--shadow-color, rgba(102, 139, 170, 0.12));
+  --shadow-colored-lg: 0 10px 20px var(--shadow-color, rgba(87, 185, 255, 0.15));
+  
+  /* Enhanced transitions */
+  --transition-all: all 0.3s var(--ease-in-out);
+  --transition-colors: background-color 0.3s var(--ease-in-out), border-color 0.3s var(--ease-in-out), color 0.3s var(--ease-in-out);
+  --transition-opacity: opacity 0.3s var(--ease-in-out);
+  --transition-shadow: box-shadow 0.3s var(--ease-in-out);
+  --transition-transform: transform 0.3s var(--ease-out);
+  
+  /* Animation variables */
+  --animation-speed-slow: 0.5s;
+  --animation-speed-medium: 0.3s;
+  --animation-speed-fast: 0.15s;
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  
+  /* Layout */
+  --header-height: 64px;
+  --sidebar-width: 280px;
+  --sidebar-width-collapsed: 70px;
+  
+  /* Z-index */
+  --z-index-0: 0;
+  --z-index-10: 10;
+  --z-index-20: 20;
+  --z-index-30: 30;
+  --z-index-40: 40;
+  --z-index-50: 50;
+  --z-index-modal: 100;
+  --z-index-tooltip: 200;
+    /* Light mode (default) - Using new brand colors */
+  --background-primary: var(--color-white);
+  --background-secondary: var(--color-background);
+  --background-tertiary: var(--color-tertiary-50);
+  --background-form-control: var(--color-white);
+  --background-form-hover: var(--color-tertiary-50);
+  --color-text-primary: var(--color-headings);
+  --color-text-secondary: var(--color-text);
+  --color-text-tertiary: var(--color-accent-1);
+  --color-text-form-label: var(--color-accent-2);
+  --color-text-placeholder: var(--color-neutral-400);
+  --color-border: var(--color-tertiary-200);
+  --color-border-focus: var(--color-secondary);
+  --color-border-light: var(--color-tertiary-100);
+  
+  /* Form control styling */
+  --form-control-height: 42px;
+  --form-control-padding: 0.75rem;
+  --form-control-border-color: var(--color-border);
+  --form-control-border-radius: var(--radius-md);
+  --form-control-focus-shadow: 0 0 0 3px rgba(102, 139, 170, 0.12);
+  --form-control-font-size: var(--font-size-sm);
+  --form-control-bg: var(--background-form-control);
+  --form-label-margin-bottom: 0.25rem;
+}
+
+/* Light mode only - no dark mode support */
+
+/* Base styles */
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--background-secondary);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  transition: var(--transition-colors);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-top: 0;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+}
+
+h2 {
+  font-size: var(--font-size-2xl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+}
+
+h5, h6 {
+  font-size: var(--font-size-base);
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: var(--spacing-4);
+}
+
+a {
+  color: var(--color-primary-600);
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+a:hover {
+  color: var(--color-primary-700);
+  text-decoration: underline;
+}
+
+/* Form elements */
+button, input, select, textarea {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+}
+
+/* Remove focus outlines from tab buttons */
+button[class*="tab"], 
+button[class*="Tab"],
+button.sidebarButton {
+  outline: none !important;
+}
+
+button[class*="tab"]:focus, 
+button[class*="Tab"]:focus,
+button.sidebarButton:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
