@@ -861,13 +861,40 @@
   }
 }
 
-/* MDEditor WYSIWYG Editor Styles */
+/* TinyMCE WYSIWYG Editor Styles */
 .wysiwygContainer {
   width: 100%;
   background: white;
   border-radius: 8px;
-  border: 1px solid #e2e2e2;
   box-sizing: border-box;
+  position: relative;
+}
+
+/* Hide any textarea that might appear above TinyMCE */
+.wysiwygContainer > textarea,
+.wysiwygContainer textarea[name="content-editor"],
+.wysiwygContainer textarea:not([id*="tinymce"]) {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  left: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+}
+
+/* TinyMCE editor container styles */
+.wysiwygContainer :global(.tox-tinymce) {
+  border-radius: 8px;
+  border: 1px solid #e2e2e2 !important;
+}
+
+.wysiwygContainer :global(.tox-editor-header) {
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.wysiwygContainer :global(.tox-tinymce-aux) {
+  z-index: 10000;
 }
 
 .mdEditor {

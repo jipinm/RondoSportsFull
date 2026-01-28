@@ -1,11 +1,28 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useTickets } from '../hooks/useTickets';
+import { useMultiCurrencyConversion } from '../hooks/useMultiCurrencyConversion';
 import styles from './TicketsPage.module.css';
 
 const TicketsPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const { tickets, loading, error } = useTickets({ event_id: eventId });
+  
+  // Get unique currencies from tickets for conversion
+  const currencies = React.useMemo(() => {
+    const uniqueCurrencies = [...new Set(tickets.map(t => t.currency_code).filter(Boolean))];
+    return uniqueCurrencies;
+  }, [tickets]);
+  
+  // Currency conversion hook - convert ticket prices to USD
+  const { convertAmount, isLoading: currencyLoading } = useMultiCurrencyConversion(currencies, 'USD');
+
+  // Format price to USD
+  const formatPriceToUsd = (price: number, currencyCode: string) => {
+    if (!price || price === 0) return '';
+    const priceInUsd = convertAmount(price, currencyCode);
+    return `$${priceInUsd.toFixed(2)}`;
+  };
 
   return (
     <div className={styles.ticketsPage}>
@@ -19,9 +36,15 @@ const TicketsPage: React.FC = () => {
             <p>{tickets.length} ticket categories found</p>
             {tickets.map((ticket: any) => (
               <div key={ticket.category_id} style={{ margin: '10px 0', padding: '10px', border: '1px solid #333' }}>
-                <h3>{ticket.name}</h3>
-                <p>Type: {ticket.type}</p>
-                {ticket.price_min && <p>Price: ${ticket.price_min}</p>}
+                <h3>{ticket.name || ticket.ticket_title}</h3>
+                <p>Type: {ticket.type || ticket.type_ticket}</p>
+                {ticket.net_rate && ticket.net_rate > 0 && (
+                  currencyLoading ? (
+                    <p className={styles.skeletonPrice}>Loading price...</p>
+                  ) : (
+                    <p>Price: {formatPriceToUsd(ticket.net_rate, ticket.currency_code)}</p>
+                  )
+                )}
               </div>
             ))}
           </div>

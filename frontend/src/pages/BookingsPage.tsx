@@ -8,6 +8,16 @@ import Toast from '../components/common/Toast';
 import type { ToastType } from '../components/common/Toast';
 import styles from './BookingsPage.module.css';
 
+interface BookingHospitality {
+  id: number;
+  hospitality_id: number;
+  hospitality_name: string;
+  price_usd: number;
+  quantity: number;
+  total_usd: number;
+  ticket_id?: string;
+}
+
 interface Booking {
   id: number;
   booking_id: string;
@@ -23,6 +33,8 @@ interface Booking {
   quantity: number;
   ticket_count: number;
   total_amount: number;
+  hospitality_total?: number;
+  hospitalities?: BookingHospitality[];
   currency: string;
   status: string;
   payment_status: string;
@@ -468,6 +480,27 @@ const BookingsPage: React.FC = () => {
                       }
                     </span>
                   </div>
+                  {/* Hospitality Services */}
+                  {booking.hospitalities && booking.hospitalities.length > 0 && (
+                    <div className={styles.detailRow}>
+                      <span className={styles.detailLabel}>Hospitality</span>
+                      <div className={styles.hospitalityList}>
+                        {booking.hospitalities.map((h, idx) => (
+                          <div key={idx} className={styles.hospitalityItem}>
+                            <span className={styles.hospitalityName}>🍽️ {h.hospitality_name}</span>
+                            <span className={styles.hospitalityPrice}>
+                              ${parseFloat(String(h.total_usd)).toFixed(2)}
+                            </span>
+                          </div>
+                        ))}
+                        {Number(booking.hospitality_total) > 0 && (
+                          <div className={styles.hospitalityTotal}>
+                            Total: ${parseFloat(String(booking.hospitality_total)).toFixed(2)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   <div className={styles.detailRow}>
                     <span className={styles.detailLabel}>Booked On</span>
                     <span className={styles.detailValue}>

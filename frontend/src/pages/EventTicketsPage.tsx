@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
@@ -14,14 +14,22 @@ import {
 import { useEventDetails } from '../hooks/useEventDetails';
 import { useTickets } from '../hooks/useTickets';
 import { useEventGuestRequirements } from '../hooks/useEventGuestRequirements';
+import { useMultiCurrencyConversion } from '../hooks/useMultiCurrencyConversion';
+import { useEventMarkups } from '../hooks/useTicketEnhancements';
+import { usePublicEventHospitalities } from '../hooks/usePublicEventHospitalities';
+import { calculateMarkupAmount } from '../services/ticketEnhancementsService';
 import VenueMap from '../components/VenueMap';
 import CartPanel from '../components/CartPanel';
+import HospitalityManager from '../components/HospitalityManager';
+import HospitalitySelector, { type SelectedHospitality } from '../components/HospitalitySelector';
 import type { Ticket } from '../services/apiRoutes';
 import styles from './EventTicketsPage.module.css';
 
-interface CartItem {
+// Extended CartItem with hospitality support
+export interface CartItem {
   ticket: Ticket;
   quantity: number;
+  selectedHospitalities?: SelectedHospitality[];
 }
 
 const EventTicketsPage: React.FC = () => {
@@ -32,9 +40,25 @@ const EventTicketsPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [hoveredTicketCategory, setHoveredTicketCategory] = useState<string | null>(null);
   
+  // Hospitality selector state
+  const [showHospitalitySelector, setShowHospitalitySelector] = useState(false);
+  const [pendingTicket, setPendingTicket] = useState<Ticket | null>(null);
+  
   // Fetch event details and tickets
   const { event, loading: eventLoading, error: eventError } = useEventDetails(eventId);
   const { tickets, loading: ticketsLoading, error: ticketsError } = useTickets({ event_id: eventId });
+  
+  // Get all unique currencies from tickets for multi-currency conversion
+  const ticketCurrencies = useMemo(() => {
+    return tickets.map(t => t.currency_code).filter(Boolean);
+  }, [tickets]);
+  
+  // Multi-currency conversion to USD
+  const { 
+    convertAmount, 
+    getExchangeRate,
+    hasConversion: hasConversionForCurrency
+  } = useMultiCurrencyConversion(ticketCurrencies, 'USD');
   
   // Fetch guest requirements for this event
   const { 
@@ -43,6 +67,17 @@ const EventTicketsPage: React.FC = () => {
     error: requirementsError,
     fetchRequirements 
   } = useEventGuestRequirements();
+
+  // Fetch markup pricing for this event
+  const { 
+    markupsByTicket
+  } = useEventMarkups(eventId);
+
+  // Fetch hospitality options for this event (PUBLIC API - no auth required)
+  const {
+    ticketHasHospitalities,
+    getHospitalitiesForTicket
+  } = usePublicEventHospitalities(eventId);
 
   // Registration form state
   const [formData, setFormData] = useState({
@@ -113,10 +148,40 @@ const EventTicketsPage: React.FC = () => {
     return event.hometeam_name && event.visiting_name && event.hometeam_name !== event.visiting_name;
   };
 
-  // Format price with correct currency
+  // Format price with correct currency and apply markup pricing if available
+  // Uses live exchange rate for calculating percentage-based markup
   const formatPrice = (ticket: Ticket) => {
     const currency = ticket.currency_code || 'USD';
     const price = ticket.face_value || 0;
+    
+    // Check if this ticket has markup pricing
+    const markup = markupsByTicket.get(ticket.ticket_id);
+    
+    // If currency conversion is available for THIS ticket's currency and currency is not already USD
+    if (hasConversionForCurrency(currency) && currency !== 'USD') {
+      const usdPrice = convertAmount(price, currency);
+      
+      // Calculate markup dynamically using live USD base price
+      const markupAmount = calculateMarkupAmount(usdPrice, markup ?? null);
+      
+      if (markupAmount > 0) {
+        const finalPrice = usdPrice + markupAmount;
+        return `USD ${finalPrice.toFixed(2)}`;
+      }
+      
+      return `USD ${usdPrice.toFixed(2)}`;
+    }
+    
+    // No conversion available or already in USD - show original currency
+    // If in USD, calculate markup dynamically
+    if (currency === 'USD') {
+      const markupAmount = calculateMarkupAmount(price, markup ?? null);
+      if (markupAmount > 0) {
+        const finalPrice = price + markupAmount;
+        return `USD ${finalPrice.toFixed(2)}`;
+      }
+    }
+    
     return `${currency} ${price.toFixed(2)}`;
   };
 
@@ -128,20 +193,38 @@ const EventTicketsPage: React.FC = () => {
     setFormData({ name: '', email: '' });
   };
 
-  // Handle add ticket (updated for cart functionality)
+  // Handle add ticket (updated for cart functionality with hospitality support)
   const handleAddTicket = (ticket: Ticket) => {
+    console.log('[AddTicket] ticket_id:', ticket.ticket_id);
+    console.log('[AddTicket] ticketHasHospitalities:', ticketHasHospitalities(ticket.ticket_id));
+    console.log('[AddTicket] hospitalities for ticket:', getHospitalitiesForTicket(ticket.ticket_id));
+    
+    // Check if this ticket has hospitality options
+    if (ticketHasHospitalities(ticket.ticket_id)) {
+      // Show hospitality selector modal
+      setPendingTicket(ticket);
+      setShowHospitalitySelector(true);
+      return;
+    }
+    
+    // No hospitalities - add directly to cart
+    addTicketToCart(ticket, []);
+  };
+
+  // Add ticket to cart with optional hospitalities
+  const addTicketToCart = (ticket: Ticket, hospitalities: SelectedHospitality[]) => {
     const existingItem = cartItems.find(item => item.ticket.ticket_id === ticket.ticket_id);
     
     if (existingItem) {
-      // Update quantity if item already exists
+      // Update quantity if item already exists (merge hospitalities)
       setCartItems(cartItems.map(item =>
         item.ticket.ticket_id === ticket.ticket_id
           ? { ...item, quantity: item.quantity + 1 }
           : item
       ));
     } else {
-      // Add new item to cart
-      setCartItems([...cartItems, { ticket, quantity: 1 }]);
+      // Add new item to cart with hospitalities
+      setCartItems([...cartItems, { ticket, quantity: 1, selectedHospitalities: hospitalities }]);
     }
     
     // Open cart panel
@@ -181,17 +264,74 @@ const EventTicketsPage: React.FC = () => {
       city: event?.city || ''
     };
 
+    // Calculate final prices for each cart item (with markup and currency conversion)
+    // Uses live exchange rate for calculating percentage-based markup
+    const cartItemsWithFinalPrices = cartItems.map(item => {
+      const currency = item.ticket.currency_code || 'USD';
+      const faceValue = item.ticket.face_value || 0;
+      
+      // Get markup for this ticket
+      const markup = markupsByTicket.get(item.ticket.ticket_id);
+      
+      // Calculate USD price with conversion if needed
+      let basePriceUSD = faceValue;
+      if (hasConversionForCurrency(currency) && currency !== 'USD') {
+        basePriceUSD = convertAmount(faceValue, currency);
+      }
+      
+      // Calculate markup dynamically using live USD base price
+      const markupAmount = calculateMarkupAmount(basePriceUSD, markup ?? null);
+      
+      // Final price is base USD price + calculated markup
+      const finalPriceUSD = basePriceUSD + markupAmount;
+      
+      // Calculate hospitality total for this item
+      const hospitalityTotal = (item.selectedHospitalities || []).reduce(
+        (sum, h) => sum + h.price_usd, 0
+      );
+      
+      return {
+        ...item,
+        finalPriceUSD,
+        markupAmount,
+        hospitalityTotal,
+        totalPricePerTicket: finalPriceUSD + hospitalityTotal
+      };
+    });
+
+    // Convert markupsByTicket Map to plain object for serialization
+    const markupsObject: Record<string, any> = {};
+    markupsByTicket.forEach((value, key) => {
+      markupsObject[key] = value;
+    });
+
     setIsCartOpen(false);
     
     // Navigate directly to login page to start authentication-first checkout flow
-    // Phase 1: Step 4 - Store requirements for later validation
     navigate('/checkout/login', {
       state: {
-        cartItems,
+        cartItems: cartItemsWithFinalPrices,
         eventData,
-        guestRequirements: guestRequirements || null
+        guestRequirements: guestRequirements || null,
+        markupsData: markupsObject
       }
     });
+  };
+
+  // Handle hospitality selection confirmation
+  const handleHospitalityConfirm = (selectedHospitalities: SelectedHospitality[]) => {
+    if (pendingTicket) {
+      addTicketToCart(pendingTicket, selectedHospitalities);
+      setShowHospitalitySelector(false);
+      setPendingTicket(null);
+      setIsCartOpen(true);
+    }
+  };
+
+  // Handle hospitality selection cancel
+  const handleHospitalityCancel = () => {
+    setShowHospitalitySelector(false);
+    setPendingTicket(null);
   };
 
   if (eventLoading || ticketsLoading) {
@@ -385,6 +525,10 @@ const EventTicketsPage: React.FC = () => {
                 </p>
               </div>
               <div className={styles.ticketFilters}>
+                {/* Hospitality Management Button */}
+                {eventId && tickets.length > 0 && (
+                  <HospitalityManager eventId={eventId} tickets={tickets} />
+                )}
                 <label className={styles.checkboxLabel}>
                   <input
                     type="checkbox"
@@ -449,8 +593,8 @@ const EventTicketsPage: React.FC = () => {
                               <Building2 size={16} />
                             </div>
                           )}
-                          {ticket.category_type === 'hospitality' && (
-                            <div className={styles.featureIcon} data-tooltip="This ticket includes hospitality">
+                          {(ticket.category_type === 'hospitality' || ticketHasHospitalities(ticket.ticket_id)) && (
+                            <div className={`${styles.featureIcon} ${styles.hospitalityIcon}`} data-tooltip="Hospitality options available">
                               <ChefHat size={16} />
                             </div>
                           )}
@@ -460,7 +604,10 @@ const EventTicketsPage: React.FC = () => {
 
                     <div className={styles.ticketPrice}>
                       <div className={styles.priceDisplay}>
-                        <span className={styles.priceAmount}>
+                        <span 
+                          className={styles.priceAmount}
+                          data-tooltip={`Local Price: ${ticket.currency_code} ${ticket.face_value?.toFixed(2)}\nExchange Rate: 1 ${ticket.currency_code} = ${hasConversionForCurrency(ticket.currency_code || '') ? getExchangeRate(ticket.currency_code || '').toFixed(4) : 'N/A'} USD\nUSD Converted: $${hasConversionForCurrency(ticket.currency_code || '') ? convertAmount(ticket.face_value || 0, ticket.currency_code || '').toFixed(2) : 'N/A'}\nMarkup: $${markupsByTicket.get(ticket.ticket_id) ? parseFloat(String(markupsByTicket.get(ticket.ticket_id)?.markup_price_usd)).toFixed(2) : '0.00'}\nFinal Price: ${formatPrice(ticket)}`}
+                        >
                           {formatPrice(ticket)}
                         </span>
                       </div>
@@ -571,7 +718,24 @@ const EventTicketsPage: React.FC = () => {
         guestRequirements={guestRequirements}
         guestRequirementsLoading={requirementsLoading}
         guestRequirementsError={requirementsError}
+        currencyConversion={{
+          hasConversion: true,
+          convertAmount,
+          getExchangeRate,
+          hasConversionForCurrency
+        }}
+        markupsByTicket={markupsByTicket}
       />
+
+      {/* Hospitality Selector Modal */}
+      {showHospitalitySelector && pendingTicket && (
+        <HospitalitySelector
+          ticketTitle={pendingTicket.ticket_title}
+          hospitalities={getHospitalitiesForTicket(pendingTicket.ticket_id)}
+          onConfirm={handleHospitalityConfirm}
+          onCancel={handleHospitalityCancel}
+        />
+      )}
     </div>
   );
 };

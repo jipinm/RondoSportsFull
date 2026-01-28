@@ -204,7 +204,7 @@ class BookingValidationService
         }
 
         // Numeric fields
-        $numericFields = ['total_amount', 'commission_amount', 'ticket_count', 'refund_amount', 'cancellation_refund_amount', 'payment_gateway_fee'];
+        $numericFields = ['total_amount', 'commission_amount', 'ticket_count', 'refund_amount', 'cancellation_refund_amount', 'payment_gateway_fee', 'hospitality_total'];
         foreach ($numericFields as $field) {
             if (isset($booking[$field])) {
                 $sanitized[$field] = is_numeric($booking[$field]) ? $booking[$field] : 0;
@@ -263,6 +263,11 @@ class BookingValidationService
         // Handle nested objects
         if (isset($booking['user']) && is_array($booking['user'])) {
             $sanitized['user'] = $booking['user'];
+        }
+
+        // Handle hospitalities array
+        if (isset($booking['hospitalities']) && is_array($booking['hospitalities'])) {
+            $sanitized['hospitalities'] = $booking['hospitalities'];
         }
 
         return $sanitized;

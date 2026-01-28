@@ -30,74 +30,95 @@ const PaymentSuccess: React.FC = () => {
   useEffect(() => {
     
     // Check if we have payment data from location state (Payment Intent flow)
-    if (locationState?.paymentIntentId && locationState?.bookingId) {
+    if (locationState?.paymentIntentId) {
       
-      // Fetch full booking details to get booking_reference and api_reservation_id
-      const fetchBookingDetails = async () => {
-        try {
-          const response = await fetch(
-            `${import.meta.env.VITE_CUSTOMER_API_BASE_URL}/api/v1/local-bookings/${locationState.bookingId}`
-          );
+      // If we have a booking ID, fetch full booking details
+      if (locationState?.bookingId) {
+        // Fetch full booking details to get booking_reference and api_reservation_id
+        const fetchBookingDetails = async () => {
+          try {
+            const response = await fetch(
+              `${import.meta.env.VITE_CUSTOMER_API_BASE_URL}/api/v1/local-bookings/${locationState.bookingId}`
+            );
 
 
-          if (response.ok) {
-            const result = await response.json();
-            
-            if (result.success) {
-              const paymentData = {
-                payment_intent_id: locationState.paymentIntentId,
-                booking_id: locationState.bookingId,
-                total_amount: locationState.totalAmount || 0,
-                currency: locationState.currency || 'USD',
-                event_name: locationState.eventData?.event_name || 'Event',
-                payment_status: 'succeeded',
-                booking_reference: result.data.booking_reference,
-                api_reservation_id: result.data.api_reservation_id,
-                customer_email: locationState.customerEmail
-              };
+            if (response.ok) {
+              const result = await response.json();
               
-              setPaymentData(paymentData);
-              setLoading(false);
-              return;
+              if (result.success) {
+                const paymentData = {
+                  payment_intent_id: locationState.paymentIntentId,
+                  booking_id: locationState.bookingId,
+                  total_amount: locationState.totalAmount || 0,
+                  currency: locationState.currency || 'USD',
+                  event_name: locationState.eventData?.event_name || 'Event',
+                  payment_status: 'succeeded',
+                  booking_reference: result.data.booking_reference,
+                  api_reservation_id: result.data.api_reservation_id,
+                  customer_email: locationState.customerEmail
+                };
+                
+                setPaymentData(paymentData);
+                setLoading(false);
+                return;
+              }
             }
+            
+            console.warn('Booking fetch failed, using fallback data from location state');
+            // Fallback to basic payment data if booking details fetch fails
+            const fallbackData = {
+              payment_intent_id: locationState.paymentIntentId,
+              booking_id: locationState.bookingId,
+              total_amount: locationState.totalAmount || 0,
+              currency: locationState.currency || 'USD',
+              event_name: locationState.eventData?.event_name || 'Event',
+              payment_status: 'succeeded',
+              booking_reference: locationState.bookingReference,
+              api_reservation_id: locationState.apiReservationId,
+              customer_email: locationState.customerEmail
+            };
+            
+            setPaymentData(fallbackData);
+          } catch (error) {
+            console.error('Error fetching booking details:', error);
+            // Use basic payment data as fallback
+            const errorFallbackData = {
+              payment_intent_id: locationState.paymentIntentId,
+              booking_id: locationState.bookingId,
+              total_amount: locationState.totalAmount || 0,
+              currency: locationState.currency || 'USD',
+              event_name: locationState.eventData?.event_name || 'Event',
+              payment_status: 'succeeded',
+              booking_reference: locationState.bookingReference,
+              api_reservation_id: locationState.apiReservationId,
+              customer_email: locationState.customerEmail
+            };
+            
+            setPaymentData(errorFallbackData);
           }
-          
-          console.warn('Booking fetch failed, using fallback data from location state');
-          // Fallback to basic payment data if booking details fetch fails
-          const fallbackData = {
-            payment_intent_id: locationState.paymentIntentId,
-            booking_id: locationState.bookingId,
-            total_amount: locationState.totalAmount || 0,
-            currency: locationState.currency || 'USD',
-            event_name: locationState.eventData?.event_name || 'Event',
-            payment_status: 'succeeded',
-            booking_reference: locationState.bookingReference,
-            api_reservation_id: locationState.apiReservationId,
-            customer_email: locationState.customerEmail
-          };
-          
-          setPaymentData(fallbackData);
-        } catch (error) {
-          console.error('Error fetching booking details:', error);
-          // Use basic payment data as fallback
-          const errorFallbackData = {
-            payment_intent_id: locationState.paymentIntentId,
-            booking_id: locationState.bookingId,
-            total_amount: locationState.totalAmount || 0,
-            currency: locationState.currency || 'USD',
-            event_name: locationState.eventData?.event_name || 'Event',
-            payment_status: 'succeeded',
-            booking_reference: locationState.bookingReference,
-            api_reservation_id: locationState.apiReservationId,
-            customer_email: locationState.customerEmail
-          };
-          
-          setPaymentData(errorFallbackData);
+          setLoading(false);
+        };
+
+        fetchBookingDetails();
+      } else {
+        // Payment succeeded but booking creation failed - show partial success
+        console.warn('Payment succeeded but no booking ID found');
+        const partialSuccessData = {
+          payment_intent_id: locationState.paymentIntentId,
+          booking_id: 0, // No booking created
+          total_amount: locationState.totalAmount || 0,
+          currency: locationState.currency || 'USD',
+          event_name: locationState.eventData?.event_name || 'Event',
+          payment_status: 'succeeded',
+          customer_email: locationState.customerEmail
+        };
+        
+        setPaymentData(partialSuccessData);
+        if (locationState.error) {
+          setError(locationState.error);
         }
         setLoading(false);
-      };
-
-      fetchBookingDetails();
+      }
       return;
     }
 

@@ -1,147 +1,89 @@
-# Timezone-Based Banner Visibility Specification
+```md
+# Currency Conversion Integration — Tickets Page
 
-## Objective
+## Route
+```
 
-Ensure that a banner becomes visible to all users worldwide at the **same absolute moment in time**, regardless of:
+/events/2b308e1d8d0a43e3bbb56a09954630ea_gnr/tickets
 
-* The admin’s local timezone when configuring the banner
-* The user’s local timezone when accessing the application
-
-This is achieved by using **UTC as the canonical time reference**.
-
----
-
-## Core Principle
-
-* Admin selects a **local date & time**
-* System converts this datetime to **UTC**
-* Only the **UTC timestamp** is stored in the database
-* Banner visibility is determined by comparing the **current UTC time** with the stored UTC timestamp
-
-> Result: The banner activates globally at the same instant.
-
----
-
-## Example 1 – Admin in India (IST)
-
-**Admin Location:** India (IST, UTC +5:30)
-
-**Admin Sets Banner Time:**
-17-12-2025 10:00 AM IST
-
-**Stored in Database (UTC):**
-17-12-2025 04:30 AM UTC
-
-### User Access Times
-
-| User Location  | Banner Becomes Visible At |
-| -------------- | ------------------------- |
-| India (IST)    | 17-12-2025 10:00 AM       |
-| UAE (UTC+4)    | 17-12-2025 08:30 AM       |
-| London (UTC+0) | 17-12-2025 04:30 AM       |
-
----
-
-## Example 2 – Admin in USA (EST)
-
-**Admin Location:** USA (EST, UTC −5)
-
-**Admin Sets Banner Time:**
-17-12-2025 08:00 PM EST
-
-**Stored in Database (UTC):**
-18-12-2025 01:00 AM UTC
-
-### User Access Times
-
-| User Location  | Banner Becomes Visible At |
-| -------------- | ------------------------- |
-| USA (EST)      | 17-12-2025 08:00 PM       |
-| India (IST)    | 18-12-2025 06:30 AM       |
-| UAE (UTC+4)    | 18-12-2025 05:00 AM       |
-| London (UTC+0) | 18-12-2025 01:00 AM       |
-
----
-
-## Example 3 – Admin in London (GMT)
-
-**Admin Location:** London (GMT, UTC +0)
-
-**Admin Sets Banner Time:**
-01-01-2026 12:00 PM GMT
-
-**Stored in Database (UTC):**
-01-01-2026 12:00 PM UTC
-
-### User Access Times
-
-| User Location            | Banner Becomes Visible At |
-| ------------------------ | ------------------------- |
-| London (GMT)             | 12:00 PM                  |
-| India (IST)              | 05:30 PM                  |
-| Australia (AEDT, UTC+11) | 11:00 PM                  |
-| USA (EST)                | 07:00 AM                  |
-
----
-
-## Example 4 – Admin in Australia (AEDT)
-
-**Admin Location:** Australia (AEDT, UTC +11)
-
-**Admin Sets Banner Time:**
-10-02-2026 09:00 AM AEDT
-
-**Stored in Database (UTC):**
-09-02-2026 10:00 PM UTC
-
-### User Access Times
-
-| User Location    | Banner Becomes Visible At |
-| ---------------- | ------------------------- |
-| Australia (AEDT) | 09:00 AM                  |
-| India (IST)      | 03:30 AM                  |
-| UAE (UTC+4)      | 12:00 AM                  |
-| London (UTC+0)   | 10:00 PM (Previous Day)   |
-
----
-
-## Admin-Side Requirements
-
-* Automatically detect admin timezone (or allow manual selection)
-* Convert selected local datetime to UTC before saving
-* Never store local timezone values in the database
-
----
-
-## User-Side Logic
-
-* Detect user timezone
-* Fetch banner UTC start time
-* Display banner when:
-
-```text
-current_utc_time >= banner_start_utc
 ```
 
 ---
 
-## What This System Avoids
-
-* No country-specific banner times
-* No duplicate datetime values
-* No manual timezone adjustments
-* No dependency on user location logic
+## Objective
+Implement real-time currency conversion to display ticket prices in **USD** while retaining the original currency values. All payment transactions must be processed exclusively in **USD**.
 
 ---
 
-## One-Line Requirement Statement
+## Scope of Enhancement
 
-> Banner visibility must be timezone-independent and activate globally at the same UTC moment, regardless of admin or user location.
+### Features to Be Added
+- Real-time conversion of ticket prices from the local currency to **USD**
+- Display of converted USD prices alongside original ticket prices
+
+---
+
+## Currency Conversion Service
+
+### Recommended API
+**Frankfurter API**
+- Data Source: European Central Bank
+- Authentication: Not required
+- Cost: Free
+- Documentation: https://www.frankfurter.dev
+
+---
+
+### Sample API Endpoint
+```
+
+[https://api.frankfurter.dev/v1/latest?from=EUR&to=USD](https://api.frankfurter.dev/v1/latest?from=EUR&to=USD)
+
+````
+
+### Sample API Response
+```json
+{
+  "amount": 1,
+  "base": "EUR",
+  "date": "2026-01-16",
+  "rates": {
+    "USD": 1.1617
+  }
+}
+````
+
+---
+
+## Implementation Instructions
+
+1. Call the Frankfurter API at the **top level of the ticket listing logic**.
+2. Read the `base` currency and conversion rate from the API response.
+3. Convert all ticket prices to **USD** using the returned exchange rate.
+4. Display:
+
+   * Original ticket price with its local currency
+   * Converted ticket price in **USD**
+5. Ensure the payment gateway:
+
+   * Uses the converted **USD amount**
+   * Sets the transaction currency strictly to **USD**
+
+---
+
+## Fallback Behavior
+
+* If the currency conversion API request fails or returns an invalid response:
+
+  * Display ticket prices using the existing logic (original currency only)
+  * Proceed with the current payment flow without any currency conversion
 
 ---
 
 ## Notes
 
-* UTC must be the **single source of truth**
-* All comparisons must occur in UTC
-* UI may display local time for clarity, but logic must remain UTC-based
+* Currency conversion must not block ticket listing or checkout flow.
+* API failures should be handled gracefully without user-facing errors.
+
+```
+```

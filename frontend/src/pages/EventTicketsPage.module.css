@@ -617,7 +617,9 @@
 
 .ticketFilters {
   display: flex;
+  align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .checkboxLabel {
@@ -784,15 +786,18 @@
 }
 
 /* Simplified special styling */
-.featureIcon[data-tooltip*="hospitality"] {
-  background: #fef3f2;
-  color: #dc2626;
-  border-color: #fecaca;
+.featureIcon[data-tooltip*="hospitality"],
+.hospitalityIcon {
+  background: linear-gradient(135deg, #fef3f2, #fdf2f8);
+  color: #9333ea;
+  border-color: #e9d5ff;
 }
 
-.featureIcon[data-tooltip*="hospitality"]:hover {
-  background: #fee2e2;
-  color: #b91c1c;
+.featureIcon[data-tooltip*="hospitality"]:hover,
+.hospitalityIcon:hover {
+  background: linear-gradient(135deg, #faf5ff, #f5f3ff);
+  color: #7c3aed;
+  box-shadow: 0 2px 8px rgba(147, 51, 234, 0.2);
 }
 
 .featureIcon[data-tooltip*="grandstand"] {
@@ -865,6 +870,18 @@
 
 .priceDisplay {
   text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.originalPrice {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #9ca3af;
+  text-decoration: line-through;
+  line-height: 1.2;
 }
 
 .priceAmount {
@@ -872,6 +889,39 @@
   font-weight: 700;
   color: #3b82f6;
   line-height: 1.2;
+  position: relative;
+  cursor: help;
+}
+
+.priceAmount[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background: #1f2937;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  white-space: pre-line;
+  z-index: 9999;
+  margin-bottom: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  line-height: 1.6;
+  text-align: left;
+  min-width: 200px;
+}
+
+.priceAmount[data-tooltip]:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  right: 20px;
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+  margin-bottom: -6px;
+  z-index: 9999;
 }
 
 .addTicketButton {

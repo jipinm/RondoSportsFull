@@ -162,6 +162,40 @@
   margin: 0;
 }
 
+/* Hospitality List in Cart */
+.hospitalityList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.hospitalityItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #7c3aed;
+  background: #f5f3ff;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.hospitalityItem svg {
+  flex-shrink: 0;
+}
+
+.hospitalityItem span:nth-child(2) {
+  flex: 1;
+}
+
+.hospitalityPrice {
+  font-weight: 600;
+  color: #059669;
+}
+
 .quantityControls {
   display: flex;
   align-items: center;

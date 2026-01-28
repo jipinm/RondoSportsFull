@@ -131,18 +131,18 @@ class EmailService
      */
     private function generateBookingConfirmationHTML(array $data): string
     {
-        $bookingReference = $data['booking_reference'] ?? '';
-        $apiReservationId = $data['api_reservation_id'] ?? '';
-        $bookingId = $data['booking_id'] ?? '';
-        $eventName = $data['event_name'] ?? 'Event';
-        $eventDate = $data['event_date'] ?? '';
+        $bookingReference = (string)($data['booking_reference'] ?? '');
+        $apiReservationId = (string)($data['api_reservation_id'] ?? '');
+        $bookingId = (string)($data['booking_id'] ?? '');
+        $eventName = (string)($data['event_name'] ?? 'Event');
+        $eventDate = (string)($data['event_date'] ?? '');
         $totalAmount = $data['total_amount'] ?? 0;
-        $currency = $data['currency'] ?? 'USD';
+        $currency = (string)($data['currency'] ?? 'USD');
         $customerName = trim(($data['customer_first_name'] ?? '') . ' ' . ($data['customer_last_name'] ?? '')) ?: 'Valued Customer';
-        $venueInfo = $data['venue_name'] ?? '';
-        $ticketCount = $data['ticket_count'] ?? 1;
-        $seatInfo = $data['seat_info'] ?? '';
-        $eventStartTime = $data['event_start_time'] ?? $eventDate;
+        $venueInfo = (string)($data['venue_name'] ?? '');
+        $ticketCount = (int)($data['ticket_count'] ?? 1);
+        $seatInfo = (string)($data['seat_info'] ?? '');
+        $eventStartTime = (string)($data['event_start_time'] ?? $eventDate);
 
         // Format amount
         $formattedAmount = $this->formatAmount($totalAmount, $currency);

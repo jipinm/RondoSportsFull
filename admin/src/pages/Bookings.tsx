@@ -136,6 +136,30 @@ const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({ booking, onCl
               <span className={styles.bookingInfoLabel}>Total Amount:</span>
               <span className={styles.bookingInfoValue}>{booking.currency} {booking.total_amount.toFixed(2)}</span>
             </div>
+            {/* Hospitality Services */}
+            {booking.hospitalities && booking.hospitalities.length > 0 && (
+              <div className={styles.bookingInfoItem} style={{ gridColumn: '1 / -1' }}>
+                <span className={styles.bookingInfoLabel}>Hospitality Services:</span>
+                <div className={styles.hospitalityList}>
+                  {booking.hospitalities.map((h, idx) => (
+                    <div key={idx} className={styles.hospitalityItem}>
+                      <span className={styles.hospitalityName}>🍽️ {h.hospitality_name}</span>
+                      <span className={styles.hospitalityDetails}>
+                        x{h.quantity} @ ${parseFloat(String(h.price_usd)).toFixed(2)}
+                      </span>
+                      <span className={styles.hospitalityPrice}>
+                        ${parseFloat(String(h.total_usd)).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                  {Number(booking.hospitality_total) > 0 && (
+                    <div className={styles.hospitalityTotal}>
+                      Hospitality Total: ${parseFloat(String(booking.hospitality_total)).toFixed(2)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
             {booking.payment_method && (
               <div className={styles.bookingInfoItem}>
                 <span className={styles.bookingInfoLabel}>Payment Method:</span>
@@ -507,41 +531,6 @@ const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({ booking, onCl
               )}
             </div>
           )}
-          
-          
-          {/* Debug: XS2Event Response Data */}
-          {booking.xs2event_response_data && (
-            <details className={styles.debugSection}>
-              <summary className={styles.debugSummary}>🔧 XS2Event Response Data (Debug)</summary>
-              <pre className={styles.debugContent}>
-                {typeof booking.xs2event_response_data === 'string' 
-                  ? booking.xs2event_response_data 
-                  : JSON.stringify(booking.xs2event_response_data, null, 2)}
-              </pre>
-            </details>
-          )}
-          
-          {/* Debug: Full API Data */}
-          {booking.api_data && Object.keys(booking.api_data).length > 0 && (
-            <details className={styles.debugSection}>
-              <summary className={styles.debugSummary}>🔍 API Data (Debug)</summary>
-              <pre className={styles.debugContent}>
-                {JSON.stringify(booking.api_data, null, 2)}
-              </pre>
-            </details>
-          )}
-          
-          {/* Debug: E-Ticket URLs */}
-          {booking.eticket_urls && (
-            <details className={styles.debugSection}>
-              <summary className={styles.debugSummary}>🎫 E-Ticket URLs (JSON)</summary>
-              <pre className={styles.debugContent}>
-                {typeof booking.eticket_urls === 'string' 
-                  ? booking.eticket_urls 
-                  : JSON.stringify(booking.eticket_urls, null, 2)}
-              </pre>
-            </details>
-          )}
         </div>
         
         <div className={styles.modalFooter}>
@@ -555,6 +544,7 @@ const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({ booking, onCl
 const Bookings: React.FC = () => {
   const [bookingsList, setBookingsList] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [loadingBookingDetails, setLoadingBookingDetails] = useState(false);
   const [refundBooking, setRefundBooking] = useState<Booking | null>(null);
   const [syncBooking, setSyncBooking] = useState<Booking | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -564,8 +554,9 @@ const Bookings: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   // Fetch bookings data
   const fetchBookings = async () => {
@@ -574,7 +565,7 @@ const Bookings: React.FC = () => {
       
       const filters: BookingFilters = {
         page: currentPage,
-        per_page: itemsPerPage,
+        limit: itemsPerPage,
         ...(searchTerm && { search: searchTerm }),
         ...(statusFilter !== 'all' && { status: statusFilter }),
         ...(paymentStatusFilter !== 'all' && { payment_status: paymentStatusFilter }),
@@ -584,6 +575,7 @@ const Bookings: React.FC = () => {
       const response = await bookingService.getBookings(filters);
       setBookingsList(response.bookings);
       setTotalPages(response.totalPages);
+      setTotalItems(response.total);
     } catch (err) {
       console.error('Error fetching bookings:', err);
       toast.error(
@@ -614,6 +606,23 @@ const Bookings: React.FC = () => {
       month: 'short',
       day: 'numeric'
     });
+  };
+
+  /**
+   * Fetch full booking details including hospitalities
+   */
+  const handleViewBooking = async (booking: Booking) => {
+    setLoadingBookingDetails(true);
+    try {
+      const fullBooking = await bookingService.getBooking(booking.id);
+      setSelectedBooking(fullBooking);
+    } catch (error) {
+      console.error('Error fetching booking details:', error);
+      // Fall back to the list data if fetch fails
+      setSelectedBooking(booking);
+    } finally {
+      setLoadingBookingDetails(false);
+    }
   };
 
   const formatLabel = (text: string) => {
@@ -922,7 +931,8 @@ const Bookings: React.FC = () => {
                     <div className={styles.actionButtons}>
                       <button 
                         className={styles.viewButton}
-                        onClick={() => setSelectedBooking(booking)}
+                        onClick={() => handleViewBooking(booking)}
+                        disabled={loadingBookingDetails}
                       >
                         <Eye size={16} /> View
                       </button>
@@ -961,43 +971,57 @@ const Bookings: React.FC = () => {
         </table>
       </div>
       
-      {totalPages > 1 && (
-        <div className={styles.pagination}>
-          <button
-            className={styles.paginationButton}
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-          >
-            Previous
-          </button>
-          
-          <div className={styles.pageNumbers}>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                className={`${styles.pageNumberButton} ${currentPage === page ? styles.activePage : ''}`}
-                onClick={() => handlePageChange(page)}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-          
-          <button
-            className={styles.paginationButton}
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-          >
-            Next
-          </button>
+      {/* Pagination */}
+      <div className={styles.pagination}>
+        <div className={styles.paginationInfo}>
+          Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} bookings
         </div>
-      )}
+        
+        {totalPages > 1 && (
+          <div className={styles.paginationControls}>
+            <button
+              className={styles.paginationButton}
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              Previous
+            </button>
+            
+            <div className={styles.pageNumbers}>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  className={`${styles.pageNumberButton} ${currentPage === page ? styles.activePage : ''}`}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+            
+            <button
+              className={styles.paginationButton}
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
       
       {selectedBooking && (
         <BookingDetailsModal
           booking={selectedBooking}
           onClose={() => setSelectedBooking(null)}
         />
+      )}
+      
+      {loadingBookingDetails && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingSpinner}></div>
+          <p>Loading booking details...</p>
+        </div>
       )}
       
       {refundBooking && (

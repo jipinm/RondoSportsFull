@@ -1,45 +1,21 @@
 // filepath: e:\RondoSportsAdminCopilot\src\pages\Content.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { File, Edit, Save, Image, AlertCircle, Loader } from 'lucide-react';
-import MDEditor from '@uiw/react-md-editor';
-import '@uiw/react-md-editor/markdown-editor.css';
-import { marked } from 'marked';
+import { Editor } from '@tinymce/tinymce-react';
 import DOMPurify from 'dompurify';
 import { BannerList } from '../components/banners';
 import staticPagesService, { type StaticPage } from '../services/staticPagesService';
 import styles from './Content.module.css';
 
-// Utility functions for HTML/Markdown conversion
-const htmlToMarkdown = (html: string): string => {
-  // Simple HTML to Markdown conversion for basic elements
-  let markdown = html
-    .replace(/<h([1-6])>/g, (_, level) => '#'.repeat(parseInt(level)) + ' ')
-    .replace(/<\/h[1-6]>/g, '\n\n')
-    .replace(/<p>/g, '')
-    .replace(/<\/p>/g, '\n\n')
-    .replace(/<strong>/g, '**')
-    .replace(/<\/strong>/g, '**')
-    .replace(/<em>/g, '*')
-    .replace(/<\/em>/g, '*')
-    .replace(/<ul>/g, '')
-    .replace(/<\/ul>/g, '\n')
-    .replace(/<ol>/g, '')
-    .replace(/<\/ol>/g, '\n')
-    .replace(/<li>/g, '- ')
-    .replace(/<\/li>/g, '\n')
-    .replace(/<br\s*\/?>/g, '\n')
-    .replace(/<a href="([^"]+)">([^<]+)<\/a>/g, '[$2]($1)');
-  
-  return markdown.trim();
-};
-
-const markdownToHtml = (markdown: string): string => {
-  return DOMPurify.sanitize(marked.parse(markdown) as string);
+// Utility function to sanitize HTML content
+const sanitizeHtml = (html: string): string => {
+  return DOMPurify.sanitize(html);
 };
 
 const Content: React.FC = () => {
+  const editorRef = useRef<any>(null);
   const [activeTab, setActiveTab] = useState<'pages' | 'banners'>('pages');
-  const [selectedPage, setSelectedPage] = useState<'terms' | 'privacy' | 'faq'>('terms');
+  const [selectedPage, setSelectedPage] = useState<'terms' | 'privacy' | 'about' | 'faq'>('terms');
   const [isEditing, setIsEditing] = useState(false);
   const [staticPages, setStaticPages] = useState<StaticPage[]>([]);
   const [currentPage, setCurrentPage] = useState<StaticPage | null>(null);
@@ -100,7 +76,7 @@ const Content: React.FC = () => {
     }
   };
   
-  const handlePageSelect = (page: 'terms' | 'privacy' | 'faq') => {
+  const handlePageSelect = (page: 'terms' | 'privacy' | 'about' | 'faq') => {
     setSelectedPage(page);
     setIsEditing(false);
     setError(null);
@@ -111,13 +87,13 @@ const Content: React.FC = () => {
   
   const handleEditToggle = () => {
     if (!isEditing && currentPage) {
-      // Convert HTML to Markdown when entering edit mode
-      setCurrentContent(htmlToMarkdown(currentPage.content));
+      // TinyMCE works directly with HTML, no conversion needed
+      setCurrentContent(currentPage.content);
     }
     setIsEditing(!isEditing);
   };
   
-  const handleContentChange = (content: string) => {
+  const handleEditorChange = (content: string) => {
     setCurrentContent(content);
   };
 
@@ -129,8 +105,8 @@ const Content: React.FC = () => {
     setSuccess(null);
     
     try {
-      // Convert Markdown to HTML before saving
-      const htmlContent = markdownToHtml(currentContent);
+      // Sanitize HTML content before saving
+      const htmlContent = sanitizeHtml(currentContent);
       
       const result = await staticPagesService.updatePage(currentPage.id, {
         content: htmlContent
@@ -208,6 +184,12 @@ const Content: React.FC = () => {
                   Privacy Policy
                 </button>
                 <button 
+                  className={`${styles.pageItem} ${selectedPage === 'about' ? styles.activePage : ''}`}
+                  onClick={() => handlePageSelect('about')}
+                >
+                  About Us
+                </button>
+                <button 
                   className={`${styles.pageItem} ${selectedPage === 'faq' ? styles.activePage : ''}`}
                   onClick={() => handlePageSelect('faq')}
                 >
@@ -236,6 +218,7 @@ const Content: React.FC = () => {
                 {currentPage ? currentPage.title : (
                   selectedPage === 'terms' ? 'Terms & Conditions' : 
                   selectedPage === 'privacy' ? 'Privacy Policy' : 
+                  selectedPage === 'about' ? 'About Us' :
                   'FAQ - Frequently Asked Questions'
                 )}
               </h2>
@@ -268,13 +251,46 @@ const Content: React.FC = () => {
                 </div>
               ) : isEditing ? (
                 <div className={styles.wysiwygContainer}>
-                  <MDEditor
-                    value={currentContent || ''}
-                    onChange={(val) => handleContentChange(val || '')}
-                    preview="edit"
-                    hideToolbar={false}
-                    data-color-mode="light"
-                    className={styles.mdEditor}
+                  <Editor
+                    key={`editor-${selectedPage}`}
+                    apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+                    onInit={(_evt, editor) => editorRef.current = editor}
+                    initialValue={currentContent || ''}
+                    onEditorChange={handleEditorChange}
+                    textareaName="content-editor"
+                    init={{
+                      height: 500,
+                      menubar: true,
+                      plugins: [
+                        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                        'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                      ],
+                      toolbar: 'undo redo | blocks | ' +
+                        'bold italic forecolor backcolor | alignleft aligncenter ' +
+                        'alignright alignjustify | bullist numlist outdent indent | ' +
+                        'link image table | removeformat | code | help',
+                      content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; }',
+                      skin: 'oxide',
+                      content_css: 'default',
+                      branding: false,
+                      promotion: false,
+                      resize: true,
+                      statusbar: true,
+                      elementpath: true,
+                      setup: (editor: any) => {
+                        editor.on('init', () => {
+                          // Hide the source textarea when editor is ready
+                          const container = editor.getContainer();
+                          if (container && container.previousSibling) {
+                            const textarea = container.previousSibling as HTMLElement;
+                            if (textarea.tagName === 'TEXTAREA') {
+                              textarea.style.display = 'none';
+                            }
+                          }
+                        });
+                      }
+                    }}
                   />
                 </div>
               ) : (

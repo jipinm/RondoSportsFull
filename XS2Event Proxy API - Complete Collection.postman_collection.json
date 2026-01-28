@@ -1,0 +1,2037 @@
+{
+  "info": {
+    "_postman_id": "389a8d13-05ae-4285-aa92-05629e194a90",
+    "name": "XS2Event Proxy API - Complete Collection",
+    "description": "Comprehensive Postman collection for XS2Event Proxy API covering all endpoints and parameters",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "4183789"
+  },
+  "item": [
+    {
+      "name": "Root & Documentation",
+      "item": [
+        {
+          "name": "API Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Get API service information and available endpoints"
+          },
+          "response": []
+        },
+        {
+          "name": "OpenAPI Specification",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/openapi.json",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "openapi.json"
+              ]
+            },
+            "description": "Get OpenAPI specification for the API"
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/healthz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "healthz"
+              ]
+            },
+            "description": "Basic health check endpoint for load balancers"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sports",
+      "item": [
+        {
+          "name": "List All Sports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/sports",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "sports"
+              ]
+            },
+            "description": "List all supported sports types"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tournaments",
+      "item": [
+        {
+          "name": "List Tournaments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/tournaments?sport_type=soccer&tournament_type=league&region=GBR&date_start=2024-01-01&date_stop=2024-12-31&season=23/24&page_size=50&page=1&sorting=name",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "tournaments"
+              ],
+              "query": [
+                {
+                  "key": "sport_type",
+                  "value": "soccer",
+                  "description": "Sport type filter"
+                },
+                {
+                  "key": "tournament_type",
+                  "value": "league",
+                  "description": "Tournament type (cup, league, oneoff)"
+                },
+                {
+                  "key": "region",
+                  "value": "GBR",
+                  "description": "ISO country code"
+                },
+                {
+                  "key": "date_start",
+                  "value": "2024-01-01",
+                  "description": "Start date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "date_stop",
+                  "value": "2024-12-31",
+                  "description": "Stop date (YYYY-MM-DD)"
+                },
+                {
+                  "key": "season",
+                  "value": "23/24",
+                  "description": "Season"
+                },
+                {
+                  "key": "page_size",
+                  "value": "50",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "sorting",
+                  "value": "name",
+                  "description": "Sorting type"
+                }
+              ]
+            },
+            "description": "List tournaments with comprehensive filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "List Tournaments by Sport Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/tournaments/formula1?region=WORLD&season=2023&tournament_type=oneoff",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "tournaments",
+                "formula1"
+              ],
+              "query": [
+                {
+                  "key": "region",
+                  "value": "WORLD",
+                  "description": "Region filter"
+                },
+                {
+                  "key": "season",
+                  "value": "2023",
+                  "description": "Season filter"
+                },
+                {
+                  "key": "tournament_type",
+                  "value": "oneoff",
+                  "description": "Tournament type"
+                }
+              ]
+            },
+            "description": "List tournaments filtered by sport type in URL path"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Tournament by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/tournaments/{{tournament_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "tournaments",
+                "{{tournament_id}}"
+              ]
+            },
+            "description": "Get details for a specific tournament by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Tournament Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/tournament/{{tournament_id}}/events?season=25/26",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "tournament",
+                "{{tournament_id}}",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "season",
+                  "value": "25/26"
+                }
+              ]
+            },
+            "description": "Get all events for a specific tournament"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "List Teams",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/teams?sport_type=soccer&popular=true&club_logo=true&iso_country=GBR&tournament_id={{tournament_id}}&page_size=25",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "teams"
+              ],
+              "query": [
+                {
+                  "key": "sport_type",
+                  "value": "soccer",
+                  "description": "Sport type filter"
+                },
+                {
+                  "key": "popular",
+                  "value": "true",
+                  "description": "Show popular teams"
+                },
+                {
+                  "key": "club_logo",
+                  "value": "true",
+                  "description": "Teams with club logo"
+                },
+                {
+                  "key": "iso_country",
+                  "value": "GBR",
+                  "description": "Country filter (ISO 3166-1 alpha-3)"
+                },
+                {
+                  "key": "tournament_id",
+                  "value": "{{tournament_id}}",
+                  "description": "Tournament filter"
+                },
+                {
+                  "key": "page_size",
+                  "value": "25",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "List teams with comprehensive filtering options"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Team by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/teams/{{team_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "teams",
+                "{{team_id}}"
+              ]
+            },
+            "description": "Get details for a specific team by ID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "List Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/events?sport_type=soccer&tournament_id={{tournament_id}}&event_status=notstarted&date_start=2024-01-01&date_stop=2024-12-31&city=London&country=GBR&popular_events=true&tickets_available=gt:10&page_size=25",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "sport_type",
+                  "value": "soccer",
+                  "description": "Sport type filter"
+                },
+                {
+                  "key": "tournament_id",
+                  "value": "{{tournament_id}}",
+                  "description": "Tournament filter"
+                },
+                {
+                  "key": "event_status",
+                  "value": "notstarted",
+                  "description": "Event status (cancelled, closed, notstarted, nosale, postponed, soldout)"
+                },
+                {
+                  "key": "date_start",
+                  "value": "2024-01-01",
+                  "description": "Start date filter"
+                },
+                {
+                  "key": "date_stop",
+                  "value": "2024-12-31",
+                  "description": "Stop date filter"
+                },
+                {
+                  "key": "city",
+                  "value": "London",
+                  "description": "City filter"
+                },
+                {
+                  "key": "country",
+                  "value": "GBR",
+                  "description": "Country filter (ISO 3)"
+                },
+                {
+                  "key": "popular_events",
+                  "value": "true",
+                  "description": "Show popular events"
+                },
+                {
+                  "key": "tickets_available",
+                  "value": "gt:10",
+                  "description": "Tickets available filter"
+                },
+                {
+                  "key": "page_size",
+                  "value": "25",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "List events with comprehensive filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/events/{{event_id}}?accept_language=en",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "events",
+                "{{event_id}}"
+              ],
+              "query": [
+                {
+                  "key": "accept_language",
+                  "value": "en",
+                  "description": "Localization language"
+                }
+              ]
+            },
+            "description": "Get details for a specific event by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event Guest Data Requirements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/events/{{event_id}}/guestdata?country_hint=NLD",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "events",
+                "{{event_id}}",
+                "guestdata"
+              ],
+              "query": [
+                {
+                  "key": "country_hint",
+                  "value": "NLD",
+                  "description": "Country hint for guest data requirements"
+                }
+              ]
+            },
+            "description": "Get guest data requirements for a specific event"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Venues",
+      "item": [
+        {
+          "name": "List Venues",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/venues?country=GBR&venue_type=stadium&popular=true&city=Liverpool&sorting=name&page_size=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "venues"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "GBR",
+                  "description": "Country filter (ISO format)"
+                },
+                {
+                  "key": "venue_type",
+                  "value": "stadium",
+                  "description": "Venue type (racetrack, stadium, other)"
+                },
+                {
+                  "key": "popular",
+                  "value": "true",
+                  "description": "Show popular venues"
+                },
+                {
+                  "key": "city",
+                  "value": "Liverpool",
+                  "description": "City filter"
+                },
+                {
+                  "key": "sorting",
+                  "value": "name",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "List venues with filtering options"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Venue by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/venues/{{venue_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "venues",
+                "{{venue_id}}"
+              ]
+            },
+            "description": "Get details for a specific venue by ID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/categories?venue_id={{venue_id}}&event_id={{event_id}}&sport_type=soccer&country=NL&on_svg=true&sorting=category_name&page_size=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "venue_id",
+                  "value": "{{venue_id}}",
+                  "description": "Venue filter"
+                },
+                {
+                  "key": "event_id",
+                  "value": "{{event_id}}",
+                  "description": "Event filter"
+                },
+                {
+                  "key": "sport_type",
+                  "value": "soccer",
+                  "description": "Sport type filter"
+                },
+                {
+                  "key": "country",
+                  "value": "NL",
+                  "description": "Country filter"
+                },
+                {
+                  "key": "on_svg",
+                  "value": "true",
+                  "description": "Available on SVG"
+                },
+                {
+                  "key": "sorting",
+                  "value": "category_name",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "List categories with filtering options"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/categories/{{category_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "categories",
+                "{{category_id}}"
+              ]
+            },
+            "description": "Get details for a specific category by ID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Countries",
+      "item": [
+        {
+          "name": "List Countries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/countries?sorting=country&page_size=20&page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "countries"
+              ],
+              "query": [
+                {
+                  "key": "sorting",
+                  "value": "country",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                }
+              ]
+            },
+            "description": "List countries in ISO-3 format"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cities",
+      "item": [
+        {
+          "name": "List Cities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/cities?country=NLD&event_startdate=2024-01-01&query=Amsterdam&sorting=city&page_size=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "cities"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "NLD",
+                  "description": "Country filter (ISO-3)"
+                },
+                {
+                  "key": "event_startdate",
+                  "value": "2024-01-01",
+                  "description": "Events starting on/after this date"
+                },
+                {
+                  "key": "query",
+                  "value": "Amsterdam",
+                  "description": "City name search"
+                },
+                {
+                  "key": "sorting",
+                  "value": "city",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "List cities with filtering options"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "List Tickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/tickets?event_id={{event_id}}&category_id={{category_id}}&ticket_status=available&stock_unlimited=true&sellable=true&sales_price_from=50&sales_price_to=200&sort=sales_price&order=asc&page=1&per_page=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "tickets"
+              ],
+              "query": [
+                {
+                  "key": "event_id",
+                  "value": "{{event_id}}",
+                  "description": "Event filter"
+                },
+                {
+                  "key": "category_id",
+                  "value": "{{category_id}}",
+                  "description": "Category filter"
+                },
+                {
+                  "key": "ticket_status",
+                  "value": "available",
+                  "description": "Ticket status"
+                },
+                {
+                  "key": "stock_unlimited",
+                  "value": "true",
+                  "description": "Unlimited stock filter"
+                },
+                {
+                  "key": "sellable",
+                  "value": "true",
+                  "description": "Sellable tickets only"
+                },
+                {
+                  "key": "sales_price_from",
+                  "value": "50",
+                  "description": "Minimum price"
+                },
+                {
+                  "key": "sales_price_to",
+                  "value": "200",
+                  "description": "Maximum price"
+                },
+                {
+                  "key": "sort",
+                  "value": "sales_price",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "order",
+                  "value": "asc",
+                  "description": "Sort order"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "per_page",
+                  "value": "50",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "List tickets with comprehensive filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ticket by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/tickets/{{ticket_id}}?show_deleted=false&sort=title&order=asc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "tickets",
+                "{{ticket_id}}"
+              ],
+              "query": [
+                {
+                  "key": "show_deleted",
+                  "value": "false",
+                  "description": "Include deleted tickets"
+                },
+                {
+                  "key": "sort",
+                  "value": "title",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "order",
+                  "value": "asc",
+                  "description": "Sort order"
+                }
+              ]
+            },
+            "description": "Get details for a specific ticket by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ticket Guest Data Requirements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/tickets/{{ticket_id}}/guestdata?country_hint=US&sort=required&order=desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "tickets",
+                "{{ticket_id}}",
+                "guestdata"
+              ],
+              "query": [
+                {
+                  "key": "country_hint",
+                  "value": "US",
+                  "description": "Country hint"
+                },
+                {
+                  "key": "sort",
+                  "value": "required",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "description": "Sort order"
+                }
+              ]
+            },
+            "description": "Get guest data requirements for a specific ticket"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        {
+          "name": "List Reservations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/reservations?status=active&limit=20&sort=created&sort_direction=desc&event_id={{event_id}}&distributor_id=dist123&on_behalf=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Reservation status"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "sort",
+                  "value": "created",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "sort_direction",
+                  "value": "desc",
+                  "description": "Sort direction"
+                },
+                {
+                  "key": "event_id",
+                  "value": "{{event_id}}",
+                  "description": "Event filter"
+                },
+                {
+                  "key": "distributor_id",
+                  "value": "dist123",
+                  "description": "Distributor filter"
+                },
+                {
+                  "key": "on_behalf",
+                  "value": "false",
+                  "description": "On behalf filter"
+                }
+              ]
+            },
+            "description": "List reservations with comprehensive filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Reservation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"currency_code\": \"EUR\",\n      \"net_rate\": 25.00,\n      \"quantity\": 2,\n      \"ticket_id\": \"{{ticket_id}}\"\n    }\n  ],\n  \"booking_email\": \"customer@example.com\",\n  \"notify\": true,\n  \"notes\": \"Special requirements\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/reservations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations"
+              ]
+            },
+            "description": "Create a new reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reservation by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/reservations/{{reservation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations",
+                "{{reservation_id}}"
+              ]
+            },
+            "description": "Get details for a specific reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Reservation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"currency_code\": \"EUR\",\n      \"net_rate\": 30.00,\n      \"quantity\": 3,\n      \"ticket_id\": \"{{ticket_id}}\"\n    }\n  ],\n  \"local_currency\": \"USD\",\n  \"valid_until\": \"2024-12-31T23:59:59Z\",\n  \"notify_me\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/reservations/{{reservation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations",
+                "{{reservation_id}}"
+              ]
+            },
+            "description": "Update an existing reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Reservation",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/reservations/{{reservation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations",
+                "{{reservation_id}}"
+              ]
+            },
+            "description": "Delete a reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Patch Reservation",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notify_me\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/reservations/{{reservation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations",
+                "{{reservation_id}}"
+              ]
+            },
+            "description": "Partially update a reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reservation Guest Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/reservations/{{reservation_id}}/guestdata?sort=first_name&sort_direction=asc&include_conditions=true&country_hint=NLD",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations",
+                "{{reservation_id}}",
+                "guestdata"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "first_name",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "sort_direction",
+                  "value": "asc",
+                  "description": "Sort direction"
+                },
+                {
+                  "key": "include_conditions",
+                  "value": "true",
+                  "description": "Include conditions"
+                },
+                {
+                  "key": "country_hint",
+                  "value": "NLD",
+                  "description": "Country hint"
+                }
+              ]
+            },
+            "description": "Get guest data for a reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Reservation Guests",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guests\": [\n    {\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"passport_number\": \"ABC123456\",\n      \"contact_email\": \"user@example.com\",\n      \"contact_phone\": \"+31123456789\",\n      \"lead_guest\": true,\n      \"date_of_birth\": \"1991-01-30\",\n      \"gender\": \"male\",\n      \"country_of_residence\": \"NLD\",\n      \"street_name\": \"Hereweg 95\",\n      \"city\": \"Groningen\",\n      \"zip\": \"9721AA\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/reservations/{{reservation_id}}/guests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations",
+                "{{reservation_id}}",
+                "guests"
+              ]
+            },
+            "description": "Add guests to a reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Guest Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/reservations/{{reservation_id}}/guestdata/{{guest_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations",
+                "{{reservation_id}}",
+                "guestdata",
+                "{{guest_id}}"
+              ]
+            },
+            "description": "Get single guest data from a reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Single Guest Data",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Updated\",\n  \"passport_number\": \"ABC123456\",\n  \"contact_email\": \"john.updated@example.com\",\n  \"contact_phone\": \"+31123456789\",\n  \"lead_guest\": true,\n  \"date_of_birth\": \"1991-01-30\",\n  \"gender\": \"male\",\n  \"country_of_residence\": \"NLD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/reservations/{{reservation_id}}/guestdata/{{guest_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "reservations",
+                "{{reservation_id}}",
+                "guestdata",
+                "{{guest_id}}"
+              ]
+            },
+            "description": "Update single guest data in a reservation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "List Bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/bookings?booking_email=user@example.com&compare_mode=AND&page_size=20&reservation_id={{reservation_id}}&event_id={{event_id}}&mass_booking=false",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookings"
+              ],
+              "query": [
+                {
+                  "key": "booking_email",
+                  "value": "user@example.com",
+                  "description": "Customer email filter"
+                },
+                {
+                  "key": "compare_mode",
+                  "value": "AND",
+                  "description": "Filter combination mode"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "reservation_id",
+                  "value": "{{reservation_id}}",
+                  "description": "Reservation filter"
+                },
+                {
+                  "key": "event_id",
+                  "value": "{{event_id}}",
+                  "description": "Event filter"
+                },
+                {
+                  "key": "mass_booking",
+                  "value": "false",
+                  "description": "Mass booking filter"
+                }
+              ]
+            },
+            "description": "List bookings with comprehensive filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reservation_id\": \"{{reservation_id}}\",\n  \"booking_email\": \"myemail@example.com\",\n  \"invoice_reference\": \"invoice 0001\",\n  \"booking_reference\": \"booking 0001\",\n  \"payment_method\": \"invoice\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookings"
+              ]
+            },
+            "description": "Create a new booking from a reservation"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/bookings/{{booking_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookings",
+                "{{booking_id}}"
+              ]
+            },
+            "description": "Get details for a specific booking"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bookings by Reservation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/bookings/reservation/{{reservation_id}}?sorting=created_desc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookings",
+                "reservation",
+                "{{reservation_id}}"
+              ],
+              "query": [
+                {
+                  "key": "sorting",
+                  "value": "created_desc",
+                  "description": "Sort criteria"
+                }
+              ]
+            },
+            "description": "Get all bookings for a specific reservation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Booking Orders",
+      "item": [
+        {
+          "name": "List Booking Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/bookingorders/list?guestdata_status=completed&api_booking=true&sport_type=soccer&page_size=20&event_startdate=2024-01-01&compare_mode=AND",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookingorders",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "guestdata_status",
+                  "value": "completed",
+                  "description": "Guest data status"
+                },
+                {
+                  "key": "api_booking",
+                  "value": "true",
+                  "description": "API booking filter"
+                },
+                {
+                  "key": "sport_type",
+                  "value": "soccer",
+                  "description": "Sport type filter"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "event_startdate",
+                  "value": "2024-01-01",
+                  "description": "Event start date filter"
+                },
+                {
+                  "key": "compare_mode",
+                  "value": "AND",
+                  "description": "Filter combination mode"
+                }
+              ]
+            },
+            "description": "List booking orders with advanced filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/bookingorders/{{booking_order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookingorders",
+                "{{booking_order_id}}"
+              ]
+            },
+            "description": "Get details for a specific booking order"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking Order Guest Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/bookingorders/{{booking_order_id}}/guestdata?include_conditions=true&country_hint=NLD&sorting=first_name",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookingorders",
+                "{{booking_order_id}}",
+                "guestdata"
+              ],
+              "query": [
+                {
+                  "key": "include_conditions",
+                  "value": "true",
+                  "description": "Include validation conditions"
+                },
+                {
+                  "key": "country_hint",
+                  "value": "NLD",
+                  "description": "Country hint for localization"
+                },
+                {
+                  "key": "sorting",
+                  "value": "first_name",
+                  "description": "Sort criteria"
+                }
+              ]
+            },
+            "description": "Get guest data for a booking order"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Booking Order Guest Data",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"ticket_id\": \"{{ticket_id}}\",\n      \"guests\": [\n        {\n          \"first_name\": \"John\",\n          \"last_name\": \"Doe\",\n          \"passport_number\": \"ABC123456\",\n          \"contact_email\": \"user@example.com\",\n          \"contact_phone\": \"+31123456789\",\n          \"lead_guest\": true,\n          \"date_of_birth\": \"1991-01-30\",\n          \"gender\": \"male\",\n          \"country_of_residence\": \"NLD\",\n          \"street_name\": \"Hereweg 95\",\n          \"city\": \"Groningen\",\n          \"zip\": \"9721AA\"\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/bookingorders/{{booking_order_id}}/guestdata",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookingorders",
+                "{{booking_order_id}}",
+                "guestdata"
+              ]
+            },
+            "description": "Update guest data for a booking order"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Guest Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/bookingorders/{{booking_order_id}}/guestdata/{{guest_id}}?include_conditions=false&country_hint=NLD",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookingorders",
+                "{{booking_order_id}}",
+                "guestdata",
+                "{{guest_id}}"
+              ],
+              "query": [
+                {
+                  "key": "include_conditions",
+                  "value": "false",
+                  "description": "Include validation conditions"
+                },
+                {
+                  "key": "country_hint",
+                  "value": "NLD",
+                  "description": "Country hint"
+                }
+              ]
+            },
+            "description": "Get single guest data from a booking order"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Single Guest Data",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Updated\",\n  \"passport_number\": \"ABC123456\",\n  \"contact_email\": \"john.updated@example.com\",\n  \"contact_phone\": \"+31123456789\",\n  \"lead_guest\": true,\n  \"date_of_birth\": \"1991-01-30\",\n  \"gender\": \"male\",\n  \"country_of_residence\": \"NLD\",\n  \"street_name\": \"Updated Street 123\",\n  \"city\": \"Amsterdam\",\n  \"zip\": \"1000AA\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/bookingorders/{{booking_order_id}}/guestdata/{{guest_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "bookingorders",
+                "{{booking_order_id}}",
+                "guestdata",
+                "{{guest_id}}"
+              ]
+            },
+            "description": "Update single guest data in a booking order"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ETickets",
+      "item": [
+        {
+          "name": "List ETickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/etickets?booking_id={{booking_id}}&format=pdf&limit=50&status=active&created_from=2024-01-01&booking_order_id={{booking_order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "etickets"
+              ],
+              "query": [
+                {
+                  "key": "booking_id",
+                  "value": "{{booking_id}}",
+                  "description": "Booking filter"
+                },
+                {
+                  "key": "format",
+                  "value": "pdf",
+                  "description": "Format filter (pdf, pkpass, all)"
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "E-ticket status"
+                },
+                {
+                  "key": "created_from",
+                  "value": "2024-01-01",
+                  "description": "Created from date"
+                },
+                {
+                  "key": "booking_order_id",
+                  "value": "{{booking_order_id}}",
+                  "description": "Booking order filter"
+                }
+              ]
+            },
+            "description": "List e-tickets with comprehensive filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Get ETickets Zip Download URL",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/etickets/download/zip/{{booking_order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "etickets",
+                "download",
+                "zip",
+                "{{booking_order_id}}"
+              ]
+            },
+            "description": "Get secured CDN link for zip download of all e-tickets"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Single ETicket PDF",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/etickets/download/{{booking_order_id}}/{{order_item_id}}/url/encoded-ticket-url",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "etickets",
+                "download",
+                "{{booking_order_id}}",
+                "{{order_item_id}}",
+                "url",
+                "encoded-ticket-url"
+              ]
+            },
+            "description": "Download single e-ticket PDF with streaming"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Unified Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/search?q=soccer&type=all&limit=20&sort=relevance&page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "soccer",
+                  "description": "Search query (required)"
+                },
+                {
+                  "key": "type",
+                  "value": "all",
+                  "description": "Type filter (sport, tournament, event, all)"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page (1-100)"
+                },
+                {
+                  "key": "sort",
+                  "value": "relevance",
+                  "description": "Sort order (relevance, date_asc, date_desc)"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                }
+              ]
+            },
+            "description": "Search across sports, tournaments, and events"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Events Only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/search?q=Liverpool&type=event&sort=date_asc&limit=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Liverpool",
+                  "description": "Search query"
+                },
+                {
+                  "key": "type",
+                  "value": "event",
+                  "description": "Search events only"
+                },
+                {
+                  "key": "sort",
+                  "value": "date_asc",
+                  "description": "Sort by date ascending"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Limit results"
+                }
+              ]
+            },
+            "description": "Search for events only with date sorting"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Status & Health",
+      "item": [
+        {
+          "name": "Get API Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Api-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "status"
+              ]
+            },
+            "description": "Get comprehensive API status and health information"
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/healthz",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "healthz"
+              ]
+            },
+            "description": "Basic health check endpoint for load balancers"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "your_api_key_here",
+      "type": "string"
+    },
+    {
+      "key": "tournament_id",
+      "value": "8a8bd5e3d98347e68cbe50d31953fcbb_trn",
+      "type": "string"
+    },
+    {
+      "key": "event_id",
+      "value": "5d3b8b1c916f4a158dc736dc8ef7c97a_evt",
+      "type": "string"
+    },
+    {
+      "key": "venue_id",
+      "value": "7552e5ca74124757be3f4b0dc1687aa9_vnx",
+      "type": "string"
+    },
+    {
+      "key": "category_id",
+      "value": "7df2fbc7f06e4985be92fb263b1f9c63_ctg",
+      "type": "string"
+    },
+    {
+      "key": "ticket_id",
+      "value": "a5cf8e7b39c14aeba4de30a8f67b9e23_tck",
+      "type": "string"
+    },
+    {
+      "key": "team_id",
+      "value": "7841dbb553b74476b9236a92f56f27e9_tms",
+      "type": "string"
+    },
+    {
+      "key": "reservation_id",
+      "value": "5e3ae0658c9e405a9a62367293b8f56b_rsr",
+      "type": "string"
+    },
+    {
+      "key": "booking_id",
+      "value": "5867e9941e924a7bb169e244b26589ba_bkn",
+      "type": "string"
+    },
+    {
+      "key": "booking_order_id",
+      "value": "3fa6eb7f123a4f5ab2c9d8e7a6b7c9d0_bor",
+      "type": "string"
+    },
+    {
+      "key": "guest_id",
+      "value": "guest-123",
+      "type": "string"
+    },
+    {
+      "key": "order_item_id",
+      "value": "item-123",
+      "type": "string"
+    }
+  ]
+}

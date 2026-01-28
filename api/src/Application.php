@@ -48,12 +48,15 @@ use XS2EventProxy\Controller\CustomerETicketController;
 use XS2EventProxy\Controller\CustomerCancellationController;
 use XS2EventProxy\Controller\AdminCancellationController;
 use XS2EventProxy\Controller\PaymentController;
+use XS2EventProxy\Controller\PublicTicketEnhancementsController;
 use XS2EventProxy\Controller\LocalBookingController;
 use XS2EventProxy\Controller\CountryController;
 use XS2EventProxy\Controller\StaticPagesController;
 use XS2EventProxy\Controller\BannersController;
 use XS2EventProxy\Controller\DashboardController;
 use XS2EventProxy\Controller\ReportsController;
+use XS2EventProxy\Controller\TicketMarkupController;
+use XS2EventProxy\Controller\HospitalityController;
 use XS2EventProxy\Middleware\CustomerAuthMiddleware;
 use XS2EventProxy\Service\DatabaseService;
 use XS2EventProxy\Service\JWTService;
@@ -76,6 +79,8 @@ use XS2EventProxy\Repository\CancellationRequestRepository;
 use XS2EventProxy\Repository\TeamCredentialsRepository;
 use XS2EventProxy\Repository\StaticPagesRepository;
 use XS2EventProxy\Repository\BannersRepository;
+use XS2EventProxy\Repository\TicketMarkupRepository;
+use XS2EventProxy\Repository\HospitalityRepository;
 use XS2EventProxy\Service\TeamCredentialsService;
 use XS2EventProxy\Service\BannersService;
 use XS2EventProxy\Service\DashboardService;
@@ -134,14 +139,22 @@ class Application
         // Add routing
         $this->setupRoutes();
 
-        // Add error middleware
+        // Add logging middleware (executes last in the chain)
+        $this->app->add(new LoggingMiddleware($this->logger));
+
+        // Add error middleware with custom error handler
         $errorMiddleware = $this->app->addErrorMiddleware(
             $this->config->isDebug(),
             true,
             true
         );
+        
+        // Set custom error handler to ensure CORS headers are included
+        $errorHandler = $errorMiddleware->getDefaultErrorHandler();
+        $errorHandler->forceContentType('application/json');
 
-        // Add CORS middleware (configured)
+        // Add CORS middleware (executes first in the chain - MUST be last in code)
+        // This ensures CORS headers are added to all responses, including errors
         $this->app->add(new CorsMiddleware(
             $this->logger,
             $this->config->getCorsAllowedOrigins(),
@@ -150,9 +163,6 @@ class Application
             $this->config->isCorsSupportsCredentials(),
             $this->config->getCorsMaxAge()
         ));
-
-        // Add logging middleware
-        $this->app->add(new LoggingMiddleware($this->logger));
     }
     
     /**
@@ -510,6 +520,37 @@ class Application
             $group->put('/banners/{id}', [$bannersController, 'updateBanner']);
             $group->delete('/banners/{id}', [$bannersController, 'deleteBanner']);
             $group->post('/banners/{id}/upload', [$bannersController, 'uploadBannerImage']);
+
+            // Ticket Markup Management (Admin)
+            $markupRepository = new TicketMarkupRepository($this->database);
+            $markupController = new TicketMarkupController($markupRepository, $this->logger);
+            $group->post('/ticket-markups/batch', [$markupController, 'batchUpsertMarkups']);
+            $group->get('/ticket-markups', [$markupController, 'getAllMarkups']);
+            $group->get('/ticket-markups/event/{eventId}', [$markupController, 'getMarkupsByEvent']);
+            $group->get('/ticket-markups/ticket/{ticketId}', [$markupController, 'getMarkupByTicket']);
+            $group->get('/ticket-markups/{id:[0-9]+}', [$markupController, 'getMarkupById']);
+            $group->put('/ticket-markups/{id:[0-9]+}', [$markupController, 'updateMarkup']);
+            $group->delete('/ticket-markups/{id:[0-9]+}', [$markupController, 'deleteMarkupById']);
+            $group->delete('/ticket-markups/ticket/{ticketId}', [$markupController, 'deleteMarkupByTicket']);
+            $group->delete('/ticket-markups/event/{eventId}', [$markupController, 'deleteMarkupsByEvent']);
+
+            // Hospitality Management (Admin)
+            $hospitalityRepository = new HospitalityRepository($this->database);
+            $hospitalityController = new HospitalityController($hospitalityRepository, $this->logger);
+            // CRUD for hospitality services
+            $group->get('/hospitalities/stats', [$hospitalityController, 'getHospitalityStats']);
+            $group->get('/hospitalities', [$hospitalityController, 'getAllHospitalities']);
+            $group->get('/hospitalities/{id:[0-9]+}', [$hospitalityController, 'getHospitalityById']);
+            $group->post('/hospitalities', [$hospitalityController, 'createHospitality']);
+            $group->put('/hospitalities/{id:[0-9]+}', [$hospitalityController, 'updateHospitality']);
+            $group->delete('/hospitalities/{id:[0-9]+}', [$hospitalityController, 'deleteHospitality']);
+            // Ticket-Hospitality assignments
+            $group->get('/hospitalities/event/{eventId}', [$hospitalityController, 'getEventHospitalities']);
+            $group->get('/hospitalities/ticket/{eventId}/{ticketId}', [$hospitalityController, 'getTicketHospitalities']);
+            $group->post('/hospitalities/ticket/{eventId}/{ticketId}', [$hospitalityController, 'assignTicketHospitalities']);
+            $group->post('/hospitalities/batch', [$hospitalityController, 'batchAssignHospitalities']);
+            $group->delete('/hospitalities/ticket/{eventId}/{ticketId}', [$hospitalityController, 'removeTicketHospitalities']);
+            $group->delete('/hospitalities/event/{eventId}', [$hospitalityController, 'removeEventHospitalities']);
             
             // Cancellation Management (Admin) - using controllers from outer scope
             $group->get('/cancellation-requests/stats', [$adminCancellationController, 'getStatistics']);
@@ -765,6 +806,20 @@ class Application
         $this->app->get('/v1/tickets', [$ticketsController, 'listTickets']);
         $this->app->get('/v1/tickets/{id:[a-zA-Z0-9_-]+}', [$ticketsController, 'getTicket']);
         $this->app->get('/v1/tickets/{id:[a-zA-Z0-9_-]+}/guestdata', [$ticketsController, 'getTicketGuestDataRequirements']);
+        
+        // Public Ticket Enhancements (Markup Pricing & Hospitality)
+        $markupRepository = new TicketMarkupRepository($this->database);
+        $hospitalityRepository = new HospitalityRepository($this->database);
+        $publicEnhancementsController = new PublicTicketEnhancementsController(
+            $this->logger,
+            $markupRepository,
+            $hospitalityRepository
+        );
+        $this->app->get('/v1/events/{eventId}/markups', [$publicEnhancementsController, 'getEventMarkups']);
+        $this->app->get('/v1/tickets/{ticketId}/markup', [$publicEnhancementsController, 'getTicketMarkup']);
+        $this->app->get('/v1/events/{eventId}/hospitalities', [$publicEnhancementsController, 'getEventHospitalities']);
+        $this->app->get('/v1/tickets/{ticketId}/hospitalities', [$publicEnhancementsController, 'getTicketHospitalities']);
+        $this->app->get('/v1/hospitalities', [$publicEnhancementsController, 'getActiveHospitalities']);
         
         // Reservations endpoints
         $this->app->get('/v1/reservations', [$reservationsController, 'getReservations']);

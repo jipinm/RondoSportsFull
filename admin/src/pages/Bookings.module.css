@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-6, 1.5rem);
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .pageTitle {
@@ -111,27 +113,58 @@
   background: var(--background-primary, white);
   border-radius: var(--radius-md, 8px);
   box-shadow: var(--shadow-md);
-  overflow-x: auto;
+  overflow: hidden;
+  width: 100%;
 }
 
 .bookingsTable {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .bookingsTable th {
   text-align: left;
-  padding: var(--spacing-4, 1rem);
+  padding: 0.75rem 0.5rem;
   border-bottom: 1px solid var(--color-neutral-200, #eee);
   color: var(--color-text-secondary, #555);
   font-weight: var(--font-weight-semibold, 600);
-  font-size: var(--font-size-sm, 0.95rem);
+  font-size: 0.8rem;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
+/* Column width distribution */
+.bookingsTable th:nth-child(1),
+.bookingsTable td:nth-child(1) { width: 8%; } /* Booking Ref */
+.bookingsTable th:nth-child(2),
+.bookingsTable td:nth-child(2) { width: 15%; } /* Event Name */
+.bookingsTable th:nth-child(3),
+.bookingsTable td:nth-child(3) { width: 10%; } /* Customer */
+.bookingsTable th:nth-child(4),
+.bookingsTable td:nth-child(4) { width: 11%; } /* Amount */
+.bookingsTable th:nth-child(5),
+.bookingsTable td:nth-child(5) { width: 9%; } /* Booking Status */
+.bookingsTable th:nth-child(6),
+.bookingsTable td:nth-child(6) { width: 9%; } /* Payment Status */
+.bookingsTable th:nth-child(7),
+.bookingsTable td:nth-child(7) { width: 9%; } /* Cancellation Request */
+.bookingsTable th:nth-child(8),
+.bookingsTable td:nth-child(8) { width: 9%; } /* XS2Event ID */
+.bookingsTable th:nth-child(9),
+.bookingsTable td:nth-child(9) { width: 8%; } /* Booking Date */
+.bookingsTable th:nth-child(10),
+.bookingsTable td:nth-child(10) { width: 12%; } /* Actions */
+
 .bookingsTable td {
-  padding: 1rem;
+  padding: 0.75rem 0.5rem;
   border-bottom: 1px solid #eee;
   vertical-align: middle;
+  font-size: 0.85rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .bookingsTable tr:last-child td {
@@ -223,7 +256,7 @@
 
 .actionButtons {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
   flex-wrap: wrap;
 }
 
@@ -232,10 +265,10 @@
 .refundButton {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
+  gap: 0.2rem;
+  padding: 0.25rem 0.4rem;
   border-radius: 4px;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 500;
   cursor: pointer;
   border: none;
@@ -484,11 +517,28 @@
   align-items: center;
   justify-content: space-between;
   margin-top: 1rem;
+  padding: 1rem;
+  background: var(--background-primary, white);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.paginationInfo {
+  color: var(--color-text-secondary, #666);
+  font-size: 0.875rem;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .pageNumbers {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .paginationButton {
@@ -619,6 +669,53 @@
 .bookingInfoValue {
   font-size: 1rem;
   font-weight: 500;
+}
+
+/* Hospitality list in booking details modal */
+.hospitalityList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.hospitalityItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd6fe;
+}
+
+.hospitalityName {
+  flex: 1;
+  font-weight: 500;
+  color: #7c3aed;
+  font-size: 0.9rem;
+}
+
+.hospitalityDetails {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.hospitalityPrice {
+  font-weight: 600;
+  color: #059669;
+  font-size: 0.95rem;
+}
+
+.hospitalityTotal {
+  text-align: right;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px dashed #d1d5db;
 }
 
 .downloadLink {
@@ -861,5 +958,41 @@
   .retryButton {
     margin-left: 0;
     margin-top: var(--spacing-2, 0.5rem);
+  }
+}
+
+/* Loading overlay for booking details */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+}
+
+.loadingOverlay p {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

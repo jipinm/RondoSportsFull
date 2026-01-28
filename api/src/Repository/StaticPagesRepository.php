@@ -37,9 +37,12 @@ class StaticPagesRepository
             $stmt = $pdo->prepare("
                 SELECT 
                     id, page_key, title, content, meta_title, meta_description, 
-                    meta_keywords, status, is_published, slug, created_by, updated_by,
+                    meta_keywords, 
+                    CASE WHEN status = 'published' THEN 'active' ELSE 'inactive' END as status, 
+                    CASE WHEN status = 'published' THEN 1 ELSE 0 END as is_published, 
+                    slug, last_edited_by as created_by, last_edited_by as updated_by,
                     created_at, updated_at
-                FROM static_pages 
+                FROM cms_pages 
                 ORDER BY page_key ASC
             ");
             
@@ -75,9 +78,12 @@ class StaticPagesRepository
             $stmt = $pdo->prepare("
                 SELECT 
                     id, page_key, title, content, meta_title, meta_description, 
-                    meta_keywords, status, is_published, slug, created_by, updated_by,
+                    meta_keywords, 
+                    CASE WHEN status = 'published' THEN 'active' ELSE 'inactive' END as status, 
+                    CASE WHEN status = 'published' THEN 1 ELSE 0 END as is_published, 
+                    slug, last_edited_by as created_by, last_edited_by as updated_by,
                     created_at, updated_at
-                FROM static_pages 
+                FROM cms_pages 
                 WHERE page_key = ?
             ");
             
@@ -121,9 +127,12 @@ class StaticPagesRepository
             $stmt = $pdo->prepare("
                 SELECT 
                     id, page_key, title, content, meta_title, meta_description, 
-                    meta_keywords, status, is_published, slug, created_by, updated_by,
+                    meta_keywords, 
+                    CASE WHEN status = 'published' THEN 'active' ELSE 'inactive' END as status, 
+                    CASE WHEN status = 'published' THEN 1 ELSE 0 END as is_published, 
+                    slug, last_edited_by as created_by, last_edited_by as updated_by,
                     created_at, updated_at
-                FROM static_pages 
+                FROM cms_pages 
                 WHERE id = ?
             ");
             
@@ -168,19 +177,38 @@ class StaticPagesRepository
             $pdo = $this->database->getConnection();
             
             // Build the update query dynamically based on provided data
-            $allowedFields = [
-                'title', 'content', 'meta_title', 'meta_description', 
-                'meta_keywords', 'status', 'is_published', 'slug'
+            // Map static_pages fields to cms_pages fields
+            $fieldMapping = [
+                'title' => 'title',
+                'content' => 'content',
+                'meta_title' => 'meta_title',
+                'meta_description' => 'meta_description',
+                'meta_keywords' => 'meta_keywords',
+                'slug' => 'slug',
+                'status' => 'status',
+                'is_published' => null // Will be handled via status field
             ];
             
             $updateFields = [];
             $values = [];
             
-            foreach ($allowedFields as $field) {
-                if (array_key_exists($field, $data)) {
-                    $updateFields[] = "$field = ?";
-                    $values[] = $data[$field];
+            foreach ($fieldMapping as $inputField => $dbField) {
+                if (array_key_exists($inputField, $data) && $dbField !== null) {
+                    // Handle status field mapping
+                    if ($inputField === 'status') {
+                        $updateFields[] = "status = ?";
+                        $values[] = ($data[$inputField] === 'active') ? 'published' : 'draft';
+                    } else {
+                        $updateFields[] = "$dbField = ?";
+                        $values[] = $data[$inputField];
+                    }
                 }
+            }
+            
+            // Handle is_published separately (maps to status)
+            if (array_key_exists('is_published', $data) && !array_key_exists('status', $data)) {
+                $updateFields[] = "status = ?";
+                $values[] = $data['is_published'] ? 'published' : 'draft';
             }
             
             if (empty($updateFields)) {
@@ -191,13 +219,13 @@ class StaticPagesRepository
                 return false;
             }
             
-            // Add updated_by and updated_at
-            $updateFields[] = "updated_by = ?";
+            // Add last_edited_by and updated_at
+            $updateFields[] = "last_edited_by = ?";
             $updateFields[] = "updated_at = CURRENT_TIMESTAMP";
             $values[] = $updatedBy;
             $values[] = $id; // For WHERE clause
             
-            $sql = "UPDATE static_pages SET " . implode(', ', $updateFields) . " WHERE id = ?";
+            $sql = "UPDATE cms_pages SET " . implode(', ', $updateFields) . " WHERE id = ?";
             
             $stmt = $pdo->prepare($sql);
             $result = $stmt->execute($values);
@@ -206,9 +234,23 @@ class StaticPagesRepository
                 $this->logger->info('Static page updated successfully', [
                     'id' => $id,
                     'updated_by' => $updatedBy,
-                    'updated_fields' => array_keys(array_intersect_key($data, array_flip($allowedFields)))
+                    'updated_fields' => array_keys($data)
                 ]);
                 return true;
+            }
+            
+            // Check if row exists but no changes were made (rowCount = 0)
+            if ($result) {
+                // Verify the row exists
+                $checkStmt = $pdo->prepare("SELECT id FROM cms_pages WHERE id = ?");
+                $checkStmt->execute([$id]);
+                if ($checkStmt->fetch()) {
+                    $this->logger->info('Static page update - no changes needed', [
+                        'id' => $id,
+                        'updated_by' => $updatedBy
+                    ]);
+                    return true;
+                }
             }
             
             $this->logger->warning('No rows were updated', [
@@ -247,24 +289,30 @@ class StaticPagesRepository
                 }
             }
             
+            // Map status from static_pages format to cms_pages format
+            $cmsStatus = 'published';
+            if (isset($data['status'])) {
+                $cmsStatus = ($data['status'] === 'active') ? 'published' : 'draft';
+            } elseif (isset($data['is_published'])) {
+                $cmsStatus = $data['is_published'] ? 'published' : 'draft';
+            }
+            
             $stmt = $pdo->prepare("
-                INSERT INTO static_pages 
-                (page_key, title, content, meta_title, meta_description, meta_keywords, 
-                 status, is_published, slug, created_by, updated_by, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                INSERT INTO cms_pages 
+                (page_key, title, slug, content, meta_title, meta_description, meta_keywords, 
+                 status, content_type, template, last_edited_by, published_at, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'rich_text', 'default', ?, NOW(), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             ");
             
             $result = $stmt->execute([
                 $data['page_key'],
                 $data['title'],
+                $data['slug'],
                 $data['content'],
                 $data['meta_title'] ?? null,
                 $data['meta_description'] ?? null,
                 $data['meta_keywords'] ?? null,
-                $data['status'] ?? 'active',
-                isset($data['is_published']) ? (bool)$data['is_published'] : true,
-                $data['slug'],
-                $createdBy,
+                $cmsStatus,
                 $createdBy
             ]);
             
@@ -305,7 +353,7 @@ class StaticPagesRepository
         try {
             $pdo = $this->database->getConnection();
             
-            $stmt = $pdo->prepare("DELETE FROM static_pages WHERE id = ?");
+            $stmt = $pdo->prepare("DELETE FROM cms_pages WHERE id = ?");
             $result = $stmt->execute([$id]);
             
             if ($result && $stmt->rowCount() > 0) {
@@ -344,8 +392,8 @@ class StaticPagesRepository
                 SELECT 
                     page_key, title, content, meta_title, meta_description, 
                     meta_keywords, slug, updated_at
-                FROM static_pages 
-                WHERE status = 'active' AND is_published = 1
+                FROM cms_pages 
+                WHERE status = 'published'
                 ORDER BY page_key ASC
             ");
             

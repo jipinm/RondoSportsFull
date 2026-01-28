@@ -17,6 +17,8 @@ import Settings from './pages/Settings';
 import RoleManagement from './pages/RoleManagement';
 import RolesManagement from './pages/RolesManagement';
 import TeamCredentials from './pages/TeamCredentials';
+import TicketMarkupManagement from './pages/TicketMarkupManagement';
+import HospitalityManagement from './pages/HospitalityManagement';
 import './App.css';
 
 function App() {
@@ -35,6 +37,8 @@ function App() {
                 <Route path="/admin-users" element={<AdminUsers />} />
                 <Route path="/customer-management" element={<CustomerManagement />} />
                 <Route path="/team-credentials" element={<TeamCredentials />} />
+                <Route path="/ticket-markup" element={<TicketMarkupManagement />} />
+                <Route path="/hospitality" element={<HospitalityManagement />} />
                 <Route path="/refunds" element={<Refunds />} />
                 <Route path="/cancellation-requests" element={<CancellationRequests />} />
                 <Route path="/content" element={<Content />} />

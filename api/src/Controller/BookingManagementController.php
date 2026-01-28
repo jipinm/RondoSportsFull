@@ -129,6 +129,10 @@ class BookingManagementController
                 return $this->errorResponse($response, 'Booking not found', null, 404);
             }
 
+            // Fetch hospitalities for this booking
+            $hospitalities = $this->bookingRepository->getBookingHospitalities($bookingId);
+            $booking['hospitalities'] = $hospitalities;
+
             // Sanitize booking data
             $booking = $this->validator->sanitizeBookingData($booking);
 

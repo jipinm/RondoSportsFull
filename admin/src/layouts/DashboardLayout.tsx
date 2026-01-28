@@ -14,7 +14,9 @@ import {
   XCircle,
   Shield,
   UserCheck,
-  Trophy
+  Trophy,
+  DollarSign,
+  Coffee
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './DashboardLayout.module.css';
@@ -78,6 +80,20 @@ const DashboardLayout: React.FC = () => {
               <NavLink to="/team-credentials" className={({ isActive }) => isActive ? styles.activeLink : styles.navLink}>
                 <Trophy size={20} />
                 {sidebarOpen && <span>Team Credentials</span>}
+              </NavLink>
+            )}
+
+            {user && (
+              <NavLink to="/ticket-markup" className={({ isActive }) => isActive ? styles.activeLink : styles.navLink}>
+                <DollarSign size={20} />
+                {sidebarOpen && <span>Ticket Markup Pricing</span>}
+              </NavLink>
+            )}
+
+            {user && (
+              <NavLink to="/hospitality" className={({ isActive }) => isActive ? styles.activeLink : styles.navLink}>
+                <Coffee size={20} />
+                {sidebarOpen && <span>Hospitality Services</span>}
               </NavLink>
             )}
 

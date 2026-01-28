@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User, Mail, Lock } from 'lucide-react';
+import { User, Mail, Lock, ChefHat } from 'lucide-react';
 import { useAuth } from '../services/customerAuth';
 import { useBooking } from '../hooks/useBooking';
 import StripeCheckout from '../components/payment/StripeCheckout';
@@ -22,9 +22,22 @@ interface StripePaymentDetails {
   full_response: any;
 }
 
+// Selected hospitality type
+interface SelectedHospitality {
+  id: number;
+  hospitality_id: number;
+  name: string;
+  price_usd: number;
+}
+
 interface CartItem {
   ticket: Ticket;
   quantity: number;
+  finalPriceUSD?: number;
+  markupAmount?: number;
+  selectedHospitalities?: SelectedHospitality[];
+  hospitalityTotal?: number;
+  totalPricePerTicket?: number;
 }
 
 interface CheckoutState {
@@ -41,6 +54,7 @@ interface CheckoutState {
   reservation: Reservation;
   guestRequirements?: import('../services/apiRoutes').EventGuestRequirements | null;
   userInfo?: any;
+  markupsData?: Record<string, any>;
 }
 
 const CheckoutPaymentPage: React.FC = () => {
@@ -57,26 +71,26 @@ const CheckoutPaymentPage: React.FC = () => {
   const { customer } = useAuth();
   const { error: bookingError } = useBooking();
 
-  // Calculate total amount
+  // Calculate total amount using pre-calculated final prices in USD
   const calculateTotal = (): number => {
     if (!state?.cartItems) return 0;
     return state.cartItems.reduce((total, item) => {
-      return total + (item.ticket.face_value * item.quantity);
+      const price = item.finalPriceUSD !== undefined ? item.finalPriceUSD : item.ticket.face_value;
+      // Include hospitality costs (already in USD)
+      const hospitalityTotal = item.selectedHospitalities?.reduce(
+        (sum, h) => sum + h.price_usd * item.quantity,
+        0
+      ) || 0;
+      return total + (price * item.quantity) + hospitalityTotal;
     }, 0);
   };
 
   const orderTotal = calculateTotal();
 
-  // Get currency from first ticket (assuming all tickets have same currency)
+  // Get currency - all prices are now in USD after conversion and markup
   const getCurrency = () => {
-    if (!state?.cartItems.length) {
-      throw new Error('No cart items found for currency determination');
-    }
-    const currency = state.cartItems[0].ticket.currency_code;
-    if (!currency) {
-      throw new Error('Ticket currency is required');
-    }
-    return currency;
+    // All prices are now in USD
+    return 'USD';
   };
 
   // NOTE: Booking is now created AFTER payment success, not on page load
@@ -109,10 +123,52 @@ const CheckoutPaymentPage: React.FC = () => {
   };
 
   const handlePaymentSuccess = async (paymentDetails: StripePaymentDetails) => {
+    console.log('=== PAYMENT SUCCESS HANDLER ===');
+    console.log('Payment Details:', paymentDetails);
+    console.log('State:', state);
+    console.log('Order Total:', orderTotal);
+    console.log('Currency:', getCurrency());
     
     try {
       // Create booking AFTER payment success (not before!)
       const currency = getCurrency();
+      
+      // Calculate ticket prices using pre-calculated final prices in USD
+      const ticketInfoWithConvertedPrices = state.cartItems.map(item => {
+        const price = item.finalPriceUSD !== undefined ? item.finalPriceUSD : item.ticket.face_value;
+        
+        return {
+          title: item.ticket.ticket_title,
+          quantity: item.quantity,
+          price: price
+        };
+      });
+      
+      // Calculate hospitality total and prepare hospitality data for API
+      let hospitalityTotal = 0;
+      const hospitalitiesPayload: Array<{
+        hospitality_id: number;
+        name: string;
+        price_usd: number;
+        quantity: number;
+        ticket_id: string;
+      }> = [];
+      
+      state.cartItems.forEach(item => {
+        if (item.selectedHospitalities && item.selectedHospitalities.length > 0) {
+          item.selectedHospitalities.forEach(h => {
+            const total = h.price_usd * item.quantity;
+            hospitalityTotal += total;
+            hospitalitiesPayload.push({
+              hospitality_id: h.hospitality_id,
+              name: h.name,
+              price_usd: h.price_usd,
+              quantity: item.quantity,
+              ticket_id: item.ticket.ticket_id
+            });
+          });
+        }
+      });
       
       const bookingPayload = {
         customer_email: customer?.email || state.userInfo?.email || 'guest@example.com',
@@ -124,13 +180,11 @@ const CheckoutPaymentPage: React.FC = () => {
         sport_type: 'Football',
         tournament_name: state.eventData.tournament_name,
         total_amount: orderTotal,
+        hospitality_total: hospitalityTotal,
+        hospitalities: hospitalitiesPayload,
         currency: currency,
         ticket_count: state.cartItems.reduce((total, item) => total + item.quantity, 0),
-        ticket_info: state.cartItems.map(item => ({
-          title: item.ticket.ticket_title,
-          quantity: item.quantity,
-          price: item.ticket.face_value
-        })),
+        ticket_info: ticketInfoWithConvertedPrices,
         category_name: state.cartItems[0]?.ticket.ticket_title || 'General',
         reservation_id: state.reservation.reservation_id,
         customer_notes: state.guests?.map(g => `${g.first_name} ${g.last_name}`).join(', ') || '',
@@ -148,6 +202,8 @@ const CheckoutPaymentPage: React.FC = () => {
         status: 'confirmed'
       };
       
+      console.log('=== CREATING BOOKING ===');
+      console.log('Booking Payload:', bookingPayload);
       
       const response = await fetch(`${import.meta.env.VITE_CUSTOMER_API_BASE_URL}/api/v1/local-bookings`, {
         method: 'POST',
@@ -157,6 +213,9 @@ const CheckoutPaymentPage: React.FC = () => {
         body: JSON.stringify(bookingPayload),
       });
 
+      console.log('=== BOOKING API RESPONSE ===');
+      console.log('Response Status:', response.status);
+      console.log('Response OK:', response.ok);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -165,6 +224,8 @@ const CheckoutPaymentPage: React.FC = () => {
       }
 
       const result = await response.json();
+      console.log('=== BOOKING CREATION RESULT ===');
+      console.log('Result:', result);
       
       if (result.success) {
         const createdBookingId = result.data.booking_id;
@@ -246,17 +307,36 @@ const CheckoutPaymentPage: React.FC = () => {
       </div>
 
       <div className={styles.ticketSummary}>
-        {state.cartItems.map((item, index) => (
-          <div key={index} className={styles.ticketItem}>
-            <div className={styles.ticketDetails}>
-              <span className={styles.ticketName}>{item.ticket.ticket_title}</span>
-              <span className={styles.ticketQuantity}>Qty: {item.quantity}</span>
+        {state.cartItems.map((item, index) => {
+          // Use pre-calculated final price in USD
+          const price = item.finalPriceUSD !== undefined ? item.finalPriceUSD : item.ticket.face_value;
+          
+          return (
+            <div key={index} className={styles.ticketItem}>
+              <div className={styles.ticketDetails}>
+                <span className={styles.ticketName}>{item.ticket.ticket_title}</span>
+                <span className={styles.ticketQuantity}>Qty: {item.quantity}</span>
+              </div>
+              <span className={styles.ticketPrice}>
+                {formatPrice(price * item.quantity)}
+              </span>
+              {item.selectedHospitalities && item.selectedHospitalities.length > 0 && (
+                <div className={styles.hospitalityItems}>
+                  {item.selectedHospitalities.map((h, hIndex) => (
+                    <div key={hIndex} className={styles.hospitalityItem}>
+                      <span className={styles.hospitalityName}>
+                        <ChefHat size={12} /> {h.name}
+                      </span>
+                      <span className={styles.hospitalityPrice}>
+                        +{formatPrice(h.price_usd * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <span className={styles.ticketPrice}>
-              {formatPrice(item.ticket.face_value * item.quantity)}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className={styles.orderTotals}>

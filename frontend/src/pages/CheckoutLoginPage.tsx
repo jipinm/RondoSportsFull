@@ -16,6 +16,8 @@ import styles from './CheckoutPage.module.css';
 interface CartItem {
   ticket: Ticket;
   quantity: number;
+  finalPriceUSD?: number;  // Pre-calculated final price in USD
+  markupAmount?: number;    // Markup amount applied
 }
 
 interface CheckoutState {
@@ -29,6 +31,7 @@ interface CheckoutState {
     city: string;
   };
   guestRequirements?: import('../services/apiRoutes').EventGuestRequirements | null;
+  markupsData?: Record<string, any>;
 }
 
 const CheckoutLoginPage: React.FC = () => {
@@ -82,27 +85,17 @@ const CheckoutLoginPage: React.FC = () => {
 
   const { cartItems, eventData } = state;
 
-  // Calculate totals
+  // Calculate totals using pre-calculated final prices in USD
   const subtotal = cartItems.reduce((total, item) => {
-    return total + (item.ticket.face_value * item.quantity);
+    const price = item.finalPriceUSD !== undefined ? item.finalPriceUSD : item.ticket.face_value;
+    return total + (price * item.quantity);
   }, 0);
 
   const orderTotal = subtotal;
 
-  const getCurrency = () => {
-    if (!cartItems.length) {
-      throw new Error('No cart items found for currency determination');
-    }
-    const currency = cartItems[0].ticket.currency_code;
-    if (!currency) {
-      throw new Error('Ticket currency is required');
-    }
-    return currency;
-  };
-
   const formatPrice = (amount: number) => {
-    const currency = getCurrency();
-    return `${currency} ${amount.toFixed(2)}`;
+    // All prices are now in USD after conversion and markup
+    return `USD ${amount.toFixed(2)}`;
   };
 
   // Authentication handlers
@@ -238,17 +231,20 @@ const CheckoutLoginPage: React.FC = () => {
       </div>
 
       <div className={styles.ticketSummary}>
-        {cartItems.map((item, index) => (
-          <div key={index} className={styles.ticketItem}>
-            <div className={styles.ticketDetails}>
-              <span className={styles.ticketName}>{item.ticket.ticket_title}</span>
-              <span className={styles.ticketQuantity}>Qty: {item.quantity}</span>
+        {cartItems.map((item, index) => {
+          const price = item.finalPriceUSD !== undefined ? item.finalPriceUSD : item.ticket.face_value;
+          return (
+            <div key={index} className={styles.ticketItem}>
+              <div className={styles.ticketDetails}>
+                <span className={styles.ticketName}>{item.ticket.ticket_title}</span>
+                <span className={styles.ticketQuantity}>Qty: {item.quantity}</span>
+              </div>
+              <span className={styles.ticketPrice}>
+                {formatPrice(price * item.quantity)}
+              </span>
             </div>
-            <span className={styles.ticketPrice}>
-              {formatPrice(item.ticket.face_value * item.quantity)}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className={styles.orderTotals}>

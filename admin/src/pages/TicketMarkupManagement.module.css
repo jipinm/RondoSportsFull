@@ -1,0 +1,836 @@
+.container {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+  color: #1e293b;
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+  padding: 2rem 2.5rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(248,250,252,0.6) 100%);
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.headerContent {
+  flex: 1;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Selection Card */
+.selectionCard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  color: #1e293b;
+}
+
+/* Select Dropdown Styles */
+.selectWrapper {
+  width: 100%;
+}
+
+.select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #1e293b;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 3rem;
+}
+
+.select:hover {
+  border-color: #cbd5e1;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.select:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+}
+
+.select option {
+  padding: 0.5rem;
+}
+
+.loading,
+.noData {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+}
+
+/* Config Card */
+.configCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.markupConfig {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Apply to All Checkbox */
+.applyAllWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+/* Ticket Markup List */
+.ticketMarkupList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.25rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.ticketMarkupRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.ticketMarkupRow:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.ticketInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ticketNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  background: #eff6ff;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.ticketDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ticketTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ticketMeta {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ticketMarkupInput {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.smallLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.markupInputWrapper {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+  width: 120px;
+  max-width: 120px;
+  flex-shrink: 0;
+}
+
+.markupInputWrapper:focus-within {
+  border-color: #3b82f6;
+}
+
+.dollarPrefix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.25rem 0 0.5rem;
+  font-size: 16px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.markupInputSmall {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  background: transparent;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
+.markupInputSmall::-webkit-outer-spin-button,
+.markupInputSmall::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.markupInputSmall::placeholder {
+  color: #94a3b8;
+}
+
+.ticketFinalPrice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.finalPriceValue {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+.markupInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 1rem;
+  color: #64748b;
+}
+
+.markupInput {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  transition: border-color 0.2s;
+}
+
+.markupInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.helpText {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.conversionInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Preview Card */
+.previewCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.priceTable {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.priceTableHeader {
+  display: grid;
+  grid-template-columns: minmax(150px, 2fr) minmax(100px, 1fr) minmax(90px, 1fr) minmax(80px, 1fr) minmax(100px, 1fr);
+  gap: 0.5rem;
+  background: #f8fafc;
+  padding: 0.875rem 1rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.priceTableBody {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.priceRow {
+  display: grid;
+  grid-template-columns: minmax(150px, 2fr) minmax(100px, 1fr) minmax(90px, 1fr) minmax(80px, 1fr) minmax(100px, 1fr);
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.priceRow:last-child {
+  border-bottom: none;
+}
+
+.priceRow:hover {
+  background: #f8fafc;
+}
+
+.priceRow .ticketTitle {
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.markup {
+  color: #ea580c;
+  font-weight: 600;
+}
+
+.finalPrice {
+  color: #059669;
+  font-weight: 700;
+}
+
+/* Existing Markups Card */
+.existingCard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid #dcfce7;
+}
+
+.existingTable {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.existingTableHeader {
+  display: grid;
+  grid-template-columns: minmax(120px, 2fr) minmax(80px, 1fr) minmax(80px, 1fr) minmax(90px, 1fr) minmax(140px, 1.5fr) minmax(100px, 1fr);
+  gap: 0.75rem;
+  background: #f0fdf4;
+  padding: 0.875rem 1rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: #166534;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #bbf7d0;
+}
+
+.existingTableBody {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.existingRow {
+  display: grid;
+  grid-template-columns: minmax(120px, 2fr) minmax(80px, 1fr) minmax(80px, 1fr) minmax(90px, 1fr) minmax(140px, 1.5fr) minmax(100px, 1fr);
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.existingRow:last-child {
+  border-bottom: none;
+}
+
+.existingRow:hover {
+  background: #f0fdf4;
+}
+
+.ticketId {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timestamp {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Action Buttons for Existing Markups */
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.editBtn {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.editBtn:hover:not(:disabled) {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.deleteBtn {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.saveBtn {
+  background: #f0fdf4;
+  color: #22c55e;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.cancelBtn {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+/* Inline Edit Input */
+.editInputCell {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.editPrefix {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.editInput {
+  width: 70px;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: #1e293b;
+  background: #ffffff;
+  outline: none;
+}
+
+.editInput:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Placeholder */
+.placeholderCard {
+  background: white;
+  border-radius: 12px;
+  padding: 4rem 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.placeholderIcon {
+  color: #cbd5e1;
+}
+
+.placeholder h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+.placeholder p {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .priceTableHeader,
+  .priceTableBody,
+  .priceRow {
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    font-size: 0.875rem;
+  }
+
+  .existingTableHeader,
+  .existingRow {
+    grid-template-columns: minmax(100px, 1.5fr) minmax(70px, 1fr) minmax(70px, 1fr) minmax(80px, 1fr) minmax(120px, 1.2fr) minmax(80px, 0.8fr);
+    font-size: 0.8rem;
+    gap: 0.5rem;
+  }
+  
+  .editInput {
+    width: 60px;
+  }
+  
+  .actionBtn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .priceTableHeader,
+  .priceTableBody,
+  .priceRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .existingTableHeader,
+  .existingRow {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .existingTableHeader > div:nth-child(5),
+  .existingRow > div:nth-child(5) {
+    display: none;
+  }
+  
+  .editInput {
+    width: 50px;
+  }
+}
+
+/* Global Markup Type Selection */
+.globalMarkupType {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.radioLabel input[type="radio"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+/* Ticket Markup Type Selector */
+.ticketMarkupType {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  min-width: 110px;
+}
+
+.markupTypeSelect {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e293b;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.markupTypeSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.markupTypeSelect:hover {
+  border-color: #3b82f6;
+}
+
+/* Calculated Markup Display */
+.calculatedMarkup {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #059669;
+  margin-top: 0.25rem;
+}
+
+/* Markup Type Badge in Tables */
+.markupType {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6366f1;
+}
+
+/* Edit Select Dropdown */
+.editSelect {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1e293b;
+  background: #ffffff;
+  cursor: pointer;
+  min-width: 90px;
+}
+
+.editSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+}

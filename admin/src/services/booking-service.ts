@@ -13,6 +13,16 @@ export interface BookingUser {
   phone?: string;
 }
 
+export interface BookingHospitality {
+  id: number;
+  hospitality_id: number;
+  hospitality_name: string;
+  price_usd: number;
+  quantity: number;
+  total_usd: number;
+  ticket_id?: string;
+}
+
 export interface Booking {
   id: string;
   booking_reference: string;
@@ -34,6 +44,8 @@ export interface Booking {
   ticket_count: number;
   ticket_price: number;
   total_amount: number;
+  hospitality_total?: number;
+  hospitalities?: BookingHospitality[];
   currency: string;
   payment_method?: string;
   payment_reference?: string;
@@ -139,7 +151,7 @@ export interface BookingsResponse {
 
 export interface BookingFilters {
   page?: number;
-  per_page?: number;
+  limit?: number;
   search?: string;
   status?: string;
   payment_status?: string;

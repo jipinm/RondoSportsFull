@@ -602,6 +602,7 @@ class BookingRepository
                 sport_type,
                 tournament_name,
                 total_amount,
+                hospitality_total,
                 currency,
                 payment_method,
                 payment_reference,
@@ -634,6 +635,7 @@ class BookingRepository
                 :sport_type,
                 :tournament_name,
                 :total_amount,
+                :hospitality_total,
                 :currency,
                 :payment_method,
                 :payment_reference,
@@ -671,6 +673,7 @@ class BookingRepository
                 'sport_type' => null,
                 'tournament_name' => null,
                 'total_amount' => 0,
+                'hospitality_total' => 0,
                 'currency' => 'USD',
                 'payment_method' => 'stripe',
                 'payment_reference' => null,
@@ -706,12 +709,100 @@ class BookingRepository
                 $data['api_data'] = json_encode($data['api_data']);
             }
             
-            $stmt->execute($data);
+            // Only keep the fields that are in the INSERT statement
+            $allowedFields = [
+                'booking_reference', 'api_reservation_id', 'customer_user_id', 'event_name', 
+                'event_id', 'event_date', 'venue_name', 'venue_id', 'sport_type', 'tournament_name',
+                'total_amount', 'hospitality_total', 'currency', 'payment_method', 'payment_reference',
+                'payment_intent_id', 'stripe_payment_method_id', 'stripe_customer_id', 'stripe_charge_id',
+                'payment_gateway_response', 'payment_gateway_fee', 'status', 'payment_status',
+                'payment_completed_at', 'ticket_count', 'seat_info', 'ticket_info', 'category_name',
+                'event_start_time', 'api_data', 'customer_notes', 'source'
+            ];
+            
+            $filteredData = array_intersect_key($data, array_flip($allowedFields));
+            
+            $stmt->execute($filteredData);
             
             return (int) $this->db->getConnection()->lastInsertId();
             
         } catch (PDOException $e) {
             throw new Exception("Database error while creating booking: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Save hospitalities for a booking
+     * 
+     * @param int $bookingId Booking ID
+     * @param array $hospitalities Array of hospitality data
+     * @return bool Success status
+     */
+    public function saveBookingHospitalities(int $bookingId, array $hospitalities): bool
+    {
+        try {
+            if (empty($hospitalities)) {
+                return true;
+            }
+
+            $sql = "INSERT INTO booking_hospitalities 
+                    (booking_id, hospitality_id, hospitality_name, price_usd, quantity, total_usd, ticket_id) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
+            
+            $stmt = $this->db->getConnection()->prepare($sql);
+            
+            foreach ($hospitalities as $hospitality) {
+                $quantity = $hospitality['quantity'] ?? 1;
+                $priceUsd = (float)($hospitality['price_usd'] ?? 0);
+                $totalUsd = $priceUsd * $quantity;
+                
+                $stmt->execute([
+                    $bookingId,
+                    $hospitality['hospitality_id'] ?? null,
+                    $hospitality['name'] ?? 'Unknown',
+                    $priceUsd,
+                    $quantity,
+                    $totalUsd,
+                    $hospitality['ticket_id'] ?? null
+                ]);
+            }
+            
+            return true;
+            
+        } catch (PDOException $e) {
+            throw new Exception("Database error while saving booking hospitalities: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get hospitalities for a booking
+     * 
+     * @param int $bookingId Booking ID
+     * @return array Array of hospitality data
+     */
+    public function getBookingHospitalities(int $bookingId): array
+    {
+        try {
+            $sql = "SELECT 
+                        bh.id,
+                        bh.hospitality_id,
+                        bh.hospitality_name,
+                        bh.price_usd,
+                        bh.quantity,
+                        bh.total_usd,
+                        bh.ticket_id,
+                        bh.created_at
+                    FROM booking_hospitalities bh
+                    WHERE bh.booking_id = ?
+                    ORDER BY bh.id ASC";
+            
+            $stmt = $this->db->getConnection()->prepare($sql);
+            $stmt->execute([$bookingId]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            throw new Exception("Database error while fetching booking hospitalities: " . $e->getMessage());
         }
     }
 

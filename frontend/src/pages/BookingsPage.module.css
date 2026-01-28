@@ -309,6 +309,43 @@
   color: #059669;
 }
 
+/* Hospitality list in booking details */
+.hospitalityList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hospitalityItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f3ff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.hospitalityName {
+  color: #7c3aed;
+  font-weight: 500;
+}
+
+.hospitalityPrice {
+  color: #059669;
+  font-weight: 600;
+}
+
+.hospitalityTotal {
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed #e5e7eb;
+}
+
 .bookingActions {
   padding: 1rem 1.5rem;
   background: #f8fafc;

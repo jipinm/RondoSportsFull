@@ -115,17 +115,30 @@ class LocalBookingController
                 'payment_status' => $data['payment_status'] ?? 'pending',
                 'status' => $data['status'] ?? 'pending',
                 'payment_completed_at' => $this->convertToMySQLDateTime($data['payment_completed_at'] ?? null) ?? 
-                                        (($data['payment_status'] ?? 'pending') === 'completed' ? date('Y-m-d H:i:s') : null)
+                                        (($data['payment_status'] ?? 'pending') === 'completed' ? date('Y-m-d H:i:s') : null),
+                'hospitality_total' => isset($data['hospitality_total']) ? (float)$data['hospitality_total'] : 0.00
             ];
 
             // Create the booking
             $bookingId = $this->bookingRepository->create($bookingData);
+
+            // Save hospitality services if provided
+            $hospitalitiesData = $data['hospitalities'] ?? [];
+            if (!empty($hospitalitiesData)) {
+                $this->bookingRepository->saveBookingHospitalities($bookingId, $hospitalitiesData);
+                $this->logger->info('Booking hospitalities saved', [
+                    'booking_id' => $bookingId,
+                    'hospitality_count' => count($hospitalitiesData),
+                    'hospitality_total' => $bookingData['hospitality_total']
+                ]);
+            }
 
             $this->logger->info('Local booking created successfully', [
                 'booking_id' => $bookingId,
                 'booking_reference' => $bookingReference,
                 'customer_email' => $customerEmail,
                 'total_amount' => $bookingData['total_amount'],
+                'hospitality_total' => $bookingData['hospitality_total'],
                 'payment_status' => $bookingData['payment_status'],
                 'status' => $bookingData['status'],
                 'payment_reference' => $bookingData['payment_reference'] ?? null,
@@ -150,13 +163,13 @@ class LocalBookingController
                     if ($xs2eventResult['success']) {
                         $this->logger->info('XS2Event booking created successfully', [
                             'booking_id' => $bookingId,
-                            'xs2event_booking_id' => $xs2eventResult['xs2event_booking_id'],
-                            'booking_code' => $xs2eventResult['booking_code']
+                            'xs2event_booking_id' => $xs2eventResult['xs2event_booking_id'] ?? null,
+                            'booking_code' => $xs2eventResult['booking_code'] ?? null
                         ]);
                     } else {
                         $this->logger->error('XS2Event booking creation failed', [
                             'booking_id' => $bookingId,
-                            'error' => $xs2eventResult['error']
+                            'error' => $xs2eventResult['error'] ?? 'Unknown error'
                         ]);
                     }
                 } catch (Exception $xs2eventException) {
@@ -199,8 +212,8 @@ class LocalBookingController
                         'customer_email' => $customerEmail
                     ]);
                 }
-            } catch (Exception $emailException) {
-                // Don't fail the booking if email sending fails
+            } catch (\Throwable $emailException) {
+                // Don't fail the booking if email sending fails (catch Throwable to handle TypeError etc.)
                 $this->logger->error('Exception while sending booking confirmation email', [
                     'booking_id' => $bookingId,
                     'error' => $emailException->getMessage()
@@ -338,6 +351,10 @@ class LocalBookingController
                 return $this->errorResponse($response, 'Booking not found', 404);
             }
 
+            // Get hospitalities for this booking
+            $hospitalities = $this->bookingRepository->getBookingHospitalities($bookingId);
+            $booking['hospitalities'] = $hospitalities;
+
             $responseData = [
                 'success' => true,
                 'data' => $booking
@@ -393,6 +410,9 @@ class LocalBookingController
             // Format the bookings for frontend consumption
             $formattedBookings = [];
             foreach ($bookings as $booking) {
+                // Get hospitalities for this booking
+                $hospitalities = $this->bookingRepository->getBookingHospitalities((int)$booking['id']);
+                
                 $formattedBookings[] = [
                     'id' => $booking['id'],
                     'booking_id' => $booking['booking_reference'],
@@ -408,6 +428,7 @@ class LocalBookingController
                     'quantity' => $booking['ticket_count'],
                     'ticket_count' => $booking['ticket_count'],
                     'total_amount' => (float)$booking['total_amount'],
+                    'hospitality_total' => (float)($booking['hospitality_total'] ?? 0),
                     'currency' => $booking['currency'],
                     'status' => $booking['status'],
                     'payment_status' => $booking['payment_status'],
@@ -421,6 +442,8 @@ class LocalBookingController
                     'customer_notes' => $booking['customer_notes'],
                     'seat_info' => $booking['seat_info'] ? json_decode($booking['seat_info'], true) : null,
                     'ticket_info' => $booking['ticket_info'] ? json_decode($booking['ticket_info'], true) : null,
+                    // Hospitality services
+                    'hospitalities' => $hospitalities,
                     // E-Ticket fields
                     'eticket_status' => $booking['eticket_status'] ?? 'pending',
                     'eticket_available' => ($booking['eticket_status'] ?? 'pending') === 'available',

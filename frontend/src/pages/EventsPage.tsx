@@ -4,6 +4,7 @@ import { Flame } from 'lucide-react';
 import { useEvents } from '../hooks/useEvents';
 import { useTeamDetails } from '../hooks/useTeamDetails';
 import { useTeamCredentials } from '../hooks/useTeamCredentials';
+import { useMultiCurrencyConversion } from '../hooks/useMultiCurrencyConversion';
 import type { Event } from '../services/apiRoutes';
 import styles from './EventsPage.module.css';
 
@@ -74,6 +75,9 @@ const EventsPage: React.FC = () => {
     team_id
   );
 
+  // Currency conversion hook - convert EUR prices to USD
+  const { convertAmount, isLoading: currencyLoading } = useMultiCurrencyConversion(['EUR'], 'USD');
+
   // Console log the team credentials API usage for debugging
   React.useEffect(() => {
     
@@ -125,19 +129,16 @@ const EventsPage: React.FC = () => {
     }
   };
 
-  // Format price with correct currency from API response
+  // Format price with correct currency from API response - converted to USD
   const formatPrice = (event: Event) => {
     if (!event.min_ticket_price_eur || event.min_ticket_price_eur === 0) {
-      return 'N/A';
+      return '';
     }
     
-    // The field name suggests EUR, but we should use the actual currency from API
-    // For now, using EUR as indicated by the field name min_ticket_price_eur
-    // TODO: Update Event interface if API provides currency_code field
-    const currency = 'EUR';
-    const price = event.min_ticket_price_eur;
+    // Convert EUR price to USD using the currency conversion hook
+    const priceInUsd = convertAmount(event.min_ticket_price_eur, 'EUR');
     
-    return `${currency} ${price.toFixed(2)}`;
+    return `USD ${priceInUsd.toFixed(2)}`;
   };
 
   // Handle ticket navigation
@@ -461,7 +462,13 @@ const EventsPage: React.FC = () => {
 
                       {/* Price Column */}
                       <div className={styles.priceColumn}>
-                        <div className={styles.priceLabel}>FROM {formatPrice(event)}</div>
+                        {currencyLoading && event.min_ticket_price_eur && event.min_ticket_price_eur > 0 ? (
+                          <div className={styles.skeletonPriceLabel}></div>
+                        ) : (
+                          formatPrice(event) && (
+                            <div className={styles.priceLabel}>FROM {formatPrice(event)}</div>
+                          )
+                        )}
                         <button
                           className={styles.viewTicketsButton}
                           onClick={() => handleViewTickets(event)}

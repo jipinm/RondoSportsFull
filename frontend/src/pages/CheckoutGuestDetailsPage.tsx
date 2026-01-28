@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User, Mail, Lock } from 'lucide-react';
+import { User, Mail, Lock, ChefHat } from 'lucide-react';
 import { useAuth } from '../services/customerAuth';
 import type { CustomerProfile } from '../services/customerAuth';
 import { useReservation } from '../hooks/useReservation';
@@ -16,9 +16,22 @@ import {
 import type { Ticket } from '../services/apiRoutes';
 import styles from './CheckoutPage.module.css';
 
+// Selected hospitality type
+interface SelectedHospitality {
+  id: number;
+  hospitality_id: number;
+  name: string;
+  price_usd: number;
+}
+
 interface CartItem {
   ticket: Ticket;
   quantity: number;
+  finalPriceUSD?: number;
+  markupAmount?: number;
+  selectedHospitalities?: SelectedHospitality[];
+  hospitalityTotal?: number;
+  totalPricePerTicket?: number;
 }
 
 interface CheckoutState {
@@ -33,6 +46,7 @@ interface CheckoutState {
   };
   guestRequirements?: import('../services/apiRoutes').EventGuestRequirements | null;
   userInfo?: any;
+  markupsData?: Record<string, any>;
 }
 
 const CheckoutGuestDetailsPage: React.FC = () => {
@@ -166,27 +180,18 @@ const CheckoutGuestDetailsPage: React.FC = () => {
     sessionStorage.removeItem('userDetails');
   };
 
-  // Calculate totals
+  // Calculate totals (including hospitalities)
   const subtotal = cartItems.reduce((total, item) => {
-    return total + (item.ticket.face_value * item.quantity);
+    // Use totalPricePerTicket if available (includes ticket + hospitalities)
+    const itemPrice = item.totalPricePerTicket || item.finalPriceUSD || item.ticket.face_value;
+    return total + (itemPrice * item.quantity);
   }, 0);
 
   const orderTotal = subtotal;
 
-  const getCurrency = () => {
-    if (!cartItems.length) {
-      throw new Error('No cart items found for currency determination');
-    }
-    const currency = cartItems[0].ticket.currency_code;
-    if (!currency) {
-      throw new Error('Ticket currency is required');
-    }
-    return currency;
-  };
-
   const formatPrice = (amount: number) => {
-    const currency = getCurrency();
-    return `${currency} ${amount.toFixed(2)}`;
+    // All prices are now in USD after conversion and markup
+    return `USD ${amount.toFixed(2)}`;
   };
 
   // Form handlers
@@ -292,17 +297,32 @@ const CheckoutGuestDetailsPage: React.FC = () => {
       </div>
 
       <div className={styles.ticketSummary}>
-        {cartItems.map((item, index) => (
-          <div key={index} className={styles.ticketItem}>
-            <div className={styles.ticketDetails}>
-              <span className={styles.ticketName}>{item.ticket.ticket_title}</span>
-              <span className={styles.ticketQuantity}>Qty: {item.quantity}</span>
+        {cartItems.map((item, index) => {
+          const itemPrice = item.totalPricePerTicket || item.finalPriceUSD || item.ticket.face_value;
+          return (
+            <div key={index} className={styles.ticketItem}>
+              <div className={styles.ticketDetails}>
+                <span className={styles.ticketName}>{item.ticket.ticket_title}</span>
+                <span className={styles.ticketQuantity}>Qty: {item.quantity}</span>
+                {/* Display selected hospitalities */}
+                {item.selectedHospitalities && item.selectedHospitalities.length > 0 && (
+                  <div className={styles.hospitalityList}>
+                    {item.selectedHospitalities.map(h => (
+                      <div key={h.hospitality_id} className={styles.hospitalityItem}>
+                        <ChefHat size={12} />
+                        <span>{h.name}</span>
+                        <span>+${h.price_usd.toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <span className={styles.ticketPrice}>
+                {formatPrice(itemPrice * item.quantity)}
+              </span>
             </div>
-            <span className={styles.ticketPrice}>
-              {formatPrice(item.ticket.face_value * item.quantity)}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className={styles.orderTotals}>

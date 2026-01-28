@@ -9,6 +9,13 @@ interface CartItem {
   quantity: number;
 }
 
+interface CartItem {
+  ticket: Ticket;
+  quantity: number;
+  finalPriceUSD?: number;
+  markupAmount?: number;
+}
+
 interface CheckoutState {
   cartItems: CartItem[];
   eventData: {
@@ -22,6 +29,7 @@ interface CheckoutState {
   guests: GuestFormData[];
   guestRequirements?: import('../services/apiRoutes').EventGuestRequirements | null;
   userInfo?: any;
+  markupsData?: Record<string, any>;
 }
 
 /**

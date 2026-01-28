@@ -40,6 +40,20 @@ export class StaticPagesService {
   async getTermsAndConditions(): Promise<StaticPage | null> {
     return this.getPageByKey('terms');
   }
+
+  /**
+   * Get about us page
+   */
+  async getAboutUs(): Promise<StaticPage | null> {
+    return this.getPageByKey('about');
+  }
+
+  /**
+   * Get FAQ page
+   */
+  async getFAQ(): Promise<StaticPage | null> {
+    return this.getPageByKey('faq');
+  }
 }
 
 // Export singleton instance
