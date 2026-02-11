@@ -30,6 +30,7 @@ interface CheckoutState {
   guestRequirements?: import('../services/apiRoutes').EventGuestRequirements | null;
   userInfo?: any;
   markupsData?: Record<string, any>;
+  selectedCurrencyCode?: string;
 }
 
 /**

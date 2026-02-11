@@ -55,6 +55,7 @@ interface CheckoutState {
   guestRequirements?: import('../services/apiRoutes').EventGuestRequirements | null;
   userInfo?: any;
   markupsData?: Record<string, any>;
+  selectedCurrencyCode?: string;
 }
 
 const CheckoutPaymentPage: React.FC = () => {
@@ -87,10 +88,9 @@ const CheckoutPaymentPage: React.FC = () => {
 
   const orderTotal = calculateTotal();
 
-  // Get currency - all prices are now in USD after conversion and markup
+  // Get currency — use the currency selected at checkout time
   const getCurrency = () => {
-    // All prices are now in USD
-    return 'USD';
+    return state?.selectedCurrencyCode || 'USD';
   };
 
   // NOTE: Booking is now created AFTER payment success, not on page load
@@ -288,10 +288,14 @@ const CheckoutPaymentPage: React.FC = () => {
   // Format price for display
   const formatPrice = (amount: number): string => {
     const currency = getCurrency();
-    return new Intl.NumberFormat('en-AE', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency
+      }).format(amount);
+    } catch {
+      return `${currency} ${amount.toFixed(2)}`;
+    }
   };
 
   // Render order summary (consistent with other checkout pages)

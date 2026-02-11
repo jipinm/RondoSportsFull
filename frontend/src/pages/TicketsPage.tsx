@@ -2,11 +2,15 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useTickets } from '../hooks/useTickets';
 import { useMultiCurrencyConversion } from '../hooks/useMultiCurrencyConversion';
+import { useSelectedCurrency } from '../contexts/CurrencyContext';
 import styles from './TicketsPage.module.css';
 
 const TicketsPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const { tickets, loading, error } = useTickets({ event_id: eventId });
+  
+  // Get user-selected currency
+  const { selectedCurrencyCode } = useSelectedCurrency();
   
   // Get unique currencies from tickets for conversion
   const currencies = React.useMemo(() => {
@@ -14,14 +18,14 @@ const TicketsPage: React.FC = () => {
     return uniqueCurrencies;
   }, [tickets]);
   
-  // Currency conversion hook - convert ticket prices to USD
-  const { convertAmount, isLoading: currencyLoading } = useMultiCurrencyConversion(currencies, 'USD');
+  // Currency conversion hook - convert ticket prices to selected currency
+  const { convertAmount, isLoading: currencyLoading } = useMultiCurrencyConversion(currencies, selectedCurrencyCode);
 
-  // Format price to USD
-  const formatPriceToUsd = (price: number, currencyCode: string) => {
+  // Format price to selected currency
+  const formatPriceToSelected = (price: number, currencyCode: string) => {
     if (!price || price === 0) return '';
-    const priceInUsd = convertAmount(price, currencyCode);
-    return `$${priceInUsd.toFixed(2)}`;
+    const converted = convertAmount(price, currencyCode);
+    return `${selectedCurrencyCode} ${converted.toFixed(2)}`;
   };
 
   return (
@@ -42,7 +46,7 @@ const TicketsPage: React.FC = () => {
                   currencyLoading ? (
                     <p className={styles.skeletonPrice}>Loading price...</p>
                   ) : (
-                    <p>Price: {formatPriceToUsd(ticket.net_rate, ticket.currency_code)}</p>
+                    <p>Price: {formatPriceToSelected(ticket.net_rate, ticket.currency_code)}</p>
                   )
                 )}
               </div>

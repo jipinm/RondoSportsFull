@@ -47,6 +47,7 @@ interface CheckoutState {
   guestRequirements?: import('../services/apiRoutes').EventGuestRequirements | null;
   userInfo?: any;
   markupsData?: Record<string, any>;
+  selectedCurrencyCode?: string;
 }
 
 const CheckoutGuestDetailsPage: React.FC = () => {
@@ -181,6 +182,7 @@ const CheckoutGuestDetailsPage: React.FC = () => {
   };
 
   // Calculate totals (including hospitalities)
+  const checkoutCurrency = state?.selectedCurrencyCode || 'USD';
   const subtotal = cartItems.reduce((total, item) => {
     // Use totalPricePerTicket if available (includes ticket + hospitalities)
     const itemPrice = item.totalPricePerTicket || item.finalPriceUSD || item.ticket.face_value;
@@ -190,8 +192,7 @@ const CheckoutGuestDetailsPage: React.FC = () => {
   const orderTotal = subtotal;
 
   const formatPrice = (amount: number) => {
-    // All prices are now in USD after conversion and markup
-    return `USD ${amount.toFixed(2)}`;
+    return `${checkoutCurrency} ${amount.toFixed(2)}`;
   };
 
   // Form handlers
@@ -311,7 +312,7 @@ const CheckoutGuestDetailsPage: React.FC = () => {
                       <div key={h.hospitality_id} className={styles.hospitalityItem}>
                         <ChefHat size={12} />
                         <span>{h.name}</span>
-                        <span>+${h.price_usd.toFixed(2)}</span>
+                        <span>+{formatPrice(h.price_usd)}</span>
                       </div>
                     ))}
                   </div>

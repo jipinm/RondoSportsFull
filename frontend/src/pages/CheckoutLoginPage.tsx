@@ -32,6 +32,7 @@ interface CheckoutState {
   };
   guestRequirements?: import('../services/apiRoutes').EventGuestRequirements | null;
   markupsData?: Record<string, any>;
+  selectedCurrencyCode?: string;
 }
 
 const CheckoutLoginPage: React.FC = () => {
@@ -85,7 +86,10 @@ const CheckoutLoginPage: React.FC = () => {
 
   const { cartItems, eventData } = state;
 
-  // Calculate totals using pre-calculated final prices in USD
+  // Get the currency used for this checkout (from navigation state)
+  const checkoutCurrency = state.selectedCurrencyCode || 'USD';
+
+  // Calculate totals using pre-calculated final prices
   const subtotal = cartItems.reduce((total, item) => {
     const price = item.finalPriceUSD !== undefined ? item.finalPriceUSD : item.ticket.face_value;
     return total + (price * item.quantity);
@@ -94,8 +98,7 @@ const CheckoutLoginPage: React.FC = () => {
   const orderTotal = subtotal;
 
   const formatPrice = (amount: number) => {
-    // All prices are now in USD after conversion and markup
-    return `USD ${amount.toFixed(2)}`;
+    return `${checkoutCurrency} ${amount.toFixed(2)}`;
   };
 
   // Authentication handlers

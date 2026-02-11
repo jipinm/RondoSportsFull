@@ -16,7 +16,8 @@ import {
   UserCheck,
   Trophy,
   DollarSign,
-  Coffee
+  Coffee,
+  Coins
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './DashboardLayout.module.css';
@@ -94,6 +95,13 @@ const DashboardLayout: React.FC = () => {
               <NavLink to="/hospitality" className={({ isActive }) => isActive ? styles.activeLink : styles.navLink}>
                 <Coffee size={20} />
                 {sidebarOpen && <span>Hospitality Services</span>}
+              </NavLink>
+            )}
+
+            {user && (
+              <NavLink to="/currencies" className={({ isActive }) => isActive ? styles.activeLink : styles.navLink}>
+                <Coins size={20} />
+                {sidebarOpen && <span>Currency Management</span>}
               </NavLink>
             )}
 

@@ -6,6 +6,7 @@ import { MdArrowDropDown } from 'react-icons/md';
 import { useSports } from '../../hooks/useSports';
 import { useMenuHierarchy } from '../../hooks/useMenuHierarchy';
 import { useAuth } from '../../services/customerAuth';
+import { useSelectedCurrency } from '../../contexts/CurrencyContext';
 
 // Sport display name mapping
 const sportDisplayNames: Record<string, string> = {
@@ -52,10 +53,12 @@ const Header: React.FC = () => {
     error: tournamentsError
   } = useMenuHierarchy();
   const { isAuthenticated, logout } = useAuth();
+  const { currencies, selectedCurrency, loading: currenciesLoading, setSelectedCurrency } = useSelectedCurrency();
   const [logoLoaded, setLogoLoaded] = React.useState(false);
   const [logoError, setLogoError] = React.useState(false);
   const [activeSubmenu, setActiveSubmenu] = React.useState<string | null>(null);
   const [accountDropdownOpen, setAccountDropdownOpen] = React.useState(false);
+  const [currencyDropdownOpen, setCurrencyDropdownOpen] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
   const navigationRef = React.useRef<HTMLElement>(null);
 
@@ -141,18 +144,20 @@ const Header: React.FC = () => {
 
   // Close submenu and account dropdown when clicking outside (mobile only)
   React.useEffect(() => {
-    if (!isMobile || (!activeSubmenu && !accountDropdownOpen)) return;
+    if (!isMobile || (!activeSubmenu && !accountDropdownOpen && !currencyDropdownOpen)) return;
 
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       // Don't close if clicking inside the submenu or account dropdown
       if (target.closest(`.${styles.submenu}`) || 
           target.closest(`.${styles.navItemWithSubmenu}`) ||
-          target.closest(`.${styles.topBarItemWithSubmenu}`)) {
+          target.closest(`.${styles.topBarItemWithSubmenu}`) ||
+          target.closest(`.${styles.currencySubmenu}`)) {
         return;
       }
       setActiveSubmenu(null);
       setAccountDropdownOpen(false);
+      setCurrencyDropdownOpen(false);
     };
 
     // Use timeout to avoid immediate closure
@@ -164,7 +169,7 @@ const Header: React.FC = () => {
       clearTimeout(timeoutId);
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [isMobile, activeSubmenu, accountDropdownOpen]);
+  }, [isMobile, activeSubmenu, accountDropdownOpen, currencyDropdownOpen]);
 
   // Get display name for sport, fallback to sport_id if not mapped
   const getDisplayName = (sportId: string): string => {
@@ -275,10 +280,34 @@ const Header: React.FC = () => {
               <span>London</span>
               <MdArrowDropDown className={styles.icon} />
             </div>
-            <div className={styles.topBarItem}>
-              <span className={styles.currencySymbol}>$</span>
-              <span>USD</span>
-              <MdArrowDropDown className={styles.icon} />
+            <div className={styles.topBarItemWithSubmenu}>
+              <div 
+                className={styles.topBarItem}
+                onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
+                style={{ cursor: 'pointer' }}
+              >
+                <span className={styles.currencySymbol}>
+                  {currenciesLoading ? '...' : (selectedCurrency?.symbol || '$')}
+                </span>
+                <span>{selectedCurrency?.code || 'USD'}</span>
+                <MdArrowDropDown className={styles.icon} />
+              </div>
+              <div className={`${styles.currencySubmenu} ${currencyDropdownOpen ? styles.currencySubmenuActive : ''}`}>
+                {currencies.map((currency) => (
+                  <button
+                    key={currency.code}
+                    className={`${styles.currencySubmenuItem} ${selectedCurrency?.code === currency.code ? styles.currencySelected : ''}`}
+                    onClick={() => {
+                      setSelectedCurrency(currency);
+                      setCurrencyDropdownOpen(false);
+                    }}
+                  >
+                    <span className={styles.currencyItemSymbol}>{currency.symbol}</span>
+                    <span className={styles.currencyItemCode}>{currency.code}</span>
+                    <span className={styles.currencyItemName}>{currency.name}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <Link to="/" className={styles.logo}>

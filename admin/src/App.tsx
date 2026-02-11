@@ -19,6 +19,7 @@ import RolesManagement from './pages/RolesManagement';
 import TeamCredentials from './pages/TeamCredentials';
 import TicketMarkupManagement from './pages/TicketMarkupManagement';
 import HospitalityManagement from './pages/HospitalityManagement';
+import CurrencyManagement from './pages/CurrencyManagement';
 import './App.css';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/team-credentials" element={<TeamCredentials />} />
                 <Route path="/ticket-markup" element={<TicketMarkupManagement />} />
                 <Route path="/hospitality" element={<HospitalityManagement />} />
+                <Route path="/currencies" element={<CurrencyManagement />} />
                 <Route path="/refunds" element={<Refunds />} />
                 <Route path="/cancellation-requests" element={<CancellationRequests />} />
                 <Route path="/content" element={<Content />} />

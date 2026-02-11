@@ -57,6 +57,7 @@ use XS2EventProxy\Controller\DashboardController;
 use XS2EventProxy\Controller\ReportsController;
 use XS2EventProxy\Controller\TicketMarkupController;
 use XS2EventProxy\Controller\HospitalityController;
+use XS2EventProxy\Controller\CurrencyController;
 use XS2EventProxy\Middleware\CustomerAuthMiddleware;
 use XS2EventProxy\Service\DatabaseService;
 use XS2EventProxy\Service\JWTService;
@@ -81,6 +82,7 @@ use XS2EventProxy\Repository\StaticPagesRepository;
 use XS2EventProxy\Repository\BannersRepository;
 use XS2EventProxy\Repository\TicketMarkupRepository;
 use XS2EventProxy\Repository\HospitalityRepository;
+use XS2EventProxy\Repository\CurrencyRepository;
 use XS2EventProxy\Service\TeamCredentialsService;
 use XS2EventProxy\Service\BannersService;
 use XS2EventProxy\Service\DashboardService;
@@ -559,6 +561,18 @@ class Application
             $group->patch('/cancellation-requests/{id:[0-9]+}/approve', [$adminCancellationController, 'approveRequest']);
             $group->patch('/cancellation-requests/{id:[0-9]+}/reject', [$adminCancellationController, 'rejectRequest']);
             $group->patch('/cancellation-requests/{id:[0-9]+}/complete', [$adminCancellationController, 'completeRequest']);
+
+            // Currency Management (Admin)
+            $currencyRepository = new CurrencyRepository($this->database->getConnection(), $this->logger);
+            $currencyController = new CurrencyController($currencyRepository, $this->logger);
+            $group->get('/currencies/stats', [$currencyController, 'getStats']);
+            $group->get('/currencies', [$currencyController, 'getCurrencies']);
+            $group->get('/currencies/{id:[0-9]+}', [$currencyController, 'getCurrency']);
+            $group->post('/currencies', [$currencyController, 'createCurrency']);
+            $group->put('/currencies/{id:[0-9]+}', [$currencyController, 'updateCurrency']);
+            $group->delete('/currencies/{id:[0-9]+}', [$currencyController, 'deleteCurrency']);
+            $group->patch('/currencies/{id:[0-9]+}/set-default', [$currencyController, 'setDefault']);
+            $group->patch('/currencies/{id:[0-9]+}/toggle-active', [$currencyController, 'toggleActive']);
             
         })->add(new AuthMiddleware(
             $this->jwtService,
@@ -595,6 +609,11 @@ class Application
             $group->get('', [$countryController, 'getActiveCountries']);
             $group->get('/search', [$countryController, 'searchCountries']);
         });
+
+        // Currency Routes (public - for currency selection)
+        $publicCurrencyRepository = new CurrencyRepository($this->database->getConnection(), $this->logger);
+        $publicCurrencyController = new CurrencyController($publicCurrencyRepository, $this->logger);
+        $this->app->get('/api/v1/currencies', [$publicCurrencyController, 'getActiveCurrencies']);
 
         // Payment Routes (public and authenticated)
         $paymentController = new PaymentController(

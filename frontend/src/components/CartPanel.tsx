@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChefHat } from 'lucide-react';
 import type { Ticket, EventGuestRequirements } from '../services/apiRoutes';
-import { calculateMarkupAmount, type TicketMarkup } from '../services/ticketEnhancementsService';
+import { type TicketMarkup } from '../services/ticketEnhancementsService';
 import GuestRequirementsPreview from './GuestRequirementsPreview';
 import styles from './CartPanel.module.css';
 
@@ -44,6 +44,7 @@ interface CartPanelProps {
     convertAmount: (amount: number, fromCurrency: string) => number;
     getExchangeRate: (currency: string) => number;
     hasConversionForCurrency: (currency: string) => boolean;
+    targetCurrencyCode?: string;
   };
   // Markup pricing data
   markupsByTicket?: Map<string, TicketMarkup>;
@@ -85,6 +86,9 @@ const CartPanel: React.FC<CartPanelProps> = ({
     });
   };
 
+  // Get the target currency code from the conversion props
+  const targetCurrency = currencyConversion?.targetCurrencyCode || 'USD';
+
   // Get the final price for a ticket (with markup applied)
   // Uses live exchange rate for calculating percentage-based markup
   const getTicketFinalPrice = (ticket: Ticket): number => {
@@ -95,16 +99,32 @@ const CartPanel: React.FC<CartPanelProps> = ({
     const markup = markupsByTicket?.get(ticket.ticket_id);
     
     // If currency conversion is available for this ticket's currency
-    if (currencyConversion?.hasConversionForCurrency(currency) && currency !== 'USD') {
-      const usdPrice = currencyConversion.convertAmount(price, currency);
-      // Calculate markup dynamically using live USD base price
-      const markupAmount = calculateMarkupAmount(usdPrice, markup ?? null);
-      return usdPrice + markupAmount;
+    if (currencyConversion?.hasConversionForCurrency(currency) && currency !== targetCurrency) {
+      const convertedPrice = currencyConversion.convertAmount(price, currency);
+      // Calculate markup in selected currency
+      let markupAmount = 0;
+      if (markup) {
+        if (markup.markup_type === 'percentage' && markup.markup_percentage !== null) {
+          markupAmount = convertedPrice * (markup.markup_percentage / 100);
+        } else {
+          const fixedMarkupUsd = parseFloat(String(markup.markup_price_usd)) || 0;
+          markupAmount = targetCurrency === 'USD' ? fixedMarkupUsd : currencyConversion.convertAmount(fixedMarkupUsd, 'USD');
+        }
+      }
+      return convertedPrice + markupAmount;
     }
     
-    // Already in USD - calculate markup dynamically
-    if (currency === 'USD') {
-      const markupAmount = calculateMarkupAmount(price, markup ?? null);
+    // Already in target currency - calculate markup directly
+    if (currency === targetCurrency) {
+      let markupAmount = 0;
+      if (markup) {
+        if (markup.markup_type === 'percentage' && markup.markup_percentage !== null) {
+          markupAmount = price * (markup.markup_percentage / 100);
+        } else {
+          const fixedMarkupUsd = parseFloat(String(markup.markup_price_usd)) || 0;
+          markupAmount = targetCurrency === 'USD' ? fixedMarkupUsd : (currencyConversion?.convertAmount(fixedMarkupUsd, 'USD') ?? fixedMarkupUsd);
+        }
+      }
       return price + markupAmount;
     }
     
@@ -112,12 +132,15 @@ const CartPanel: React.FC<CartPanelProps> = ({
     return price;
   };
 
-  // Get hospitality total for a cart item
+  // Get hospitality total for a cart item (converted to target currency)
   const getHospitalityTotal = (item: CartItem): number => {
     if (!item.selectedHospitalities || item.selectedHospitalities.length === 0) {
       return 0;
     }
-    return item.selectedHospitalities.reduce((sum, h) => sum + h.price_usd, 0);
+    return item.selectedHospitalities.reduce((sum, h) => {
+      const convertedPrice = targetCurrency === 'USD' ? h.price_usd : (currencyConversion?.convertAmount(h.price_usd, 'USD') ?? h.price_usd);
+      return sum + convertedPrice;
+    }, 0);
   };
 
   // Get total price for a cart item (ticket + hospitalities) * quantity
@@ -136,9 +159,9 @@ const CartPanel: React.FC<CartPanelProps> = ({
   const orderTotal = subtotal;
 
   const formatPrice = (amount: number) => {
-    // Use USD if conversion is available
+    // Use the target currency from conversion props
     if (currencyConversion?.hasConversion) {
-      return `USD ${amount.toFixed(2)}`;
+      return `${targetCurrency} ${amount.toFixed(2)}`;
     }
     
     const currency = cartItems[0]?.ticket.currency_code || 'USD';
@@ -232,7 +255,10 @@ const CartPanel: React.FC<CartPanelProps> = ({
                             <div key={h.hospitality_id} className={styles.hospitalityItem}>
                               <ChefHat size={12} />
                               <span>{h.name}</span>
-                              <span className={styles.hospitalityPrice}>+${h.price_usd.toFixed(2)}</span>
+                          <span className={styles.hospitalityPrice}>+{(() => {
+                            const converted = targetCurrency === 'USD' ? h.price_usd : (currencyConversion?.convertAmount(h.price_usd, 'USD') ?? h.price_usd);
+                            return `${targetCurrency} ${converted.toFixed(2)}`;
+                          })()}</span>
                             </div>
                           ))}
                         </div>

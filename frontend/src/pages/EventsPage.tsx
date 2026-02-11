@@ -5,6 +5,7 @@ import { useEvents } from '../hooks/useEvents';
 import { useTeamDetails } from '../hooks/useTeamDetails';
 import { useTeamCredentials } from '../hooks/useTeamCredentials';
 import { useMultiCurrencyConversion } from '../hooks/useMultiCurrencyConversion';
+import { useSelectedCurrency } from '../contexts/CurrencyContext';
 import type { Event } from '../services/apiRoutes';
 import styles from './EventsPage.module.css';
 
@@ -75,8 +76,11 @@ const EventsPage: React.FC = () => {
     team_id
   );
 
-  // Currency conversion hook - convert EUR prices to USD
-  const { convertAmount, isLoading: currencyLoading } = useMultiCurrencyConversion(['EUR'], 'USD');
+  // Get user-selected currency
+  const { selectedCurrencyCode } = useSelectedCurrency();
+
+  // Currency conversion hook - convert EUR prices to selected currency
+  const { convertAmount, isLoading: currencyLoading } = useMultiCurrencyConversion(['EUR'], selectedCurrencyCode);
 
   // Console log the team credentials API usage for debugging
   React.useEffect(() => {
@@ -129,16 +133,16 @@ const EventsPage: React.FC = () => {
     }
   };
 
-  // Format price with correct currency from API response - converted to USD
+  // Format price with correct currency from API response - converted to selected currency
   const formatPrice = (event: Event) => {
     if (!event.min_ticket_price_eur || event.min_ticket_price_eur === 0) {
       return '';
     }
     
-    // Convert EUR price to USD using the currency conversion hook
-    const priceInUsd = convertAmount(event.min_ticket_price_eur, 'EUR');
+    // Convert EUR price to selected currency using the currency conversion hook
+    const convertedPrice = convertAmount(event.min_ticket_price_eur, 'EUR');
     
-    return `USD ${priceInUsd.toFixed(2)}`;
+    return `${selectedCurrencyCode} ${convertedPrice.toFixed(2)}`;
   };
 
   // Handle ticket navigation

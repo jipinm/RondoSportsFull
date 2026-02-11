@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './services/customerAuth';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import Layout from './components/layout/Layout';
 import ScrollToTop from './components/ScrollToTop';
 import HomePage from './components/home/HomePage';
@@ -35,6 +36,7 @@ import './styles/global.css';
 const App: React.FC = () => {
   return (
     <AuthProvider>
+      <CurrencyProvider>
       <Router>
         <ScrollToTop />
         <Layout>
@@ -72,6 +74,7 @@ const App: React.FC = () => {
           </Routes>
         </Layout>
       </Router>
+      </CurrencyProvider>
     </AuthProvider>
   );
 };
