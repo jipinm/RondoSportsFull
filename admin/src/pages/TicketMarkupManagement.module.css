@@ -834,3 +834,66 @@
   outline: none;
   border-color: #3b82f6;
 }
+
+/* Tab Navigation */
+.tabNavigation {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #334155;
+  background: #f8fafc;
+}
+
+.tabActive {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+  font-weight: 600;
+}
+
+.tabActive:hover {
+  color: #2563eb;
+  background: transparent;
+}
+
+:global([data-theme="dark"]) .tabNavigation {
+  border-bottom-color: #334155;
+}
+
+:global([data-theme="dark"]) .tab {
+  color: #94a3b8;
+}
+
+:global([data-theme="dark"]) .tab:hover {
+  color: #e2e8f0;
+  background: #1e293b;
+}
+
+:global([data-theme="dark"]) .tabActive {
+  color: #60a5fa;
+  border-bottom-color: #60a5fa;
+}
+
+:global([data-theme="dark"]) .tabActive:hover {
+  color: #93bbfc;
+  background: transparent;
+}

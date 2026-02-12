@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { DollarSign, TrendingUp, Save, Trash2, RefreshCw, Edit2, X, Check } from 'lucide-react';
+import { DollarSign, TrendingUp, Save, Trash2, RefreshCw, Edit2, X, Check, Layers } from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { useToast } from '../hooks/useToast';
 import ToastContainer from '../components/ToastContainer';
 import { ticketMarkupService, type TicketMarkup, type MarkupType } from '../services/ticketMarkupService';
+import HierarchicalMarkupManager from '../components/HierarchicalMarkupManager';
 import styles from './TicketMarkupManagement.module.css';
 
 // Helper to get current season (e.g., "25/26")
@@ -104,6 +105,9 @@ const useCurrencyConversion = (fromCurrency: string, toCurrency: string = 'USD')
 };
 
 const TicketMarkupManagement: React.FC = () => {
+  // Tab state: 'per-ticket' = existing flow, 'hierarchical' = new feature
+  const [activeTab, setActiveTab] = useState<'per-ticket' | 'hierarchical'>('hierarchical');
+  
   // Selection states - hierarchical
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -662,6 +666,31 @@ const TicketMarkupManagement: React.FC = () => {
         </div>
       </div>
 
+      {/* Tab Navigation */}
+      <div className={styles.tabNavigation}>
+        <button
+          className={`${styles.tab} ${activeTab === 'hierarchical' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('hierarchical')}
+        >
+          <Layers size={16} />
+          Hierarchical Markup Rules
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'per-ticket' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('per-ticket')}
+        >
+          <DollarSign size={16} />
+          Per-Ticket Markup (Legacy)
+        </button>
+      </div>
+
+      {/* Hierarchical Markup Tab */}
+      {activeTab === 'hierarchical' && (
+        <HierarchicalMarkupManager />
+      )}
+
+      {/* Per-Ticket Markup Tab (existing implementation) */}
+      {activeTab === 'per-ticket' && (
       <div className={styles.content}>
         {/* Step 1: Tournament Selection */}
         <Card className={styles.selectionCard}>
@@ -1144,11 +1173,12 @@ const TicketMarkupManagement: React.FC = () => {
             <div className={styles.placeholder}>
               <DollarSign size={64} className={styles.placeholderIcon} />
               <h3>No Event Selected</h3>
-              <p>Select an event from the list above to configure markup pricing</p>
+              <p>Select an event from the list above to configure per-ticket markup pricing</p>
             </div>
           </Card>
         )}
       </div>
+      )}
     </div>
   );
 };

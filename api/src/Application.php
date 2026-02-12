@@ -56,6 +56,7 @@ use XS2EventProxy\Controller\BannersController;
 use XS2EventProxy\Controller\DashboardController;
 use XS2EventProxy\Controller\ReportsController;
 use XS2EventProxy\Controller\TicketMarkupController;
+use XS2EventProxy\Controller\MarkupRuleController;
 use XS2EventProxy\Controller\HospitalityController;
 use XS2EventProxy\Controller\CurrencyController;
 use XS2EventProxy\Middleware\CustomerAuthMiddleware;
@@ -81,6 +82,7 @@ use XS2EventProxy\Repository\TeamCredentialsRepository;
 use XS2EventProxy\Repository\StaticPagesRepository;
 use XS2EventProxy\Repository\BannersRepository;
 use XS2EventProxy\Repository\TicketMarkupRepository;
+use XS2EventProxy\Repository\MarkupRuleRepository;
 use XS2EventProxy\Repository\HospitalityRepository;
 use XS2EventProxy\Repository\CurrencyRepository;
 use XS2EventProxy\Service\TeamCredentialsService;
@@ -536,6 +538,17 @@ class Application
             $group->delete('/ticket-markups/ticket/{ticketId}', [$markupController, 'deleteMarkupByTicket']);
             $group->delete('/ticket-markups/event/{eventId}', [$markupController, 'deleteMarkupsByEvent']);
 
+            // Hierarchical Markup Rules Management (Admin)
+            $markupRuleRepository = new MarkupRuleRepository($this->database);
+            $markupRuleController = new MarkupRuleController($markupRuleRepository, $this->logger);
+            $group->post('/markup-rules', [$markupRuleController, 'createOrUpdateRule']);
+            $group->get('/markup-rules', [$markupRuleController, 'getAllRules']);
+            $group->get('/markup-rules/{id:[0-9]+}', [$markupRuleController, 'getRuleById']);
+            $group->put('/markup-rules/{id:[0-9]+}', [$markupRuleController, 'updateRule']);
+            $group->delete('/markup-rules/{id:[0-9]+}', [$markupRuleController, 'deleteRule']);
+            $group->get('/markup-rules/sport/{sportType}', [$markupRuleController, 'getRulesBySport']);
+            $group->post('/markup-rules/resolve', [$markupRuleController, 'resolveMarkup']);
+
             // Hospitality Management (Admin)
             $hospitalityRepository = new HospitalityRepository($this->database);
             $hospitalityController = new HospitalityController($hospitalityRepository, $this->logger);
@@ -828,14 +841,18 @@ class Application
         
         // Public Ticket Enhancements (Markup Pricing & Hospitality)
         $markupRepository = new TicketMarkupRepository($this->database);
+        $markupRuleRepository2 = new MarkupRuleRepository($this->database);
         $hospitalityRepository = new HospitalityRepository($this->database);
         $publicEnhancementsController = new PublicTicketEnhancementsController(
             $this->logger,
             $markupRepository,
+            $markupRuleRepository2,
             $hospitalityRepository
         );
         $this->app->get('/v1/events/{eventId}/markups', [$publicEnhancementsController, 'getEventMarkups']);
         $this->app->get('/v1/tickets/{ticketId}/markup', [$publicEnhancementsController, 'getTicketMarkup']);
+        $this->app->get('/v1/events/{eventId}/effective-markups', [$publicEnhancementsController, 'getEventEffectiveMarkups']);
+        $this->app->get('/v1/events/{eventId}/tickets/{ticketId}/effective-markup', [$publicEnhancementsController, 'getEffectiveMarkup']);
         $this->app->get('/v1/events/{eventId}/hospitalities', [$publicEnhancementsController, 'getEventHospitalities']);
         $this->app->get('/v1/tickets/{ticketId}/hospitalities', [$publicEnhancementsController, 'getTicketHospitalities']);
         $this->app->get('/v1/hospitalities', [$publicEnhancementsController, 'getActiveHospitalities']);
