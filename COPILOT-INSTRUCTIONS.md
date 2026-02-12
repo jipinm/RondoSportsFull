@@ -1,4 +1,4 @@
-# 🧾 Hospitality Scope Change – AI Implementation Instructions
+# 🧾 Hospitality Scope Change – Implementation Instructions
 
 ## 📍 Route Affected
 `/events/:EventId/tickets` (frontend application)

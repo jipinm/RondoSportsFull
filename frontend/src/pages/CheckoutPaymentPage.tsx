@@ -22,12 +22,10 @@ interface StripePaymentDetails {
   full_response: any;
 }
 
-// Selected hospitality type
-interface SelectedHospitality {
-  id: number;
+// Included hospitality info (read-only, no pricing)
+interface IncludedHospitality {
   hospitality_id: number;
   name: string;
-  price_usd: number;
 }
 
 interface CartItem {
@@ -35,8 +33,7 @@ interface CartItem {
   quantity: number;
   finalPriceUSD?: number;
   markupAmount?: number;
-  selectedHospitalities?: SelectedHospitality[];
-  hospitalityTotal?: number;
+  includedHospitalities?: IncludedHospitality[];
   totalPricePerTicket?: number;
 }
 
@@ -72,17 +69,13 @@ const CheckoutPaymentPage: React.FC = () => {
   const { customer } = useAuth();
   const { error: bookingError } = useBooking();
 
-  // Calculate total amount using pre-calculated final prices in USD
+  // Calculate total amount using pre-calculated final prices
+  // Hospitality is now inclusive with ticket price — no separate pricing
   const calculateTotal = (): number => {
     if (!state?.cartItems) return 0;
     return state.cartItems.reduce((total, item) => {
       const price = item.finalPriceUSD !== undefined ? item.finalPriceUSD : item.ticket.face_value;
-      // Include hospitality costs (already in USD)
-      const hospitalityTotal = item.selectedHospitalities?.reduce(
-        (sum, h) => sum + h.price_usd * item.quantity,
-        0
-      ) || 0;
-      return total + (price * item.quantity) + hospitalityTotal;
+      return total + (price * item.quantity);
     }, 0);
   };
 
@@ -133,7 +126,7 @@ const CheckoutPaymentPage: React.FC = () => {
       // Create booking AFTER payment success (not before!)
       const currency = getCurrency();
       
-      // Calculate ticket prices using pre-calculated final prices in USD
+      // Calculate ticket prices using pre-calculated final prices
       const ticketInfoWithConvertedPrices = state.cartItems.map(item => {
         const price = item.finalPriceUSD !== undefined ? item.finalPriceUSD : item.ticket.face_value;
         
@@ -144,26 +137,19 @@ const CheckoutPaymentPage: React.FC = () => {
         };
       });
       
-      // Calculate hospitality total and prepare hospitality data for API
-      let hospitalityTotal = 0;
+      // Gather included hospitality names for informational reference in booking
       const hospitalitiesPayload: Array<{
         hospitality_id: number;
         name: string;
-        price_usd: number;
-        quantity: number;
         ticket_id: string;
       }> = [];
       
       state.cartItems.forEach(item => {
-        if (item.selectedHospitalities && item.selectedHospitalities.length > 0) {
-          item.selectedHospitalities.forEach(h => {
-            const total = h.price_usd * item.quantity;
-            hospitalityTotal += total;
+        if (item.includedHospitalities && item.includedHospitalities.length > 0) {
+          item.includedHospitalities.forEach(h => {
             hospitalitiesPayload.push({
               hospitality_id: h.hospitality_id,
               name: h.name,
-              price_usd: h.price_usd,
-              quantity: item.quantity,
               ticket_id: item.ticket.ticket_id
             });
           });
@@ -180,7 +166,6 @@ const CheckoutPaymentPage: React.FC = () => {
         sport_type: 'Football',
         tournament_name: state.eventData.tournament_name,
         total_amount: orderTotal,
-        hospitality_total: hospitalityTotal,
         hospitalities: hospitalitiesPayload,
         currency: currency,
         ticket_count: state.cartItems.reduce((total, item) => total + item.quantity, 0),
@@ -324,15 +309,15 @@ const CheckoutPaymentPage: React.FC = () => {
               <span className={styles.ticketPrice}>
                 {formatPrice(price * item.quantity)}
               </span>
-              {item.selectedHospitalities && item.selectedHospitalities.length > 0 && (
+              {item.includedHospitalities && item.includedHospitalities.length > 0 && (
                 <div className={styles.hospitalityItems}>
-                  {item.selectedHospitalities.map((h, hIndex) => (
+                  {item.includedHospitalities.map((h, hIndex) => (
                     <div key={hIndex} className={styles.hospitalityItem}>
                       <span className={styles.hospitalityName}>
                         <ChefHat size={12} /> {h.name}
                       </span>
                       <span className={styles.hospitalityPrice}>
-                        +{formatPrice(h.price_usd * item.quantity)}
+                        Included
                       </span>
                     </div>
                   ))}

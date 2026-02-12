@@ -16,12 +16,10 @@ import {
 import type { Ticket } from '../services/apiRoutes';
 import styles from './CheckoutPage.module.css';
 
-// Selected hospitality type
-interface SelectedHospitality {
-  id: number;
+// Included hospitality info (read-only, no pricing)
+interface IncludedHospitality {
   hospitality_id: number;
   name: string;
-  price_usd: number;
 }
 
 interface CartItem {
@@ -29,8 +27,7 @@ interface CartItem {
   quantity: number;
   finalPriceUSD?: number;
   markupAmount?: number;
-  selectedHospitalities?: SelectedHospitality[];
-  hospitalityTotal?: number;
+  includedHospitalities?: IncludedHospitality[];
   totalPricePerTicket?: number;
 }
 
@@ -305,14 +302,13 @@ const CheckoutGuestDetailsPage: React.FC = () => {
               <div className={styles.ticketDetails}>
                 <span className={styles.ticketName}>{item.ticket.ticket_title}</span>
                 <span className={styles.ticketQuantity}>Qty: {item.quantity}</span>
-                {/* Display selected hospitalities */}
-                {item.selectedHospitalities && item.selectedHospitalities.length > 0 && (
+                {/* Display included hospitalities (informational, no prices) */}
+                {item.includedHospitalities && item.includedHospitalities.length > 0 && (
                   <div className={styles.hospitalityList}>
-                    {item.selectedHospitalities.map(h => (
+                    {item.includedHospitalities.map(h => (
                       <div key={h.hospitality_id} className={styles.hospitalityItem}>
                         <ChefHat size={12} />
                         <span>{h.name}</span>
-                        <span>+{formatPrice(h.price_usd)}</span>
                       </div>
                     ))}
                   </div>

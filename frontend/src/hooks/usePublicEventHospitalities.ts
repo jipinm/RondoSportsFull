@@ -1,78 +1,75 @@
 /**
  * usePublicEventHospitalities Hook
  * 
- * React hook for fetching hospitality services available for tickets in an event (public API)
+ * Fetches hierarchically resolved hospitality services for tickets in an event.
+ * Hospitalities are admin-assigned, ticket-inclusive, and price-independent.
+ * Uses the 5-level hierarchy: sport > tournament > team > event > ticket.
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
-  getPublicEventHospitalities, 
-  type PublicTicketHospitality 
+  getResolvedEventHospitalities, 
+  type ResolvedHospitality 
 } from '../services/hospitalityService';
 
+/** Simplified hospitality option — no pricing fields */
 export interface HospitalityOption {
-  id: number;
   hospitality_id: number;
   name: string;
   description: string | null;
-  price_usd: number;
-  effective_price_usd: number;
+  level: string;
 }
 
-export const usePublicEventHospitalities = (eventId: string | undefined) => {
-  const [hospitalities, setHospitalities] = useState<PublicTicketHospitality[]>([]);
+export const usePublicEventHospitalities = (
+  eventId: string | undefined,
+  sportType?: string,
+  ticketIds?: string[],
+  tournamentId?: string | null,
+  teamId?: string | null
+) => {
+  const [hospitalitiesByTicket, setHospitalitiesByTicket] = useState<Map<string, HospitalityOption[]>>(new Map());
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchHospitalities = useCallback(async () => {
-    if (!eventId) {
-      setHospitalities([]);
+    if (!eventId || !sportType || !ticketIds || ticketIds.length === 0) {
+      setHospitalitiesByTicket(new Map());
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-      console.log('[Hospitalities] Fetching for event:', eventId);
-      const result = await getPublicEventHospitalities(eventId);
-      console.log('[Hospitalities] Received:', result);
-      setHospitalities(result);
+      const result = await getResolvedEventHospitalities(
+        eventId, sportType, ticketIds, tournamentId, teamId
+      );
+
+      // Convert the object map into Map<string, HospitalityOption[]>
+      const map = new Map<string, HospitalityOption[]>();
+      for (const [ticketId, hospitalities] of Object.entries(result)) {
+        const options: HospitalityOption[] = (hospitalities as ResolvedHospitality[]).map(h => ({
+          hospitality_id: h.hospitality_id,
+          name: h.hospitality_name,
+          description: h.hospitality_description,
+          level: h.level,
+        }));
+        if (options.length > 0) {
+          map.set(ticketId, options);
+        }
+      }
+      setHospitalitiesByTicket(map);
     } catch (err: any) {
       console.error('[Hospitalities] Error:', err);
       setError(err.message || 'Failed to fetch hospitalities');
-      setHospitalities([]);
+      setHospitalitiesByTicket(new Map());
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, sportType, ticketIds?.join(','), tournamentId, teamId]);
 
   useEffect(() => {
     fetchHospitalities();
   }, [fetchHospitalities]);
-
-  // Group hospitalities by ticket_id for easy lookup
-  const hospitalitiesByTicket = useMemo(() => {
-    const map = new Map<string, HospitalityOption[]>();
-    
-    console.log('[Hospitalities] Grouping by ticket. Raw data:', hospitalities);
-    
-    hospitalities.forEach(h => {
-      const existing = map.get(h.ticket_id) || [];
-      existing.push({
-        id: h.id,
-        hospitality_id: h.hospitality_id,
-        name: h.name,
-        description: h.description,
-        price_usd: h.base_price_usd,
-        effective_price_usd: h.effective_price_usd
-      });
-      map.set(h.ticket_id, existing);
-    });
-    
-    console.log('[Hospitalities] Mapped by ticket:', [...map.entries()]);
-    
-    return map;
-  }, [hospitalities]);
 
   // Check if a ticket has any hospitalities
   const ticketHasHospitalities = useCallback((ticketId: string): boolean => {
@@ -85,7 +82,6 @@ export const usePublicEventHospitalities = (eventId: string | undefined) => {
   }, [hospitalitiesByTicket]);
 
   return {
-    hospitalities,
     hospitalitiesByTicket,
     loading,
     error,

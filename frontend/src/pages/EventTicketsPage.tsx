@@ -9,7 +9,8 @@ import {
   MapPinned, 
   IdCard,
   ChefHat,
-  Building2
+  Building2,
+  Sparkles
 } from 'lucide-react';
 import { useEventDetails } from '../hooks/useEventDetails';
 import { useTickets } from '../hooks/useTickets';
@@ -21,16 +22,15 @@ import { calculateEffectiveMarkupAmount } from '../services/ticketEnhancementsSe
 import { usePublicEventHospitalities } from '../hooks/usePublicEventHospitalities';
 import VenueMap from '../components/VenueMap';
 import CartPanel from '../components/CartPanel';
-import HospitalityManager from '../components/HospitalityManager';
-import HospitalitySelector, { type SelectedHospitality } from '../components/HospitalitySelector';
 import type { Ticket } from '../services/apiRoutes';
 import styles from './EventTicketsPage.module.css';
 
-// Extended CartItem with hospitality support
+// CartItem — hospitality is now informational only (included with ticket)
 export interface CartItem {
   ticket: Ticket;
   quantity: number;
-  selectedHospitalities?: SelectedHospitality[];
+  /** Read-only list of hospitalities included with this ticket (no pricing) */
+  includedHospitalities?: { hospitality_id: number; name: string }[];
 }
 
 const EventTicketsPage: React.FC = () => {
@@ -41,10 +41,6 @@ const EventTicketsPage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [hoveredTicketCategory, setHoveredTicketCategory] = useState<string | null>(null);
   
-  // Hospitality selector state
-  const [showHospitalitySelector, setShowHospitalitySelector] = useState(false);
-  const [pendingTicket, setPendingTicket] = useState<Ticket | null>(null);
-  
   // Fetch event details and tickets
   const { event, loading: eventLoading, error: eventError } = useEventDetails(eventId);
   const { tickets, loading: ticketsLoading, error: ticketsError } = useTickets({ event_id: eventId });
@@ -53,7 +49,7 @@ const EventTicketsPage: React.FC = () => {
   const { selectedCurrencyCode } = useSelectedCurrency();
   
   // Get all unique currencies from tickets for multi-currency conversion
-  // Always include 'USD' so we can convert fixed markup amounts and hospitality prices
+  // Always include 'USD' so we can convert fixed markup amounts
   const ticketCurrencies = useMemo(() => {
     const codes = tickets.map(t => t.currency_code).filter(Boolean);
     if (!codes.includes('USD')) {
@@ -92,11 +88,17 @@ const EventTicketsPage: React.FC = () => {
     event?.hometeam_id
   );
 
-  // Fetch hospitality options for this event (PUBLIC API - no auth required)
+  // Fetch hierarchically resolved hospitality assignments for this event (PUBLIC API)
   const {
     ticketHasHospitalities,
     getHospitalitiesForTicket
-  } = usePublicEventHospitalities(eventId);
+  } = usePublicEventHospitalities(
+    eventId,
+    event?.sport_type,
+    ticketIds,
+    event?.tournament_id,
+    event?.hometeam_id
+  );
 
   // Registration form state
   const [formData, setFormData] = useState({
@@ -224,26 +226,19 @@ const EventTicketsPage: React.FC = () => {
     setFormData({ name: '', email: '' });
   };
 
-  // Handle add ticket (updated for cart functionality with hospitality support)
+  // Handle add ticket — hospitalities are now included with the ticket (no selection modal)
   const handleAddTicket = (ticket: Ticket) => {
-    console.log('[AddTicket] ticket_id:', ticket.ticket_id);
-    console.log('[AddTicket] ticketHasHospitalities:', ticketHasHospitalities(ticket.ticket_id));
-    console.log('[AddTicket] hospitalities for ticket:', getHospitalitiesForTicket(ticket.ticket_id));
-    
-    // Check if this ticket has hospitality options
-    if (ticketHasHospitalities(ticket.ticket_id)) {
-      // Show hospitality selector modal
-      setPendingTicket(ticket);
-      setShowHospitalitySelector(true);
-      return;
-    }
-    
-    // No hospitalities - add directly to cart
-    addTicketToCart(ticket, []);
+    // Gather included hospitalities (informational only — no pricing)
+    const hospitalities = getHospitalitiesForTicket(ticket.ticket_id).map(h => ({
+      hospitality_id: h.hospitality_id,
+      name: h.name
+    }));
+
+    addTicketToCart(ticket, hospitalities);
   };
 
-  // Add ticket to cart with optional hospitalities
-  const addTicketToCart = (ticket: Ticket, hospitalities: SelectedHospitality[]) => {
+  // Add ticket to cart with included hospitality info (read-only, no pricing)
+  const addTicketToCart = (ticket: Ticket, hospitalities: { hospitality_id: number; name: string }[]) => {
     const existingItem = cartItems.find(item => item.ticket.ticket_id === ticket.ticket_id);
     
     if (existingItem) {
@@ -254,8 +249,8 @@ const EventTicketsPage: React.FC = () => {
           : item
       ));
     } else {
-      // Add new item to cart with hospitalities
-      setCartItems([...cartItems, { ticket, quantity: 1, selectedHospitalities: hospitalities }]);
+      // Add new item to cart with included hospitalities
+      setCartItems([...cartItems, { ticket, quantity: 1, includedHospitalities: hospitalities }]);
     }
     
     // Open cart panel
@@ -297,6 +292,7 @@ const EventTicketsPage: React.FC = () => {
 
     // Calculate final prices for each cart item (with markup and currency conversion)
     // Converts to the user-selected currency using live exchange rates
+    // Note: hospitality is now inclusive — no separate pricing
     const cartItemsWithFinalPrices = cartItems.map(item => {
       const currency = item.ticket.currency_code || 'USD';
       const faceValue = item.ticket.face_value || 0;
@@ -324,26 +320,14 @@ const EventTicketsPage: React.FC = () => {
         convertUsdToSelected
       );
       
-      // Final price in selected currency = converted base + markup
+      // Final price in selected currency = converted base + markup (no hospitality pricing)
       const finalPrice = basePrice + markupAmount;
-      
-      // Convert hospitality prices from USD to selected currency
-      const convertedHospitalities = (item.selectedHospitalities || []).map(h => ({
-        ...h,
-        price_usd: selectedCurrencyCode === 'USD' ? h.price_usd : convertAmount(h.price_usd, 'USD')
-      }));
-      
-      const hospitalityTotal = convertedHospitalities.reduce(
-        (sum, h) => sum + h.price_usd, 0
-      );
       
       return {
         ...item,
-        selectedHospitalities: convertedHospitalities,
-        finalPriceUSD: finalPrice, // Keep field name for backward compat with checkout pages
+        finalPriceUSD: finalPrice,
         markupAmount,
-        hospitalityTotal,
-        totalPricePerTicket: finalPrice + hospitalityTotal
+        totalPricePerTicket: finalPrice
       };
     });
 
@@ -365,22 +349,6 @@ const EventTicketsPage: React.FC = () => {
         selectedCurrencyCode
       }
     });
-  };
-
-  // Handle hospitality selection confirmation
-  const handleHospitalityConfirm = (selectedHospitalities: SelectedHospitality[]) => {
-    if (pendingTicket) {
-      addTicketToCart(pendingTicket, selectedHospitalities);
-      setShowHospitalitySelector(false);
-      setPendingTicket(null);
-      setIsCartOpen(true);
-    }
-  };
-
-  // Handle hospitality selection cancel
-  const handleHospitalityCancel = () => {
-    setShowHospitalitySelector(false);
-    setPendingTicket(null);
   };
 
   if (eventLoading || ticketsLoading) {
@@ -574,10 +542,6 @@ const EventTicketsPage: React.FC = () => {
                 </p>
               </div>
               <div className={styles.ticketFilters}>
-                {/* Hospitality Management Button */}
-                {eventId && tickets.length > 0 && (
-                  <HospitalityManager eventId={eventId} tickets={tickets} />
-                )}
                 <label className={styles.checkboxLabel}>
                   <input
                     type="checkbox"
@@ -642,9 +606,23 @@ const EventTicketsPage: React.FC = () => {
                               <Building2 size={16} />
                             </div>
                           )}
-                          {(ticket.category_type === 'hospitality' || ticketHasHospitalities(ticket.ticket_id)) && (
-                            <div className={`${styles.featureIcon} ${styles.hospitalityIcon}`} data-tooltip="Hospitality options available">
+                          {ticketHasHospitalities(ticket.ticket_id) && (
+                            <div className={`${styles.featureIcon} ${styles.hospitalityIcon} ${styles.hospitalityTrigger}`}>
                               <ChefHat size={16} />
+                              <div className={styles.hospitalityTooltip}>
+                                <div className={styles.tooltipHeader}>
+                                  <ChefHat size={14} />
+                                  <span>Included Hospitality</span>
+                                </div>
+                                <ul className={styles.tooltipList}>
+                                  {getHospitalitiesForTicket(ticket.ticket_id).map(h => (
+                                    <li key={h.hospitality_id} className={styles.tooltipItem}>
+                                      <Sparkles size={12} className={styles.tooltipItemIcon} />
+                                      <span>{h.name}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -777,15 +755,6 @@ const EventTicketsPage: React.FC = () => {
         markupsByTicket={markupsByTicket}
       />
 
-      {/* Hospitality Selector Modal */}
-      {showHospitalitySelector && pendingTicket && (
-        <HospitalitySelector
-          ticketTitle={pendingTicket.ticket_title}
-          hospitalities={getHospitalitiesForTicket(pendingTicket.ticket_id)}
-          onConfirm={handleHospitalityConfirm}
-          onCancel={handleHospitalityCancel}
-        />
-      )}
     </div>
   );
 };

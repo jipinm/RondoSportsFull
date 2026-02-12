@@ -292,60 +292,50 @@ export const removeEventHospitalities = async (eventId: string): Promise<void> =
 // PUBLIC API FUNCTIONS (No authentication required)
 // ============================================================================
 
-export interface PublicTicketHospitality {
-  id: number;
-  event_id: string;
-  ticket_id: string;
+/**
+ * Resolved hospitality item returned by the hierarchical public API.
+ * No pricing fields — hospitality is now inclusive with the ticket.
+ */
+export interface ResolvedHospitality {
   hospitality_id: number;
-  custom_price_usd: number | null;
-  name: string;
-  description: string | null;
-  base_price_usd: number;
-  effective_price_usd: number;
-  is_active: boolean;
+  hospitality_name: string;
+  hospitality_description: string | null;
+  level: 'sport' | 'tournament' | 'team' | 'event' | 'ticket';
+  source: 'hospitality_assignments' | 'legacy';
 }
 
 /**
- * Get all hospitalities assigned to tickets in an event (PUBLIC API)
+ * Get hierarchically resolved hospitality services for all tickets in an event.
+ * Uses the 5-level hierarchy: sport > tournament > team > event > ticket.
+ * Returns a map of ticket_id → resolved hospitality list (no pricing).
+ *
+ * @param eventId - The event ID
+ * @param sportType - Sport type for hierarchical context
+ * @param ticketIds - Comma-separated ticket IDs
+ * @param tournamentId - Optional tournament ID
+ * @param teamId - Optional team (home team) ID
  */
-export const getPublicEventHospitalities = async (eventId: string): Promise<PublicTicketHospitality[]> => {
-  const response = await fetch(`${API_BASE_URL}/v1/events/${eventId}/hospitalities`);
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to fetch event hospitalities');
-  }
-  
-  const data = await response.json();
-  return data.data || [];
-};
+export const getResolvedEventHospitalities = async (
+  eventId: string,
+  sportType: string,
+  ticketIds: string[],
+  tournamentId?: string | null,
+  teamId?: string | null
+): Promise<Record<string, ResolvedHospitality[]>> => {
+  const params = new URLSearchParams();
+  if (sportType) params.append('sport_type', sportType);
+  if (tournamentId) params.append('tournament_id', tournamentId);
+  if (teamId) params.append('team_id', teamId);
+  if (ticketIds.length > 0) params.append('ticket_ids', ticketIds.join(','));
 
-/**
- * Get hospitalities for a specific ticket (PUBLIC API)
- */
-export const getPublicTicketHospitalities = async (eventId: string, ticketId: string): Promise<PublicTicketHospitality[]> => {
-  const response = await fetch(`${API_BASE_URL}/v1/tickets/${ticketId}/hospitalities?event_id=${eventId}`);
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to fetch ticket hospitalities');
-  }
-  
-  const data = await response.json();
-  return data.data?.hospitalities || [];
-};
+  const url = `${API_BASE_URL}/v1/events/${eventId}/effective-hospitalities?${params.toString()}`;
+  const response = await fetch(url);
 
-/**
- * Get all active hospitality services (PUBLIC API)
- */
-export const getPublicActiveHospitalities = async (): Promise<Hospitality[]> => {
-  const response = await fetch(`${API_BASE_URL}/v1/hospitalities`);
-  
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to fetch active hospitalities');
+    throw new Error(error.error || 'Failed to fetch resolved event hospitalities');
   }
-  
+
   const data = await response.json();
-  return data.data || [];
+  return data.data?.hospitalities || {};
 };

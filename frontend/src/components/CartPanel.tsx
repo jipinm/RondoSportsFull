@@ -5,18 +5,17 @@ import { type EffectiveMarkup, calculateEffectiveMarkupAmount } from '../service
 import GuestRequirementsPreview from './GuestRequirementsPreview';
 import styles from './CartPanel.module.css';
 
-// Selected hospitality type
-interface SelectedHospitality {
-  id: number;
+// Included hospitality info (read-only, no pricing)
+interface IncludedHospitality {
   hospitality_id: number;
   name: string;
-  price_usd: number;
 }
 
 interface CartItem {
   ticket: Ticket;
   quantity: number;
-  selectedHospitalities?: SelectedHospitality[];
+  /** Read-only list of hospitalities included with this ticket (no pricing) */
+  includedHospitalities?: IncludedHospitality[];
 }
 
 interface CartPanelProps {
@@ -134,22 +133,10 @@ const CartPanel: React.FC<CartPanelProps> = ({
     return price;
   };
 
-  // Get hospitality total for a cart item (converted to target currency)
-  const getHospitalityTotal = (item: CartItem): number => {
-    if (!item.selectedHospitalities || item.selectedHospitalities.length === 0) {
-      return 0;
-    }
-    return item.selectedHospitalities.reduce((sum, h) => {
-      const convertedPrice = targetCurrency === 'USD' ? h.price_usd : (currencyConversion?.convertAmount(h.price_usd, 'USD') ?? h.price_usd);
-      return sum + convertedPrice;
-    }, 0);
-  };
-
-  // Get total price for a cart item (ticket + hospitalities) * quantity
+  // Get total price for a cart item (ticket price only — hospitality is inclusive)
   const getItemTotal = (item: CartItem): number => {
     const ticketPrice = getTicketFinalPrice(item.ticket);
-    const hospitalityTotal = getHospitalityTotal(item);
-    return (ticketPrice + hospitalityTotal) * item.quantity;
+    return ticketPrice * item.quantity;
   };
 
   // Calculate subtotal using final prices with markup and hospitalities
@@ -250,17 +237,13 @@ const CartPanel: React.FC<CartPanelProps> = ({
                       <h4 className={styles.itemTitle}>{item.ticket.ticket_title}</h4>
                       <p className={styles.itemCategory}>{item.ticket.category_name}</p>
                       
-                      {/* Display selected hospitalities */}
-                      {item.selectedHospitalities && item.selectedHospitalities.length > 0 && (
+                      {/* Display included hospitalities (informational, no prices) */}
+                      {item.includedHospitalities && item.includedHospitalities.length > 0 && (
                         <div className={styles.hospitalityList}>
-                          {item.selectedHospitalities.map(h => (
+                          {item.includedHospitalities.map(h => (
                             <div key={h.hospitality_id} className={styles.hospitalityItem}>
                               <ChefHat size={12} />
                               <span>{h.name}</span>
-                          <span className={styles.hospitalityPrice}>+{(() => {
-                            const converted = targetCurrency === 'USD' ? h.price_usd : (currencyConversion?.convertAmount(h.price_usd, 'USD') ?? h.price_usd);
-                            return `${targetCurrency} ${converted.toFixed(2)}`;
-                          })()}</span>
                             </div>
                           ))}
                         </div>

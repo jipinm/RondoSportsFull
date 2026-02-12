@@ -785,19 +785,110 @@
   z-index: 20;
 }
 
-/* Simplified special styling */
-.featureIcon[data-tooltip*="hospitality"],
+/* Hospitality icon styling */
 .hospitalityIcon {
   background: linear-gradient(135deg, #fef3f2, #fdf2f8);
   color: #9333ea;
   border-color: #e9d5ff;
 }
 
-.featureIcon[data-tooltip*="hospitality"]:hover,
 .hospitalityIcon:hover {
   background: linear-gradient(135deg, #faf5ff, #f5f3ff);
   color: #7c3aed;
   box-shadow: 0 2px 8px rgba(147, 51, 234, 0.2);
+}
+
+/* Hospitality tooltip trigger — suppress the default data-tooltip ::after/::before */
+.hospitalityTrigger::after,
+.hospitalityTrigger::before {
+  display: none !important;
+}
+
+/* Modern hospitality tooltip */
+.hospitalityTooltip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  min-width: 220px;
+  max-width: 280px;
+  background: #ffffff;
+  border: 1px solid #e9d5ff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(147, 51, 234, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hospitalityTrigger:hover .hospitalityTooltip {
+  display: block;
+}
+
+/* Tooltip arrow */
+.hospitalityTooltip::before {
+  content: '';
+  display: block !important;
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border-left: 1px solid #e9d5ff;
+  border-top: 1px solid #e9d5ff;
+  z-index: 1;
+}
+
+/* Tooltip header */
+.tooltipHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border-bottom: 1px solid #e9d5ff;
+  color: #6d28d9;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.tooltipHeader svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+/* Tooltip hospitality list */
+.tooltipList {
+  list-style: none;
+  margin: 0;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tooltipItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #faf5ff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #4c1d95;
+  transition: background 0.15s ease;
+}
+
+.tooltipItemIcon {
+  flex-shrink: 0;
+  color: #a78bfa;
 }
 
 .featureIcon[data-tooltip*="grandstand"] {
