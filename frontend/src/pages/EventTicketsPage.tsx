@@ -16,7 +16,8 @@ import { useTickets } from '../hooks/useTickets';
 import { useEventGuestRequirements } from '../hooks/useEventGuestRequirements';
 import { useMultiCurrencyConversion } from '../hooks/useMultiCurrencyConversion';
 import { useSelectedCurrency } from '../contexts/CurrencyContext';
-import { useEventMarkups } from '../hooks/useTicketEnhancements';
+import { useEventEffectiveMarkups } from '../hooks/useTicketEnhancements';
+import { calculateEffectiveMarkupAmount } from '../services/ticketEnhancementsService';
 import { usePublicEventHospitalities } from '../hooks/usePublicEventHospitalities';
 import VenueMap from '../components/VenueMap';
 import CartPanel from '../components/CartPanel';
@@ -76,10 +77,20 @@ const EventTicketsPage: React.FC = () => {
     fetchRequirements 
   } = useEventGuestRequirements();
 
-  // Fetch markup pricing for this event
+  // Collect ticket IDs for hierarchical markup resolution
+  const ticketIds = useMemo(() => tickets.map(t => t.ticket_id), [tickets]);
+
+  // Fetch effective (hierarchically-resolved) markup pricing for this event
+  // Priority: legacy ticket > ticket rule > event rule > team rule > tournament rule > sport rule
   const { 
-    markupsByTicket
-  } = useEventMarkups(eventId);
+    effectiveMarkupsByTicket: markupsByTicket
+  } = useEventEffectiveMarkups(
+    eventId,
+    event?.sport_type,
+    ticketIds,
+    event?.tournament_id,
+    event?.hometeam_id
+  );
 
   // Fetch hospitality options for this event (PUBLIC API - no auth required)
   const {
@@ -156,54 +167,49 @@ const EventTicketsPage: React.FC = () => {
     return event.hometeam_name && event.visiting_name && event.hometeam_name !== event.visiting_name;
   };
 
-  // Format price with correct currency and apply markup pricing if available
+  // Format price with correct currency and apply hierarchical markup pricing if available
   // Uses live exchange rate for calculating percentage-based markup
+  // Fixed markups are always in USD and converted to the display currency
   const formatPrice = (ticket: Ticket) => {
     const currency = ticket.currency_code || 'USD';
     const price = ticket.face_value || 0;
     
-    // Check if this ticket has markup pricing
+    // Check if this ticket has markup pricing (from hierarchical resolution)
     const markup = markupsByTicket.get(ticket.ticket_id);
     
-    // If currency conversion is available for THIS ticket's currency and currency is not already the selected currency
+    // Helper: convert a USD amount to the selected currency
+    const convertUsdToSelected = (usdAmount: number): number => {
+      if (selectedCurrencyCode === 'USD') return usdAmount;
+      if (hasConversionForCurrency('USD')) return convertAmount(usdAmount, 'USD');
+      return usdAmount;
+    };
+    
+    // If currency conversion is available for THIS ticket's currency and it's not already the selected currency
     if (hasConversionForCurrency(currency) && currency !== selectedCurrencyCode) {
       const convertedPrice = convertAmount(price, currency);
       
-      // Calculate percentage markup on the converted price
-      let markupAmount = 0;
-      if (markup) {
-        if (markup.markup_type === 'percentage' && markup.markup_percentage !== null) {
-          markupAmount = convertedPrice * (markup.markup_percentage / 100);
-        } else {
-          // Fixed markup is stored in USD — convert to selected currency
-          const fixedMarkupUsd = parseFloat(String(markup.markup_price_usd)) || 0;
-          markupAmount = convertAmount(fixedMarkupUsd, 'USD');
-        }
-      }
+      // Calculate markup amount in the selected (display) currency
+      const markupAmount = calculateEffectiveMarkupAmount(
+        convertedPrice,
+        markup ?? null,
+        convertUsdToSelected
+      );
       
-      if (markupAmount > 0) {
-        const finalPrice = convertedPrice + markupAmount;
-        return `${selectedCurrencyCode} ${finalPrice.toFixed(2)}`;
-      }
-      
-      return `${selectedCurrencyCode} ${convertedPrice.toFixed(2)}`;
+      const finalPrice = convertedPrice + markupAmount;
+      return `${selectedCurrencyCode} ${finalPrice.toFixed(2)}`;
     }
     
     // Already in the selected currency — calculate markup directly
     if (currency === selectedCurrencyCode) {
-      if (markup) {
-        let markupAmount = 0;
-        if (markup.markup_type === 'percentage' && markup.markup_percentage !== null) {
-          markupAmount = price * (markup.markup_percentage / 100);
-        } else {
-          // Fixed markup is in USD; if selected currency is also USD, use as-is, else convert
-          const fixedMarkupUsd = parseFloat(String(markup.markup_price_usd)) || 0;
-          markupAmount = selectedCurrencyCode === 'USD' ? fixedMarkupUsd : convertAmount(fixedMarkupUsd, 'USD');
-        }
-        if (markupAmount > 0) {
-          const finalPrice = price + markupAmount;
-          return `${selectedCurrencyCode} ${finalPrice.toFixed(2)}`;
-        }
+      const markupAmount = calculateEffectiveMarkupAmount(
+        price,
+        markup ?? null,
+        convertUsdToSelected
+      );
+      
+      if (markupAmount > 0) {
+        const finalPrice = price + markupAmount;
+        return `${selectedCurrencyCode} ${finalPrice.toFixed(2)}`;
       }
     }
     
@@ -295,8 +301,15 @@ const EventTicketsPage: React.FC = () => {
       const currency = item.ticket.currency_code || 'USD';
       const faceValue = item.ticket.face_value || 0;
       
-      // Get markup for this ticket
+      // Get effective markup for this ticket (from hierarchical resolution)
       const markup = markupsByTicket.get(item.ticket.ticket_id);
+      
+      // Helper: convert a USD amount to the selected currency
+      const convertUsdToSelected = (usdAmount: number): number => {
+        if (selectedCurrencyCode === 'USD') return usdAmount;
+        if (hasConversionForCurrency('USD')) return convertAmount(usdAmount, 'USD');
+        return usdAmount;
+      };
       
       // Calculate price in the selected currency
       let basePrice = faceValue;
@@ -304,17 +317,12 @@ const EventTicketsPage: React.FC = () => {
         basePrice = convertAmount(faceValue, currency);
       }
       
-      // Calculate markup in the selected currency
-      let markupAmount = 0;
-      if (markup) {
-        if (markup.markup_type === 'percentage' && markup.markup_percentage !== null) {
-          markupAmount = basePrice * (markup.markup_percentage / 100);
-        } else {
-          // Fixed markup is stored in USD — convert to selected currency
-          const fixedMarkupUsd = parseFloat(String(markup.markup_price_usd)) || 0;
-          markupAmount = selectedCurrencyCode === 'USD' ? fixedMarkupUsd : convertAmount(fixedMarkupUsd, 'USD');
-        }
-      }
+      // Calculate markup amount in the selected currency using the shared helper
+      const markupAmount = calculateEffectiveMarkupAmount(
+        basePrice,
+        markup ?? null,
+        convertUsdToSelected
+      );
       
       // Final price in selected currency = converted base + markup
       const finalPrice = basePrice + markupAmount;
@@ -647,7 +655,7 @@ const EventTicketsPage: React.FC = () => {
                       <div className={styles.priceDisplay}>
                         <span 
                           className={styles.priceAmount}
-                          data-tooltip={`Local Price: ${ticket.currency_code} ${ticket.face_value?.toFixed(2)}\nExchange Rate: 1 ${ticket.currency_code} = ${hasConversionForCurrency(ticket.currency_code || '') ? getExchangeRate(ticket.currency_code || '').toFixed(4) : 'N/A'} ${selectedCurrencyCode}\nConverted: ${hasConversionForCurrency(ticket.currency_code || '') ? `${selectedCurrencyCode} ${convertAmount(ticket.face_value || 0, ticket.currency_code || '').toFixed(2)}` : 'N/A'}\nMarkup: ${markupsByTicket.get(ticket.ticket_id) ? parseFloat(String(markupsByTicket.get(ticket.ticket_id)?.markup_price_usd)).toFixed(2) : '0.00'} (USD)\nFinal Price: ${formatPrice(ticket)}`}
+                          data-tooltip={`Local Price: ${ticket.currency_code} ${ticket.face_value?.toFixed(2)}\nExchange Rate: 1 ${ticket.currency_code} = ${hasConversionForCurrency(ticket.currency_code || '') ? getExchangeRate(ticket.currency_code || '').toFixed(4) : 'N/A'} ${selectedCurrencyCode}\nConverted: ${hasConversionForCurrency(ticket.currency_code || '') ? `${selectedCurrencyCode} ${convertAmount(ticket.face_value || 0, ticket.currency_code || '').toFixed(2)}` : 'N/A'}\nMarkup: ${(() => { const m = markupsByTicket.get(ticket.ticket_id); if (!m) return '0.00 (none)'; return m.markup_type === 'percentage' ? `${m.markup_percentage ?? m.markup_amount}% (${m.level})` : `${(m.markup_price_usd ?? m.markup_amount).toFixed(2)} USD (${m.level})`; })()}\nFinal Price: ${formatPrice(ticket)}`}
                         >
                           {formatPrice(ticket)}
                         </span>

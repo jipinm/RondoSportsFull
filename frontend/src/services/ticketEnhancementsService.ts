@@ -12,6 +12,10 @@ import { apiClient } from './apiRoutes';
 // Markup type: fixed (USD amount) or percentage (% of base price)
 export type MarkupType = 'fixed' | 'percentage';
 
+// Markup hierarchy level (from most specific to least specific)
+export type MarkupLevel = 'ticket' | 'event' | 'team' | 'tournament' | 'sport';
+
+// Legacy per-ticket markup (from ticket_markups table)
 export interface TicketMarkup {
   id?: number;
   ticket_id: string;
@@ -25,6 +29,37 @@ export interface TicketMarkup {
   updated_at?: string;
   created_by?: number;
   updated_by?: number;
+}
+
+/**
+ * Effective markup resolved from hierarchical markup rules.
+ * The API resolves the most-specific markup that applies using priority:
+ * legacy ticket > ticket rule > event rule > team rule > tournament rule > sport rule
+ * 
+ * markup_amount is always in USD for fixed type, or a percentage value for percentage type.
+ */
+export interface EffectiveMarkup {
+  level: MarkupLevel;
+  source: 'legacy' | 'markup_rules';
+  markup_type: MarkupType;
+  /** For fixed: USD amount. For percentage: the percentage value (e.g. 25 = 25%) */
+  markup_amount: number;
+  /** USD markup amount (available for legacy entries) */
+  markup_price_usd?: number;
+  /** Percentage value if percentage type (e.g. 25 = 25%) */
+  markup_percentage: number | null;
+  /** Base price in USD (available for legacy entries) */
+  base_price_usd?: number;
+  /** Final price in USD (available for legacy entries) */
+  final_price_usd?: number;
+  /** Rule ID */
+  rule_id?: number;
+  /** Display names from hierarchical rules */
+  sport_name?: string;
+  tournament_name?: string;
+  team_name?: string;
+  event_name?: string;
+  ticket_name?: string;
 }
 
 export interface HospitalityService {
@@ -128,6 +163,86 @@ export const getTicketMarkup = async (ticketId: string): Promise<TicketMarkup | 
     }
     throw error;
   }
+};
+
+/**
+ * Get effective (hierarchically-resolved) markup pricing for all tickets in an event.
+ * Uses the hierarchical markup resolution: ticket > event > team > tournament > sport.
+ * Falls back to legacy ticket_markups if no hierarchical context is provided.
+ * 
+ * @param eventId - XS2Event Event ID
+ * @param sportType - Sport type slug (e.g., 'soccer', 'tennis')
+ * @param ticketIds - Array of ticket IDs to resolve markup for
+ * @param tournamentId - Optional XS2Event Tournament ID
+ * @param teamId - Optional XS2Event Team ID (home team or relevant team)
+ * @returns Promise with a map of ticket_id -> EffectiveMarkup (or null)
+ */
+export const getEventEffectiveMarkups = async (
+  eventId: string,
+  sportType: string,
+  ticketIds: string[],
+  tournamentId?: string,
+  teamId?: string
+): Promise<Record<string, EffectiveMarkup | null>> => {
+  try {
+    // Build query params
+    const params = new URLSearchParams();
+    if (sportType) params.set('sport_type', sportType);
+    if (tournamentId) params.set('tournament_id', tournamentId);
+    if (teamId) params.set('team_id', teamId);
+    if (ticketIds.length > 0) params.set('ticket_ids', ticketIds.join(','));
+
+    const queryString = params.toString();
+    const url = `/v1/events/${eventId}/effective-markups${queryString ? `?${queryString}` : ''}`;
+
+    const response = await apiClient.request<ApiResponse<{
+      event_id: string;
+      markups: Record<string, EffectiveMarkup | null>;
+    }>>(url);
+
+    if (!response.data.success) {
+      throw new Error(response.data.error || 'Failed to fetch effective markups');
+    }
+
+    return response.data.data.markups;
+  } catch (error: any) {
+    console.error('Failed to get effective markups:', error);
+    // Return empty object if no markups exist (not an error)
+    if (error.response?.status === 404 || error.message?.includes('not found')) {
+      return {};
+    }
+    throw error;
+  }
+};
+
+/**
+ * Calculate markup amount for an effective (hierarchical) markup.
+ * For percentage type: applies percentage to the base price.
+ * For fixed type: markup_amount is in USD.
+ * 
+ * @param basePriceInDisplayCurrency - The base price in whatever currency is being displayed
+ * @param markup - The resolved effective markup
+ * @param convertFromUsd - Optional function to convert USD to display currency (for fixed markups)
+ * @returns The markup amount in the display currency
+ */
+export const calculateEffectiveMarkupAmount = (
+  basePriceInDisplayCurrency: number,
+  markup: EffectiveMarkup | null,
+  convertFromUsd?: (usdAmount: number) => number
+): number => {
+  if (!markup) return 0;
+
+  if (markup.markup_type === 'percentage') {
+    const percentage = markup.markup_percentage ?? markup.markup_amount ?? 0;
+    return basePriceInDisplayCurrency * (percentage / 100);
+  }
+
+  // Fixed markup: amount is in USD, needs conversion to display currency
+  const fixedAmountUsd = markup.markup_price_usd ?? markup.markup_amount ?? 0;
+  if (convertFromUsd) {
+    return convertFromUsd(fixedAmountUsd);
+  }
+  return fixedAmountUsd;
 };
 
 /**
@@ -288,10 +403,14 @@ export const getHospitalitiesByIds = (
 // ============================================================================
 
 export const ticketEnhancementsService = {
-  // Markup Pricing
+  // Markup Pricing (legacy)
   getEventMarkups,
   getTicketMarkup,
   applyMarkupToPrice,
+  
+  // Hierarchical Markup Pricing
+  getEventEffectiveMarkups,
+  calculateEffectiveMarkupAmount,
   
   // Hospitality Services
   getActiveHospitalities,

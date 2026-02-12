@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChefHat } from 'lucide-react';
 import type { Ticket, EventGuestRequirements } from '../services/apiRoutes';
-import { type TicketMarkup } from '../services/ticketEnhancementsService';
+import { type EffectiveMarkup, calculateEffectiveMarkupAmount } from '../services/ticketEnhancementsService';
 import GuestRequirementsPreview from './GuestRequirementsPreview';
 import styles from './CartPanel.module.css';
 
@@ -46,8 +46,8 @@ interface CartPanelProps {
     hasConversionForCurrency: (currency: string) => boolean;
     targetCurrencyCode?: string;
   };
-  // Markup pricing data
-  markupsByTicket?: Map<string, TicketMarkup>;
+  // Markup pricing data (hierarchical or legacy)
+  markupsByTicket?: Map<string, EffectiveMarkup>;
 }
 
 const CartPanel: React.FC<CartPanelProps> = ({
@@ -91,40 +91,42 @@ const CartPanel: React.FC<CartPanelProps> = ({
 
   // Get the final price for a ticket (with markup applied)
   // Uses live exchange rate for calculating percentage-based markup
+  // Fixed markups are always in USD and converted to the display currency
   const getTicketFinalPrice = (ticket: Ticket): number => {
     const currency = ticket.currency_code || 'USD';
     const price = ticket.face_value || 0;
     
-    // Get markup for this ticket
+    // Get effective markup for this ticket
     const markup = markupsByTicket?.get(ticket.ticket_id);
+    
+    // Helper: convert a USD amount to the target currency
+    const convertUsdToTarget = (usdAmount: number): number => {
+      if (targetCurrency === 'USD') return usdAmount;
+      if (currencyConversion?.hasConversionForCurrency('USD')) {
+        return currencyConversion.convertAmount(usdAmount, 'USD');
+      }
+      return usdAmount;
+    };
     
     // If currency conversion is available for this ticket's currency
     if (currencyConversion?.hasConversionForCurrency(currency) && currency !== targetCurrency) {
       const convertedPrice = currencyConversion.convertAmount(price, currency);
-      // Calculate markup in selected currency
-      let markupAmount = 0;
-      if (markup) {
-        if (markup.markup_type === 'percentage' && markup.markup_percentage !== null) {
-          markupAmount = convertedPrice * (markup.markup_percentage / 100);
-        } else {
-          const fixedMarkupUsd = parseFloat(String(markup.markup_price_usd)) || 0;
-          markupAmount = targetCurrency === 'USD' ? fixedMarkupUsd : currencyConversion.convertAmount(fixedMarkupUsd, 'USD');
-        }
-      }
+      // Calculate markup in the target currency
+      const markupAmount = calculateEffectiveMarkupAmount(
+        convertedPrice,
+        markup ?? null,
+        convertUsdToTarget
+      );
       return convertedPrice + markupAmount;
     }
     
-    // Already in target currency - calculate markup directly
+    // Already in target currency — calculate markup directly
     if (currency === targetCurrency) {
-      let markupAmount = 0;
-      if (markup) {
-        if (markup.markup_type === 'percentage' && markup.markup_percentage !== null) {
-          markupAmount = price * (markup.markup_percentage / 100);
-        } else {
-          const fixedMarkupUsd = parseFloat(String(markup.markup_price_usd)) || 0;
-          markupAmount = targetCurrency === 'USD' ? fixedMarkupUsd : (currencyConversion?.convertAmount(fixedMarkupUsd, 'USD') ?? fixedMarkupUsd);
-        }
-      }
+      const markupAmount = calculateEffectiveMarkupAmount(
+        price,
+        markup ?? null,
+        convertUsdToTarget
+      );
       return price + markupAmount;
     }
     

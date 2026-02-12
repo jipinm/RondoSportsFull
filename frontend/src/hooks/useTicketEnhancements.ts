@@ -9,7 +9,9 @@ import {
   getActiveHospitalities,
   getEventHospitalities,
   getTicketHospitalities,
+  getEventEffectiveMarkups,
   type TicketMarkup,
+  type EffectiveMarkup,
   type HospitalityService,
   type TicketHospitality,
   type EventHospitalitiesResponse,
@@ -73,6 +75,92 @@ export const useEventMarkups = (eventId: string | undefined): UseEventMarkupsRes
     loading,
     error,
     refetch: fetchMarkups,
+  };
+};
+
+// ============================================================================
+// useEventEffectiveMarkups - Get hierarchically-resolved markup for an event
+// ============================================================================
+
+export interface UseEventEffectiveMarkupsResult {
+  effectiveMarkups: Record<string, EffectiveMarkup | null>;
+  effectiveMarkupsByTicket: Map<string, EffectiveMarkup>;
+  loading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
+/**
+ * Hook to fetch hierarchically-resolved effective markups for all tickets in an event.
+ * Uses the markup resolution priority: legacy ticket > ticket rule > event > team > tournament > sport.
+ * 
+ * @param eventId - XS2Event Event ID
+ * @param sportType - Sport type slug from event details (e.g., 'soccer')
+ * @param ticketIds - Array of ticket IDs to resolve
+ * @param tournamentId - Optional tournament ID from event details
+ * @param teamId - Optional team ID (typically home team) from event details
+ */
+export const useEventEffectiveMarkups = (
+  eventId: string | undefined,
+  sportType: string | undefined,
+  ticketIds: string[],
+  tournamentId?: string,
+  teamId?: string
+): UseEventEffectiveMarkupsResult => {
+  const [effectiveMarkups, setEffectiveMarkups] = useState<Record<string, EffectiveMarkup | null>>({});
+  const [effectiveMarkupsByTicket, setEffectiveMarkupsByTicket] = useState<Map<string, EffectiveMarkup>>(new Map());
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchEffectiveMarkups = async () => {
+    if (!eventId || !sportType || ticketIds.length === 0) {
+      setEffectiveMarkups({});
+      setEffectiveMarkupsByTicket(new Map());
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await getEventEffectiveMarkups(
+        eventId,
+        sportType,
+        ticketIds,
+        tournamentId,
+        teamId
+      );
+      setEffectiveMarkups(data);
+
+      // Create lookup map for easy access by ticket_id (only non-null entries)
+      const map = new Map<string, EffectiveMarkup>();
+      Object.entries(data).forEach(([ticketId, markup]) => {
+        if (markup) {
+          map.set(ticketId, markup);
+        }
+      });
+      setEffectiveMarkupsByTicket(map);
+    } catch (err: any) {
+      console.error('Failed to fetch effective markups:', err);
+      setError(err.message || 'Failed to load markup pricing');
+      setEffectiveMarkups({});
+      setEffectiveMarkupsByTicket(new Map());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEffectiveMarkups();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventId, sportType, ticketIds.length, tournamentId, teamId]);
+
+  return {
+    effectiveMarkups,
+    effectiveMarkupsByTicket,
+    loading,
+    error,
+    refetch: fetchEffectiveMarkups,
   };
 };
 
