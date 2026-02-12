@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
@@ -40,6 +41,25 @@ const EventTicketsPage: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [hoveredTicketCategory, setHoveredTicketCategory] = useState<string | null>(null);
+
+  // Fixed-position hospitality tooltip state
+  const [tooltipTicketId, setTooltipTicketId] = useState<string | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
+  const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showHospitalityTooltip = useCallback((ticketId: string, e: React.MouseEvent<HTMLDivElement>) => {
+    if (tooltipTimeoutRef.current) clearTimeout(tooltipTimeoutRef.current);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltipPos({ top: rect.top, left: rect.left + rect.width / 2 });
+    setTooltipTicketId(ticketId);
+  }, []);
+
+  const hideHospitalityTooltip = useCallback(() => {
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setTooltipTicketId(null);
+      setTooltipPos(null);
+    }, 100);
+  }, []);
   
   // Fetch event details and tickets
   const { event, loading: eventLoading, error: eventError } = useEventDetails(eventId);
@@ -607,22 +627,12 @@ const EventTicketsPage: React.FC = () => {
                             </div>
                           )}
                           {ticketHasHospitalities(ticket.ticket_id) && (
-                            <div className={`${styles.featureIcon} ${styles.hospitalityIcon} ${styles.hospitalityTrigger}`}>
+                            <div
+                              className={`${styles.featureIcon} ${styles.hospitalityIcon}`}
+                              onMouseEnter={(e) => showHospitalityTooltip(ticket.ticket_id, e)}
+                              onMouseLeave={hideHospitalityTooltip}
+                            >
                               <ChefHat size={16} />
-                              <div className={styles.hospitalityTooltip}>
-                                <div className={styles.tooltipHeader}>
-                                  <ChefHat size={14} />
-                                  <span>Included Hospitality</span>
-                                </div>
-                                <ul className={styles.tooltipList}>
-                                  {getHospitalitiesForTicket(ticket.ticket_id).map(h => (
-                                    <li key={h.hospitality_id} className={styles.tooltipItem}>
-                                      <Sparkles size={12} className={styles.tooltipItemIcon} />
-                                      <span>{h.name}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
                             </div>
                           )}
                         </div>
@@ -754,6 +764,31 @@ const EventTicketsPage: React.FC = () => {
         }}
         markupsByTicket={markupsByTicket}
       />
+
+      {/* Fixed-position hospitality tooltip rendered via portal */}
+      {tooltipTicketId && tooltipPos && createPortal(
+        <div
+          className={styles.hospitalityTooltipFixed}
+          style={{ top: tooltipPos.top, left: tooltipPos.left }}
+          onMouseEnter={() => { if (tooltipTimeoutRef.current) clearTimeout(tooltipTimeoutRef.current); }}
+          onMouseLeave={hideHospitalityTooltip}
+        >
+          <div className={styles.tooltipArrow} />
+          <div className={styles.tooltipHeader}>
+            <ChefHat size={14} />
+            <span>Included Hospitality</span>
+          </div>
+          <ul className={styles.tooltipList}>
+            {getHospitalitiesForTicket(tooltipTicketId).map(h => (
+              <li key={h.hospitality_id} className={styles.tooltipItem}>
+                <Sparkles size={12} className={styles.tooltipItemIcon} />
+                <span>{h.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>,
+        document.body
+      )}
 
     </div>
   );

@@ -798,49 +798,47 @@
   box-shadow: 0 2px 8px rgba(147, 51, 234, 0.2);
 }
 
-/* Hospitality tooltip trigger — suppress the default data-tooltip ::after/::before */
-.hospitalityTrigger::after,
-.hospitalityTrigger::before {
+/* Hospitality icon — suppress the default data-tooltip ::after/::before */
+.hospitalityIcon::after,
+.hospitalityIcon::before {
   display: none !important;
 }
 
-/* Modern hospitality tooltip */
-.hospitalityTooltip {
-  display: none;
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
+/* ================================================================
+   Fixed-position hospitality tooltip (rendered via React portal)
+   Escapes scroll container overflow clipping entirely.
+   ================================================================ */
+.hospitalityTooltipFixed {
+  position: fixed;
+  transform: translateX(-50%) translateY(calc(-100% - 12px));
+  z-index: 99999;
   min-width: 220px;
   max-width: 280px;
   background: #ffffff;
   border: 1px solid #e9d5ff;
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(147, 51, 234, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 30px rgba(147, 51, 234, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 0;
-  overflow: hidden;
-  pointer-events: none;
+  pointer-events: auto;
+  animation: tooltipFadeIn 0.15s ease;
 }
 
-.hospitalityTrigger:hover .hospitalityTooltip {
-  display: block;
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(calc(-100% - 8px)); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(calc(-100% - 12px)); }
 }
 
-/* Tooltip arrow */
-.hospitalityTooltip::before {
-  content: '';
-  display: block !important;
+/* Tooltip arrow — bottom pointing (tooltip opens upward) */
+.tooltipArrow {
   position: absolute;
-  top: -6px;
+  bottom: -6px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
   width: 12px;
   height: 12px;
   background: #ffffff;
-  border-left: 1px solid #e9d5ff;
-  border-top: 1px solid #e9d5ff;
-  z-index: 1;
+  border-right: 1px solid #e9d5ff;
+  border-bottom: 1px solid #e9d5ff;
 }
 
 /* Tooltip header */

@@ -6,7 +6,7 @@
  * Uses the 5-level hierarchy: sport > tournament > team > event > ticket.
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   getResolvedEventHospitalities, 
   type ResolvedHospitality 
