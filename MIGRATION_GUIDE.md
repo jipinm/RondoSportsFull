@@ -70,6 +70,7 @@ mysql -u your_username -p your_database_name < migration-tables-safe.sql
 ⚠️ **Test Environment**: Test in development before running in production  
 ⚠️ **Admin Users**: Ensure `admin_users` table exists (referenced by foreign keys)  
 ⚠️ **Bookings Table**: Ensure `bookings` table exists (referenced by `booking_hospitalities`)  
+⚠️ **Historical Data**: The `booking_hospitalities` INSERT statements are commented out by default. Only uncomment if the referenced bookings exist in your database  
 
 ## Rollback Strategy
 
@@ -84,6 +85,9 @@ If you need to rollback:
 
 ### Error: "Unknown table 'bookings'"
 **Solution**: The `bookings` table is required for `booking_hospitalities`. Ensure it exists first.
+
+### Error: "Cannot add or update a child row: a foreign key constraint fails"
+**Solution**: This occurs when trying to insert into `booking_hospitalities` with a `booking_id` that doesn't exist. The migration script has commented out the `booking_hospitalities` INSERT statements by default. Only uncomment them if you have the corresponding booking records in your `bookings` table.
 
 ### Error: "Duplicate entry"
 **Solution**: The script uses `DROP TABLE IF EXISTS`. If you still get duplicates, there may be unique constraint violations in your seed data.

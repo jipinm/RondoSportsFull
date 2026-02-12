@@ -301,8 +301,10 @@ CREATE TABLE IF NOT EXISTS `booking_hospitalities` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Hospitality services booked with tickets';
 
 -- Dumping data for table rondo.booking_hospitalities
-INSERT INTO `booking_hospitalities` (`id`, `booking_id`, `hospitality_id`, `hospitality_name`, `price_usd`, `quantity`, `total_usd`, `ticket_id`, `created_at`) VALUES
-	(1, 34, 1, 'VIP lounge Access', 100.00, 2, 200.00, 'c4d8eba21b964f06bc5b80da69e3b8dc_spp', '2026-01-27 12:44:02');
+-- NOTE: Only insert booking_hospitalities if the referenced booking exists
+-- Uncomment the following line only if booking with id=34 exists in your database
+-- INSERT INTO `booking_hospitalities` (`id`, `booking_id`, `hospitality_id`, `hospitality_name`, `price_usd`, `quantity`, `total_usd`, `ticket_id`, `created_at`) VALUES
+-- 	(1, 34, 1, 'VIP lounge Access', 100.00, 2, 200.00, 'c4d8eba21b964f06bc5b80da69e3b8dc_spp', '2026-01-27 12:44:02');
 
 -- ========================================================================
 -- STEP 5: Restore settings
