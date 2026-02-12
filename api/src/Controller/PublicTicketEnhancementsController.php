@@ -416,6 +416,136 @@ class PublicTicketEnhancementsController
     }
 
     /**
+     * Resolve effective hospitalities for all tickets in an event (hierarchical)
+     * GET /v1/events/{eventId}/effective-hospitalities
+     * 
+     * Query params: sport_type, tournament_id, team_id, ticket_ids (comma-separated)
+     * 
+     * Returns all hospitality services that apply to each ticket based on
+     * the hierarchical assignment (sport → tournament → team → event → ticket).
+     */
+    public function getEventEffectiveHospitalities(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $eventId = $args['eventId'] ?? '';
+
+            if (empty($eventId)) {
+                throw new ApiException('Event ID is required', 400);
+            }
+
+            $queryParams = $request->getQueryParams();
+            $sportType = $queryParams['sport_type'] ?? '';
+            $tournamentId = $queryParams['tournament_id'] ?? null;
+            $teamId = $queryParams['team_id'] ?? null;
+            $ticketIdsStr = $queryParams['ticket_ids'] ?? '';
+
+            $ticketIds = !empty($ticketIdsStr) ? explode(',', $ticketIdsStr) : [];
+
+            if (!empty($sportType) && !empty($ticketIds)) {
+                // Use hierarchical resolution
+                $resolved = $this->hospitalityRepository->resolveHospitalitiesForEvent(
+                    $eventId, $sportType, $tournamentId, $teamId, $ticketIds
+                );
+            } else {
+                // Fallback to legacy event hospitalities (flat)
+                $legacyData = $this->hospitalityRepository->getEventHospitalities($eventId);
+                $resolved = [];
+                foreach ($legacyData as $item) {
+                    $tId = $item['ticket_id'];
+                    if (!isset($resolved[$tId])) {
+                        $resolved[$tId] = [];
+                    }
+                    $item['level'] = 'ticket';
+                    $item['source'] = 'legacy';
+                    $resolved[$tId][] = $item;
+                }
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'event_id' => $eventId,
+                    'hospitalities' => $resolved,
+                ],
+            ]));
+
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withHeader('Cache-Control', 'public, max-age=300')
+                ->withStatus(200);
+
+        } catch (ApiException $e) {
+            return $this->errorResponse($response, $e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            $this->logger->error('Failed to resolve event effective hospitalities', [
+                'event_id' => $eventId ?? '',
+                'error' => $e->getMessage(),
+            ]);
+            return $this->errorResponse($response, 'Failed to resolve hospitality services', 500);
+        }
+    }
+
+    /**
+     * Resolve effective hospitalities for a single ticket (hierarchical)
+     * GET /v1/events/{eventId}/tickets/{ticketId}/effective-hospitalities
+     * 
+     * Query params: sport_type, tournament_id, team_id
+     */
+    public function getTicketEffectiveHospitalities(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $eventId = $args['eventId'] ?? '';
+            $ticketId = $args['ticketId'] ?? '';
+
+            if (empty($eventId) || empty($ticketId)) {
+                throw new ApiException('Event ID and Ticket ID are required', 400);
+            }
+
+            $queryParams = $request->getQueryParams();
+            $sportType = $queryParams['sport_type'] ?? '';
+            $tournamentId = $queryParams['tournament_id'] ?? null;
+            $teamId = $queryParams['team_id'] ?? null;
+
+            if (!empty($sportType)) {
+                $resolved = $this->hospitalityRepository->resolveHospitalitiesForTicket(
+                    $sportType, $tournamentId, $teamId, $eventId, $ticketId
+                );
+            } else {
+                // Fallback to legacy
+                $resolved = $this->hospitalityRepository->getTicketHospitalities($eventId, $ticketId);
+                foreach ($resolved as &$item) {
+                    $item['level'] = 'ticket';
+                    $item['source'] = 'legacy';
+                }
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => [
+                    'event_id' => $eventId,
+                    'ticket_id' => $ticketId,
+                    'hospitalities' => $resolved,
+                ],
+            ]));
+
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withHeader('Cache-Control', 'public, max-age=300')
+                ->withStatus(200);
+
+        } catch (ApiException $e) {
+            return $this->errorResponse($response, $e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            $this->logger->error('Failed to resolve ticket effective hospitalities', [
+                'event_id' => $eventId ?? '',
+                'ticket_id' => $ticketId ?? '',
+                'error' => $e->getMessage(),
+            ]);
+            return $this->errorResponse($response, 'Failed to resolve hospitality services', 500);
+        }
+    }
+
+    /**
      * Error response helper
      */
     private function errorResponse(Response $response, string $message, int $statusCode = 500): Response

@@ -1,144 +1,115 @@
-**Implement Hierarchical Mark-up Pricing Across All Sports Levels**
+# 🧾 Hospitality Scope Change – AI Implementation Instructions
+
+## 📍 Route Affected
+`/events/:EventId/tickets` (frontend application)
 
 ---
 
-### **Background (Current Implementation)**
+## 🔁 Current Behavior
 
-The application is a sports ticket booking system with the following structures:
-
-**Soccer (team-based sports):**
-Sports Type → Tournament → Team → Event → Ticket Category
-
-**Non-team sports (e.g., Formula 1, MotoGP):**
-Sports Type → Tournament → Event → Ticket Category
-
-Currently, mark-up pricing is supported **only at the Event → Ticket Category level** (mainly for soccer).
-There is **no support for mark-up at higher hierarchy levels** (sport, tournament, team, event).
+- After selecting a ticket, a popup asks the user to choose hospitality services.
+- Selected hospitalities add extra charges to the ticket price.
+- Chefcap icon visibility is based on the `xs2events` API response and logic.
 
 ---
 
-### **Change Requirement (New Behavior)**
+## 🎯 Scope Change Requirements
 
-Mark-up pricing must be supported at **all hierarchy levels**, depending on the sport type:
-
-#### Applicable Levels:
-
-* Sports Type
-* Tournament
-* Team (only for team-based sports like Soccer)
-* Event
-* Ticket Category
+### 1. ❌ Remove Hospitality Pricing Logic
+- Completely remove hospitality price calculation and price addition to ticket/cart totals.
+- There is **no separate price entity** for hospitality services anymore.
+- Ignore any hospitality price fields returned by APIs.
 
 ---
 
-### **Pricing Rule (Priority & Override Logic)**
-
-Mark-up must be applied using **most-specific override logic**:
-
-**Priority order (highest wins):**
-Ticket Category
-→ Event
-→ Team
-→ Tournament
-→ Sports Type
-
-If a mark-up exists at a lower (more specific) level, it must override higher-level values.
+### 2. ❌ Remove Hospitality Selection UI
+- Remove the hospitality selection popup/modal entirely.
+- Users must not select hospitalities manually.
 
 ---
 
-### **Scenarios to Support**
-
-#### **Scenario 1 – Sport-level mark-up**
-
-If admin selects only a **Sports Type** (e.g., Formula One) and sets mark-up:
-→ Apply this mark-up to **all events and ticket categories under that sport**.
+### 3. ✅ Hospitality Is Part of the Ticket
+- Hospitalities are now **inclusive** with the ticket.
+- Admin assigns hospitalities to ticket categories.
+- Users can only **view** assigned hospitalities.
 
 ---
 
-#### **Scenario 2 – Tournament-level mark-up**
-
-If admin selects:
-Soccer → Premier League
-→ Mark-up applies **only to that tournament’s tickets**
-→ Other soccer tournaments use sport-level mark-up (if exists)
+### 4. 🎩 Chefcap Icon Display Logic
+- Display the chefcap icon **only** for ticket categories that have **at least one assigned hospitality** at any hierarchical level.
+- Icon visibility must be based on **hospitality assignment**, not on old `xs2events` API response based logic.
 
 ---
 
-#### **Scenario 3 – Team-level mark-up**
-
-If admin selects:
-Soccer → Premier League → Manchester United
-→ Mark-up applies only to **Manchester United tickets**
-
----
-
-#### **Scenario 4 – Event-level mark-up**
-
-If admin selects:
-Soccer → Premier League → Manchester United → Specific Event
-→ Mark-up applies only to that event’s tickets
+### 5. 📋 Hospitality List on Hover
+- On hovering the chefcap icon, display a **read-only list** of assigned hospitalities.
+- The list must:
+  - Be informational only
+  - Have no selection controls
+  - Show no price values
 
 ---
 
-#### **Scenario 5 – Full Hierarchy Example**
-
-Configured mark-ups:
-
-A) Soccer = $200
-B) Soccer → La Liga = $100
-C) Soccer → La Liga → FC Barcelona = $150
-D) Soccer → La Liga → FC Barcelona → Barcelona vs Madrid (28-02-2026) = $50
-E) Soccer → La Liga → FC Barcelona → Barcelona vs Madrid → VIP Zone = $250
-
-Final applied prices must resolve as:
-
-* VIP Zone → **$250**
-* Event (Barcelona vs Madrid) → **$50**
-* Team (FC Barcelona) → **$150**
-* Tournament (La Liga) → **$100**
-* All other Soccer tickets → **$200**
+### 6. 🧩 Data Handling Rules
+- Use hospitality assignment data from the public API response hierarchy from the #api application.
+- If needed, refer to the **latest-database-tables-and-data.sql** for hospitality assignments.
+- Do not depend on legacy hospitality pricing fields.
 
 ---
 
-### **Functional Requirements**
+## 🌐 Backend API Scope Change (Public APIs)
 
-1. Allow storing mark-up values at each hierarchy level:
-
-   * sport
-   * tournament
-   * team (if applicable)
-   * event
-   * ticket category
-
-2. Implement mark-up resolution logic that:
-
-   * Traverses from ticket category upward
-   * Applies the **nearest defined mark-up**
-
-3. Ensure:
-
-   * Non-team sports (Formula 1, MotoGP) skip the Team level
-   * Existing booking and pricing logic is not broken
-   * Backward compatibility is preserved
+- Develop or update **public APIs** in the `#api` application to support this new hospitality model.
+- Refer to the **latest-database-tables-and-data.sql** if required.
+- APIs must:
+  - Return assigned hospitalities for ticket categories
+  - Support hierarchical hospitality assignments
+  - Exclude hospitality pricing fields
 
 ---
 
-### **Non-Functional Requirements**
+## 🧹 Code Cleanup
+- Remove:
+  - Hospitality price states
+  - Hospitality selection handlers
+  - Unused hospitality-related props
+  - Deprecated API fields related to hospitality pricing
 
-* Do NOT hardcode sport types
-* Do NOT duplicate pricing logic
-* Keep implementation modular
-* Ensure performance is not degraded
-* Validate data integrity (no conflicting rows)
+---
+
+## 🛡️ Non-Functional Requirements
+- Do not affect:
+  - Ticket base pricing
+  - Mark-up pricing logic
+  - Currency switching logic
+  - Exchange rate calculation logic
+  - Cart logic
+  - Checkout flow
+  - Ticket quantity logic
+- Ensure backward compatibility for unrelated features.
 
 ---
 
-### **Deliverables Expected from AI Agent**
+## ✅ Expected Final Behavior
 
-* Updated database schema (if needed)
-* Updated pricing calculation logic
-* Updated admin UI logic for mark-up entry
-* Unit-testable mark-up resolution function
-* No regression in current ticket booking flow
+- Hospitalities are:
+  - Included with tickets
+  - Not selectable
+  - Not priced separately
+  - Displayed only as informational items on hover
+
+- Chefcap icon:
+  - Appears only if at least one hospitality is assigned
+  - Shows hospitality list on hover
 
 ---
+
+## 🏁 Objective
+
+Implement the new hospitality model where hospitality services are:
+
+- Admin-assigned  
+- Ticket-inclusive  
+- Price-independent  
+- Read-only for users  
+- Displayed via chefcap hover tooltip  

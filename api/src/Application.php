@@ -559,13 +559,24 @@ class Application
             $group->post('/hospitalities', [$hospitalityController, 'createHospitality']);
             $group->put('/hospitalities/{id:[0-9]+}', [$hospitalityController, 'updateHospitality']);
             $group->delete('/hospitalities/{id:[0-9]+}', [$hospitalityController, 'deleteHospitality']);
-            // Ticket-Hospitality assignments
+            // Ticket-Hospitality assignments (legacy)
             $group->get('/hospitalities/event/{eventId}', [$hospitalityController, 'getEventHospitalities']);
             $group->get('/hospitalities/ticket/{eventId}/{ticketId}', [$hospitalityController, 'getTicketHospitalities']);
             $group->post('/hospitalities/ticket/{eventId}/{ticketId}', [$hospitalityController, 'assignTicketHospitalities']);
             $group->post('/hospitalities/batch', [$hospitalityController, 'batchAssignHospitalities']);
             $group->delete('/hospitalities/ticket/{eventId}/{ticketId}', [$hospitalityController, 'removeTicketHospitalities']);
             $group->delete('/hospitalities/event/{eventId}', [$hospitalityController, 'removeEventHospitalities']);
+
+            // Hierarchical Hospitality Assignments (NEW)
+            $group->get('/hospitality-assignments', [$hospitalityController, 'getAllAssignments']);
+            $group->get('/hospitality-assignments/scope', [$hospitalityController, 'getAssignmentsAtScope']);
+            $group->post('/hospitality-assignments', [$hospitalityController, 'createAssignment']);
+            $group->post('/hospitality-assignments/batch', [$hospitalityController, 'batchCreateAssignments']);
+            $group->put('/hospitality-assignments/scope', [$hospitalityController, 'replaceAssignmentsAtScope']);
+            $group->delete('/hospitality-assignments/scope', [$hospitalityController, 'removeAssignmentsAtScope']);
+            $group->get('/hospitality-assignments/{id:[0-9]+}', [$hospitalityController, 'getAssignmentById']);
+            $group->delete('/hospitality-assignments/{id:[0-9]+}', [$hospitalityController, 'deleteAssignment']);
+            $group->post('/hospitality-assignments/resolve', [$hospitalityController, 'resolveForTicket']);
             
             // Cancellation Management (Admin) - using controllers from outer scope
             $group->get('/cancellation-requests/stats', [$adminCancellationController, 'getStatistics']);
@@ -856,6 +867,8 @@ class Application
         $this->app->get('/v1/events/{eventId}/hospitalities', [$publicEnhancementsController, 'getEventHospitalities']);
         $this->app->get('/v1/tickets/{ticketId}/hospitalities', [$publicEnhancementsController, 'getTicketHospitalities']);
         $this->app->get('/v1/hospitalities', [$publicEnhancementsController, 'getActiveHospitalities']);
+        $this->app->get('/v1/events/{eventId}/effective-hospitalities', [$publicEnhancementsController, 'getEventEffectiveHospitalities']);
+        $this->app->get('/v1/events/{eventId}/tickets/{ticketId}/effective-hospitalities', [$publicEnhancementsController, 'getTicketEffectiveHospitalities']);
         
         // Reservations endpoints
         $this->app->get('/v1/reservations', [$reservationsController, 'getReservations']);

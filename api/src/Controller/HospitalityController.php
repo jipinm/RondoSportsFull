@@ -12,7 +12,12 @@ use Psr\Log\LoggerInterface;
 use Exception;
 
 /**
- * Controller for hospitality services management
+ * Controller for hospitality services management.
+ * 
+ * Handles:
+ *  - CRUD for hospitality services (price removed)
+ *  - Hierarchical assignment at 5 levels (sport, tournament, team, event, ticket)
+ *  - Legacy ticket-level assignments (backward compatibility)
  */
 class HospitalityController
 {
@@ -28,7 +33,7 @@ class HospitalityController
     }
 
     // ========================================================================
-    // Hospitality CRUD Operations
+    // Hospitality CRUD Operations (Price Removed)
     // ========================================================================
 
     /**
@@ -43,11 +48,6 @@ class HospitalityController
 
             $hospitalities = $this->hospitalityRepository->getAllHospitalities($activeOnly);
 
-            $this->logger->info('Retrieved all hospitalities', [
-                'count' => count($hospitalities),
-                'active_only' => $activeOnly
-            ]);
-
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => $hospitalities,
@@ -57,10 +57,7 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to get hospitalities', [
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to get hospitalities', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
@@ -87,17 +84,13 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to get hospitality', [
-                'id' => $args['id'] ?? null,
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to get hospitality', ['id' => $args['id'] ?? null, 'error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
 
     /**
-     * Create a new hospitality service
+     * Create a new hospitality service (no price_usd)
      * POST /api/v1/admin/hospitalities
      */
     public function createHospitality(Request $request, Response $response): ResponseInterface
@@ -106,13 +99,8 @@ class HospitalityController
             $data = $request->getParsedBody();
             $adminUser = $request->getAttribute('user');
 
-            // Validate required fields
             if (empty($data['name'])) {
                 return $this->errorResponse($response, 'name is required', 400);
-            }
-
-            if (!isset($data['price_usd']) || !is_numeric($data['price_usd'])) {
-                return $this->errorResponse($response, 'price_usd must be a valid number', 400);
             }
 
             $hospitalityId = $this->hospitalityRepository->createHospitality($data, $adminUser['id']);
@@ -133,17 +121,13 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to create hospitality', [
-                'error' => $e->getMessage(),
-                'admin_user_id' => $adminUser['id'] ?? null
-            ]);
-
+            $this->logger->error('Failed to create hospitality', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
 
     /**
-     * Update an existing hospitality service
+     * Update an existing hospitality service (no price_usd)
      * PUT /api/v1/admin/hospitalities/{id}
      */
     public function updateHospitality(Request $request, Response $response, array $args): ResponseInterface
@@ -153,15 +137,9 @@ class HospitalityController
             $data = $request->getParsedBody();
             $adminUser = $request->getAttribute('user');
 
-            // Check if hospitality exists
             $existing = $this->hospitalityRepository->getHospitalityById($id);
             if (!$existing) {
                 return $this->errorResponse($response, 'Hospitality service not found', 404);
-            }
-
-            // Validate price if provided
-            if (isset($data['price_usd']) && !is_numeric($data['price_usd'])) {
-                return $this->errorResponse($response, 'price_usd must be a valid number', 400);
             }
 
             $success = $this->hospitalityRepository->updateHospitality($id, $data, $adminUser['id']);
@@ -186,11 +164,7 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to update hospitality', [
-                'id' => $args['id'] ?? null,
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to update hospitality', ['id' => $args['id'] ?? null, 'error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
@@ -205,7 +179,6 @@ class HospitalityController
             $id = (int) $args['id'];
             $adminUser = $request->getAttribute('user');
 
-            // Check if hospitality exists
             $existing = $this->hospitalityRepository->getHospitalityById($id);
             if (!$existing) {
                 return $this->errorResponse($response, 'Hospitality service not found', 404);
@@ -231,11 +204,7 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to delete hospitality', [
-                'id' => $args['id'] ?? null,
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to delete hospitality', ['id' => $args['id'] ?? null, 'error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
@@ -257,20 +226,378 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to get hospitality stats', [
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to get hospitality stats', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
 
     // ========================================================================
-    // Ticket-Hospitality Assignment Operations
+    // Hierarchical Assignment Operations (NEW)
     // ========================================================================
 
     /**
-     * Get hospitalities assigned to a specific ticket
+     * Create/update a hospitality assignment at a hierarchy level
+     * POST /api/v1/admin/hospitality-assignments
+     * 
+     * Body: { hospitality_id, sport_type, tournament_id?, team_id?, event_id?, ticket_id?,
+     *         sport_name?, tournament_name?, team_name?, event_name?, ticket_name? }
+     */
+    public function createAssignment(Request $request, Response $response): ResponseInterface
+    {
+        try {
+            $data = $request->getParsedBody();
+            $adminUser = $request->getAttribute('user');
+
+            if (empty($data['hospitality_id'])) {
+                return $this->errorResponse($response, 'hospitality_id is required', 400);
+            }
+
+            if (empty($data['sport_type']) && empty($data['event_id'])) {
+                return $this->errorResponse($response, 'At least sport_type or event_id is required', 400);
+            }
+
+            $result = $this->hospitalityRepository->upsertAssignment($data, $adminUser['id']);
+
+            $this->logger->info('Created/updated hospitality assignment', [
+                'hospitality_id' => $data['hospitality_id'],
+                'admin_user_id' => $adminUser['id']
+            ]);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $result,
+                'message' => 'Hospitality assignment saved successfully'
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to create hospitality assignment', ['error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Batch assign multiple hospitality services at a scope level
+     * POST /api/v1/admin/hospitality-assignments/batch
+     * 
+     * Body: { hospitality_ids: [1,2,3], sport_type, tournament_id?, team_id?, event_id?, ticket_id?,
+     *         sport_name?, tournament_name?, team_name?, event_name?, ticket_name? }
+     */
+    public function batchCreateAssignments(Request $request, Response $response): ResponseInterface
+    {
+        try {
+            $data = $request->getParsedBody();
+            $adminUser = $request->getAttribute('user');
+
+            if (empty($data['hospitality_ids']) || !is_array($data['hospitality_ids'])) {
+                return $this->errorResponse($response, 'hospitality_ids array is required', 400);
+            }
+
+            if (empty($data['sport_type']) && empty($data['event_id'])) {
+                return $this->errorResponse($response, 'At least sport_type or event_id is required', 400);
+            }
+
+            // Extract scope data (everything except hospitality_ids)
+            $scopeData = $data;
+            unset($scopeData['hospitality_ids']);
+
+            $result = $this->hospitalityRepository->batchUpsertAssignments(
+                $scopeData,
+                $data['hospitality_ids'],
+                $adminUser['id']
+            );
+
+            $this->logger->info('Batch assigned hospitalities', [
+                'count' => count($data['hospitality_ids']),
+                'admin_user_id' => $adminUser['id']
+            ]);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $result,
+                'message' => $result['message']
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to batch assign hospitalities', ['error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Replace all assignments at a scope level
+     * PUT /api/v1/admin/hospitality-assignments/scope
+     * 
+     * Body: { hospitality_ids: [1,2,3], sport_type, tournament_id?, team_id?, event_id?, ticket_id?,
+     *         sport_name?, tournament_name?, team_name?, event_name?, ticket_name? }
+     */
+    public function replaceAssignmentsAtScope(Request $request, Response $response): ResponseInterface
+    {
+        try {
+            $data = $request->getParsedBody();
+            $adminUser = $request->getAttribute('user');
+
+            if (!isset($data['hospitality_ids']) || !is_array($data['hospitality_ids'])) {
+                return $this->errorResponse($response, 'hospitality_ids array is required', 400);
+            }
+
+            // Extract scope data
+            $scopeData = $data;
+            unset($scopeData['hospitality_ids']);
+
+            $result = $this->hospitalityRepository->replaceAssignmentsAtScope(
+                $scopeData,
+                $data['hospitality_ids'],
+                $adminUser['id']
+            );
+
+            $this->logger->info('Replaced hospitality assignments at scope', [
+                'deleted_count' => $result['deleted_count'],
+                'inserted_count' => $result['inserted_count'],
+                'admin_user_id' => $adminUser['id']
+            ]);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $result,
+                'message' => $result['message']
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to replace hospitality assignments', ['error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get assignments at a scope (exact match)
+     * GET /api/v1/admin/hospitality-assignments/scope
+     * 
+     * Query params: sport_type, tournament_id, team_id, event_id, ticket_id
+     */
+    public function getAssignmentsAtScope(Request $request, Response $response): ResponseInterface
+    {
+        try {
+            $queryParams = $request->getQueryParams();
+
+            $scopeData = [
+                'sport_type' => $queryParams['sport_type'] ?? null,
+                'tournament_id' => $queryParams['tournament_id'] ?? null,
+                'team_id' => $queryParams['team_id'] ?? null,
+                'event_id' => $queryParams['event_id'] ?? null,
+                'ticket_id' => $queryParams['ticket_id'] ?? null,
+            ];
+
+            $assignments = $this->hospitalityRepository->getAssignmentsAtScope($scopeData);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $assignments,
+                'count' => count($assignments)
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to get assignments at scope', ['error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get all assignments with optional filters
+     * GET /api/v1/admin/hospitality-assignments
+     * 
+     * Query params: level, sport_type, tournament_id, team_id, event_id, hospitality_id, is_active, page, limit
+     */
+    public function getAllAssignments(Request $request, Response $response): ResponseInterface
+    {
+        try {
+            $queryParams = $request->getQueryParams();
+            $page = max(1, (int) ($queryParams['page'] ?? 1));
+            $limit = min(100, max(1, (int) ($queryParams['limit'] ?? 50)));
+
+            $filters = [];
+            foreach (['level', 'sport_type', 'tournament_id', 'team_id', 'event_id', 'hospitality_id'] as $key) {
+                if (!empty($queryParams[$key])) {
+                    $filters[$key] = $queryParams[$key];
+                }
+            }
+            if (isset($queryParams['is_active'])) {
+                $filters['is_active'] = (int) $queryParams['is_active'];
+            }
+
+            $result = $this->hospitalityRepository->getAllAssignments($filters, $page, $limit);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $result['data'],
+                'pagination' => $result['pagination']
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to get all assignments', ['error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Get a single assignment by ID
+     * GET /api/v1/admin/hospitality-assignments/{id}
+     */
+    public function getAssignmentById(Request $request, Response $response, array $args): ResponseInterface
+    {
+        try {
+            $id = (int) $args['id'];
+            $assignment = $this->hospitalityRepository->getAssignmentById($id);
+
+            if (!$assignment) {
+                return $this->errorResponse($response, 'Hospitality assignment not found', 404);
+            }
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $assignment
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to get assignment', ['id' => $args['id'] ?? null, 'error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Delete a specific assignment by ID
+     * DELETE /api/v1/admin/hospitality-assignments/{id}
+     */
+    public function deleteAssignment(Request $request, Response $response, array $args): ResponseInterface
+    {
+        try {
+            $id = (int) $args['id'];
+            $adminUser = $request->getAttribute('user');
+
+            $existing = $this->hospitalityRepository->getAssignmentById($id);
+            if (!$existing) {
+                return $this->errorResponse($response, 'Hospitality assignment not found', 404);
+            }
+
+            $success = $this->hospitalityRepository->deleteAssignment($id);
+
+            if (!$success) {
+                return $this->errorResponse($response, 'Failed to delete hospitality assignment', 500);
+            }
+
+            $this->logger->info('Deleted hospitality assignment', [
+                'assignment_id' => $id,
+                'admin_user_id' => $adminUser['id']
+            ]);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Hospitality assignment deleted successfully'
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to delete assignment', ['id' => $args['id'] ?? null, 'error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Remove all assignments at a scope
+     * DELETE /api/v1/admin/hospitality-assignments/scope
+     * 
+     * Query params: sport_type, tournament_id, team_id, event_id, ticket_id
+     */
+    public function removeAssignmentsAtScope(Request $request, Response $response): ResponseInterface
+    {
+        try {
+            $queryParams = $request->getQueryParams();
+            $adminUser = $request->getAttribute('user');
+
+            $scopeData = [
+                'sport_type' => $queryParams['sport_type'] ?? null,
+                'tournament_id' => $queryParams['tournament_id'] ?? null,
+                'team_id' => $queryParams['team_id'] ?? null,
+                'event_id' => $queryParams['event_id'] ?? null,
+                'ticket_id' => $queryParams['ticket_id'] ?? null,
+            ];
+
+            $deletedCount = $this->hospitalityRepository->removeAssignmentsAtScope($scopeData);
+
+            $this->logger->info('Removed hospitality assignments at scope', [
+                'deleted_count' => $deletedCount,
+                'admin_user_id' => $adminUser['id']
+            ]);
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'deleted_count' => $deletedCount,
+                'message' => "Removed {$deletedCount} hospitality assignments"
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to remove assignments at scope', ['error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Resolve effective hospitalities for a ticket (admin preview)
+     * POST /api/v1/admin/hospitality-assignments/resolve
+     * 
+     * Body: { sport_type, tournament_id?, team_id?, event_id, ticket_id }
+     */
+    public function resolveForTicket(Request $request, Response $response): ResponseInterface
+    {
+        try {
+            $data = $request->getParsedBody();
+
+            if (empty($data['sport_type']) || empty($data['event_id']) || empty($data['ticket_id'])) {
+                return $this->errorResponse($response, 'sport_type, event_id, and ticket_id are required', 400);
+            }
+
+            $resolved = $this->hospitalityRepository->resolveHospitalitiesForTicket(
+                $data['sport_type'],
+                $data['tournament_id'] ?? null,
+                $data['team_id'] ?? null,
+                $data['event_id'],
+                $data['ticket_id']
+            );
+
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $resolved,
+                'count' => count($resolved)
+            ]));
+
+            return $response->withHeader('Content-Type', 'application/json');
+
+        } catch (Exception $e) {
+            $this->logger->error('Failed to resolve hospitalities', ['error' => $e->getMessage()]);
+            return $this->errorResponse($response, $e->getMessage(), 500);
+        }
+    }
+
+    // ========================================================================
+    // Legacy Ticket-Hospitality Assignment Operations (Backward Compatible)
+    // ========================================================================
+
+    /**
+     * Get hospitalities assigned to a specific ticket (legacy)
      * GET /api/v1/admin/hospitalities/ticket/{eventId}/{ticketId}
      */
     public function getTicketHospitalities(Request $request, Response $response, array $args): ResponseInterface
@@ -290,18 +617,13 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to get ticket hospitalities', [
-                'event_id' => $args['eventId'] ?? null,
-                'ticket_id' => $args['ticketId'] ?? null,
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to get ticket hospitalities', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get all hospitality assignments for an event
+     * Get all hospitality assignments for an event (legacy)
      * GET /api/v1/admin/hospitalities/event/{eventId}
      */
     public function getEventHospitalities(Request $request, Response $response, array $args): ResponseInterface
@@ -311,7 +633,6 @@ class HospitalityController
 
             $hospitalities = $this->hospitalityRepository->getHospitalitiesByEvent($eventId);
 
-            // Group by ticket_id for easier frontend processing
             $groupedByTicket = [];
             foreach ($hospitalities as $h) {
                 $ticketId = $h['ticket_id'];
@@ -331,23 +652,14 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to get event hospitalities', [
-                'event_id' => $args['eventId'] ?? null,
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to get event hospitalities', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
 
     /**
-     * Assign hospitalities to a ticket
+     * Assign hospitalities to a ticket (legacy)
      * POST /api/v1/admin/hospitalities/ticket/{eventId}/{ticketId}
-     * 
-     * Request body:
-     * {
-     *   "hospitality_ids": [1, 2, 3]
-     * }
      */
     public function assignTicketHospitalities(Request $request, Response $response, array $args): ResponseInterface
     {
@@ -362,18 +674,8 @@ class HospitalityController
             }
 
             $result = $this->hospitalityRepository->assignHospitalitiesToTicket(
-                $eventId,
-                $ticketId,
-                $data['hospitality_ids'],
-                $adminUser['id']
+                $eventId, $ticketId, $data['hospitality_ids'], $adminUser['id']
             );
-
-            $this->logger->info('Assigned hospitalities to ticket', [
-                'event_id' => $eventId,
-                'ticket_id' => $ticketId,
-                'hospitality_count' => count($data['hospitality_ids']),
-                'admin_user_id' => $adminUser['id']
-            ]);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -384,29 +686,14 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to assign ticket hospitalities', [
-                'event_id' => $args['eventId'] ?? null,
-                'ticket_id' => $args['ticketId'] ?? null,
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to assign ticket hospitalities', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
 
     /**
-     * Batch assign hospitalities to multiple tickets in an event
+     * Batch assign hospitalities to multiple tickets in an event (legacy)
      * POST /api/v1/admin/hospitalities/batch
-     * 
-     * Request body:
-     * {
-     *   "event_id": "event123",
-     *   "tickets": {
-     *     "ticket1": [1, 2, 3],
-     *     "ticket2": [1, 4],
-     *     "ticket3": []
-     *   }
-     * }
      */
     public function batchAssignHospitalities(Request $request, Response $response): ResponseInterface
     {
@@ -414,7 +701,6 @@ class HospitalityController
             $data = $request->getParsedBody();
             $adminUser = $request->getAttribute('user');
 
-            // Validate required fields
             if (empty($data['event_id'])) {
                 return $this->errorResponse($response, 'event_id is required', 400);
             }
@@ -424,16 +710,8 @@ class HospitalityController
             }
 
             $result = $this->hospitalityRepository->batchAssignHospitalities(
-                $data['event_id'],
-                $data['tickets'],
-                $adminUser['id']
+                $data['event_id'], $data['tickets'], $adminUser['id']
             );
-
-            $this->logger->info('Batch assigned hospitalities', [
-                'event_id' => $data['event_id'],
-                'tickets_processed' => $result['tickets_processed'],
-                'admin_user_id' => $adminUser['id']
-            ]);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -444,17 +722,13 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to batch assign hospitalities', [
-                'error' => $e->getMessage(),
-                'admin_user_id' => $adminUser['id'] ?? null
-            ]);
-
+            $this->logger->error('Failed to batch assign hospitalities', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
 
     /**
-     * Remove all hospitalities from a ticket
+     * Remove all hospitalities from a ticket (legacy)
      * DELETE /api/v1/admin/hospitalities/ticket/{eventId}/{ticketId}
      */
     public function removeTicketHospitalities(Request $request, Response $response, array $args): ResponseInterface
@@ -462,16 +736,8 @@ class HospitalityController
         try {
             $eventId = $args['eventId'];
             $ticketId = $args['ticketId'];
-            $adminUser = $request->getAttribute('user');
 
             $deletedCount = $this->hospitalityRepository->removeTicketHospitalities($eventId, $ticketId);
-
-            $this->logger->info('Removed ticket hospitalities', [
-                'event_id' => $eventId,
-                'ticket_id' => $ticketId,
-                'deleted_count' => $deletedCount,
-                'admin_user_id' => $adminUser['id']
-            ]);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -482,33 +748,21 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to remove ticket hospitalities', [
-                'event_id' => $args['eventId'] ?? null,
-                'ticket_id' => $args['ticketId'] ?? null,
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to remove ticket hospitalities', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
 
     /**
-     * Remove all hospitalities from an event
+     * Remove all hospitalities from an event (legacy)
      * DELETE /api/v1/admin/hospitalities/event/{eventId}
      */
     public function removeEventHospitalities(Request $request, Response $response, array $args): ResponseInterface
     {
         try {
             $eventId = $args['eventId'];
-            $adminUser = $request->getAttribute('user');
 
             $deletedCount = $this->hospitalityRepository->removeEventHospitalities($eventId);
-
-            $this->logger->info('Removed event hospitalities', [
-                'event_id' => $eventId,
-                'deleted_count' => $deletedCount,
-                'admin_user_id' => $adminUser['id']
-            ]);
 
             $response->getBody()->write(json_encode([
                 'success' => true,
@@ -519,11 +773,7 @@ class HospitalityController
             return $response->withHeader('Content-Type', 'application/json');
 
         } catch (Exception $e) {
-            $this->logger->error('Failed to remove event hospitalities', [
-                'event_id' => $args['eventId'] ?? null,
-                'error' => $e->getMessage()
-            ]);
-
+            $this->logger->error('Failed to remove event hospitalities', ['error' => $e->getMessage()]);
             return $this->errorResponse($response, $e->getMessage(), 500);
         }
     }
@@ -532,9 +782,6 @@ class HospitalityController
     // Helper Methods
     // ========================================================================
 
-    /**
-     * Create error response
-     */
     private function errorResponse(Response $response, string $message, int $statusCode): ResponseInterface
     {
         $response->getBody()->write(json_encode([

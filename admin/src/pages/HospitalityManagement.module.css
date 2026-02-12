@@ -600,6 +600,422 @@
   margin-top: 1rem;
 }
 
+/* ============================================================================
+   Hierarchical Assignment Styles (NEW)
+   ============================================================================ */
+
+/* Select Wrapper */
+.selectWrapper {
+  max-width: 600px;
+}
+
+.helpText {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+/* Config Card */
+.configCard,
+.existingCard,
+.infoCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.configCard .cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.breadcrumbSeparator {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.breadcrumbItem {
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Level Selection */
+.levelSelection {
+  margin-bottom: 1.5rem;
+}
+
+.levelSelection .label {
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.levelButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.levelBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.levelBtn:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.levelBtnActive {
+  font-weight: 600;
+}
+
+.levelDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.levelDescription {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-style: italic;
+  margin: 0;
+}
+
+/* No Active Warning */
+.noActiveWarning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.noActiveWarning svg {
+  color: #f59e0b;
+}
+
+.noActiveWarning p {
+  margin: 0;
+}
+
+/* Service Selector */
+.serviceSelectorHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.selectAllBtn {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  color: #6366f1;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.selectAllBtn:hover {
+  background: #eef2ff;
+  border-color: #6366f1;
+}
+
+/* Service Checkbox Grid */
+.serviceCheckboxGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.serviceCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.serviceCheckbox:hover {
+  border-color: #6366f1;
+  background: #fafaff;
+}
+
+.serviceChecked {
+  border-color: #6366f1;
+  background: #eef2ff;
+}
+
+.serviceCheckbox input {
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.serviceCheckboxInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.serviceCheckboxName {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.serviceCheckboxDesc {
+  font-size: 0.8rem;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.checkIcon {
+  color: #6366f1;
+  flex-shrink: 0;
+}
+
+/* Assignment Save Actions */
+.assignmentSaveActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.savedBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #10b981;
+  font-weight: 500;
+}
+
+/* Existing Assignments Card */
+.existingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.existingHeader .cardTitle {
+  margin: 0;
+}
+
+.noData {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* Rules Table */
+.rulesTable {
+  overflow-x: auto;
+}
+
+.rulesTableHeader {
+  display: grid;
+  grid-template-columns: 120px 1fr 160px 80px 140px 70px;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rulesTableBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.ruleRow {
+  display: grid;
+  grid-template-columns: 120px 1fr 160px 80px 140px 70px;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  align-items: center;
+  font-size: 0.875rem;
+  transition: background 0.15s;
+}
+
+.ruleRow:hover {
+  background: #f8fafc;
+}
+
+.levelBadge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.scopeCell {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  color: #475569;
+  font-size: 0.8rem;
+}
+
+.scopeItem {
+  white-space: nowrap;
+}
+
+.serviceNameCell {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.statusActive {
+  color: #10b981;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.statusInactive {
+  color: #ef4444;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.rowActions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.actionBtn {
+  padding: 0.375rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.15s;
+}
+
+.actionBtn:hover {
+  background: #f1f5f9;
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionBtn.deleteBtn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* Info Card */
+.infoCard .cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.priorityList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.priorityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.priorityBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.priorityNote {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .statsGrid {
@@ -643,6 +1059,26 @@
 
   .hospitalityChips {
     flex-direction: column;
+  }
+
+  .serviceCheckboxGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .levelButtons {
+    flex-direction: column;
+  }
+
+  .rulesTableHeader,
+  .ruleRow {
+    grid-template-columns: 100px 1fr 120px 60px 100px 50px;
+    font-size: 0.75rem;
+  }
+
+  .serviceSelectorHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
 
@@ -727,4 +1163,114 @@
 :global(.dark) .formActions,
 :global(.dark) .assignmentActions {
   border-color: #334155;
+}
+
+/* Dark mode: new hierarchical assignment styles */
+:global(.dark) .configCard,
+:global(.dark) .existingCard,
+:global(.dark) .infoCard {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:global(.dark) .breadcrumb {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(.dark) .breadcrumbItem {
+  color: #cbd5e1;
+}
+
+:global(.dark) .levelBtn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:global(.dark) .levelBtn:hover {
+  border-color: #475569;
+  background: #0f172a;
+}
+
+:global(.dark) .levelDescription,
+:global(.dark) .helpText {
+  color: #94a3b8;
+}
+
+:global(.dark) .serviceCheckbox {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:global(.dark) .serviceCheckbox:hover {
+  border-color: #6366f1;
+  background: #1e1b4b;
+}
+
+:global(.dark) .serviceChecked {
+  border-color: #6366f1;
+  background: #1e1b4b;
+}
+
+:global(.dark) .serviceCheckboxName {
+  color: #f1f5f9;
+}
+
+:global(.dark) .serviceCheckboxDesc {
+  color: #94a3b8;
+}
+
+:global(.dark) .selectAllBtn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #818cf8;
+}
+
+:global(.dark) .selectAllBtn:hover {
+  background: #1e1b4b;
+  border-color: #6366f1;
+}
+
+:global(.dark) .assignmentSaveActions {
+  border-color: #334155;
+}
+
+:global(.dark) .rulesTableHeader {
+  background: #0f172a;
+  color: #94a3b8;
+}
+
+:global(.dark) .ruleRow {
+  border-color: #1e293b;
+}
+
+:global(.dark) .ruleRow:hover {
+  background: #0f172a;
+}
+
+:global(.dark) .scopeCell {
+  color: #94a3b8;
+}
+
+:global(.dark) .serviceNameCell {
+  color: #f1f5f9;
+}
+
+:global(.dark) .noData {
+  color: #94a3b8;
+}
+
+:global(.dark) .priorityItem {
+  color: #cbd5e1;
+}
+
+:global(.dark) .priorityNote {
+  background: #064e3b;
+  border-color: #065f46;
+  color: #a7f3d0;
+}
+
+:global(.dark) .noActiveWarning {
+  color: #94a3b8;
 }

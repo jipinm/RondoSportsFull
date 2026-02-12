@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `admin_users` (
 -- Dumping data for table rondo.admin_users: ~4 rows (approximately)
 INSERT INTO `admin_users` (`id`, `name`, `email`, `password_hash`, `role_id`, `role`, `status`, `permissions`, `last_login_at`, `password_changed_at`, `email_verified_at`, `two_fa_enabled`, `two_fa_secret`, `failed_login_attempts`, `locked_until`, `created_by`, `created_at`, `updated_at`) VALUES
 	(1, 'Super Administrator', 'superadmin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2, 'admin', 'active', NULL, '2025-10-14 06:20:52', NULL, '2025-10-01 12:39:22', 0, NULL, 0, NULL, NULL, '2025-10-01 12:39:22', '2025-10-14 06:20:52'),
-	(3, 'Administrator', 'admin@example.com', '$2y$10$nrSSAKGq92Tu2JKtKiCvMeRnGkgP/dVzIBGNlAZfQ7Lg7Lvw9IDHS', 1, 'super_admin', 'active', NULL, '2026-02-12 09:56:42', '2025-10-20 10:30:18', NULL, 0, NULL, 0, NULL, NULL, '2025-10-01 13:09:32', '2026-02-12 09:56:42'),
+	(3, 'Administrator', 'admin@example.com', '$2y$10$nrSSAKGq92Tu2JKtKiCvMeRnGkgP/dVzIBGNlAZfQ7Lg7Lvw9IDHS', 1, 'super_admin', 'active', NULL, '2026-02-12 17:09:57', '2025-10-20 10:30:18', NULL, 0, NULL, 0, NULL, NULL, '2025-10-01 13:09:32', '2026-02-12 17:09:57'),
 	(6, 'Viewer', 'viewer@example.com', '$2y$10$SqepbywijmC5N1FDI6buKOqrPx77nIL9BLSWLCJ5/0cFOo2EQcasK', 3, 'manager', 'active', NULL, NULL, '2025-10-02 09:05:14', NULL, 0, NULL, 0, NULL, NULL, '2025-10-02 09:05:14', '2025-10-12 19:16:37'),
 	(8, 'Staff', 'staff@example.com', '$2y$10$CFw5.Rm69NmpK1PpVWambuBKALJmVVzuXB6L.F7ct2BaurqvHdZ2S', 4, 'staff', 'inactive', NULL, NULL, '2025-10-02 09:33:46', NULL, 0, NULL, 0, NULL, NULL, '2025-10-02 09:33:46', '2025-10-18 22:21:45');
 
@@ -790,7 +790,7 @@ CREATE TABLE IF NOT EXISTS `hospitalities` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL COMMENT 'Name of the hospitality service',
   `description` text DEFAULT NULL COMMENT 'Description of what the service includes',
-  `price_usd` decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Price of the service in USD',
+  `price_usd` decimal(10,2) DEFAULT NULL COMMENT 'Legacy price field - no longer used for new services',
   `is_active` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Whether the service is currently available',
   `sort_order` int(11) NOT NULL DEFAULT 0 COMMENT 'Display order for the service',
   `created_by` bigint(20) unsigned DEFAULT NULL COMMENT 'Admin user who created the service',
@@ -804,12 +804,62 @@ CREATE TABLE IF NOT EXISTS `hospitalities` (
   KEY `idx_updated_by` (`updated_by`),
   CONSTRAINT `fk_hospitality_created_by` FOREIGN KEY (`created_by`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_hospitality_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Hospitality services management';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Hospitality services management';
 
--- Dumping data for table rondo.hospitalities: ~2 rows (approximately)
+-- Dumping data for table rondo.hospitalities: ~3 rows (approximately)
 INSERT INTO `hospitalities` (`id`, `name`, `description`, `price_usd`, `is_active`, `sort_order`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
 	(1, 'VIP lounge Access', 'You can enter the VIP area.', 100.00, 1, 1, 3, 3, '2026-01-22 06:52:13', '2026-01-22 06:52:29'),
-	(2, 'Whole day Food', 'Full meal for the event day', 25.00, 1, 2, 3, 3, '2026-01-22 06:53:19', '2026-01-22 06:53:19');
+	(2, 'Whole day Food', 'Full meal for the event day', 25.00, 1, 2, 3, 3, '2026-01-22 06:53:19', '2026-01-22 06:53:19'),
+	(3, 'Drinking Water', '2 bottles of drinking water will be delivered during the break time.', 0.00, 1, 3, 3, 3, '2026-02-12 17:10:59', '2026-02-12 17:11:11');
+
+-- Dumping structure for table rondo.hospitality_assignments
+CREATE TABLE IF NOT EXISTS `hospitality_assignments` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `hospitality_id` bigint(20) unsigned NOT NULL COMMENT 'FK to hospitalities table',
+  `sport_type` varchar(100) DEFAULT NULL COMMENT 'XS2Event sport type slug (e.g., soccer, motorsport, tennis)',
+  `tournament_id` varchar(100) DEFAULT NULL COMMENT 'XS2Event tournament ID',
+  `team_id` varchar(100) DEFAULT NULL COMMENT 'XS2Event team ID (only for team-based sports)',
+  `event_id` varchar(100) DEFAULT NULL COMMENT 'XS2Event event ID',
+  `ticket_id` varchar(100) DEFAULT NULL COMMENT 'XS2Event ticket ID (most specific level)',
+  `sport_name` varchar(255) DEFAULT NULL COMMENT 'Display name for the sport',
+  `tournament_name` varchar(255) DEFAULT NULL COMMENT 'Display name for the tournament',
+  `team_name` varchar(255) DEFAULT NULL COMMENT 'Display name for the team',
+  `event_name` varchar(255) DEFAULT NULL COMMENT 'Display name for the event',
+  `ticket_name` varchar(255) DEFAULT NULL COMMENT 'Display name for the ticket category',
+  `level` enum('sport','tournament','team','event','ticket') NOT NULL COMMENT 'The hierarchy level this assignment targets',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Whether this assignment is currently active',
+  `created_by` bigint(20) unsigned DEFAULT NULL,
+  `updated_by` bigint(20) unsigned DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_hospitality_scope` (`hospitality_id`,`sport_type`,`tournament_id`,`team_id`,`event_id`,`ticket_id`),
+  KEY `idx_hospitality_id` (`hospitality_id`),
+  KEY `idx_ha_sport_type` (`sport_type`),
+  KEY `idx_ha_tournament_id` (`tournament_id`),
+  KEY `idx_ha_team_id` (`team_id`),
+  KEY `idx_ha_event_id` (`event_id`),
+  KEY `idx_ha_ticket_id` (`ticket_id`),
+  KEY `idx_ha_level` (`level`),
+  KEY `idx_ha_is_active` (`is_active`),
+  KEY `idx_ha_created_by` (`created_by`),
+  KEY `idx_ha_updated_by` (`updated_by`),
+  CONSTRAINT `fk_ha_created_by` FOREIGN KEY (`created_by`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_ha_hospitality` FOREIGN KEY (`hospitality_id`) REFERENCES `hospitalities` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_ha_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Hierarchical hospitality service assignments (sport > tournament > team > event > ticket)';
+
+-- Dumping data for table rondo.hospitality_assignments: ~9 rows (approximately)
+INSERT INTO `hospitality_assignments` (`id`, `hospitality_id`, `sport_type`, `tournament_id`, `team_id`, `event_id`, `ticket_id`, `sport_name`, `tournament_name`, `team_name`, `event_name`, `ticket_name`, `level`, `is_active`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+	(32, 1, 'soccer', 'f306f395644a42e09821253d13637d70_trn', '6aa902ed038b4e64b3905372a943c614_tms', '9b0856d9aa964f259999212d121ff006_gnr', '742952afd8104a92b857c13132066ee2_spp', 'Soccer', 'Premier League', 'Manchester United', 'Manchester United vs Nottingham Forest', 'Executive Lounge', 'ticket', 1, 3, 3, '2026-02-12 17:13:22', '2026-02-12 17:13:22'),
+	(33, 2, 'soccer', 'f306f395644a42e09821253d13637d70_trn', '6aa902ed038b4e64b3905372a943c614_tms', '9b0856d9aa964f259999212d121ff006_gnr', '742952afd8104a92b857c13132066ee2_spp', 'Soccer', 'Premier League', 'Manchester United', 'Manchester United vs Nottingham Forest', 'Executive Lounge', 'ticket', 1, 3, 3, '2026-02-12 17:13:22', '2026-02-12 17:13:22'),
+	(34, 3, 'soccer', 'f306f395644a42e09821253d13637d70_trn', '6aa902ed038b4e64b3905372a943c614_tms', '9b0856d9aa964f259999212d121ff006_gnr', '742952afd8104a92b857c13132066ee2_spp', 'Soccer', 'Premier League', 'Manchester United', 'Manchester United vs Nottingham Forest', 'Executive Lounge', 'ticket', 1, 3, 3, '2026-02-12 17:13:22', '2026-02-12 17:13:22'),
+	(35, 1, 'soccer', 'f306f395644a42e09821253d13637d70_trn', '6aa902ed038b4e64b3905372a943c614_tms', '9b0856d9aa964f259999212d121ff006_gnr', NULL, 'Soccer', 'Premier League', 'Manchester United', 'Manchester United vs Nottingham Forest', NULL, 'event', 1, 3, 3, '2026-02-12 17:15:09', '2026-02-12 17:15:09'),
+	(36, 2, 'soccer', 'f306f395644a42e09821253d13637d70_trn', '6aa902ed038b4e64b3905372a943c614_tms', '9b0856d9aa964f259999212d121ff006_gnr', NULL, 'Soccer', 'Premier League', 'Manchester United', 'Manchester United vs Nottingham Forest', NULL, 'event', 1, 3, 3, '2026-02-12 17:15:09', '2026-02-12 17:15:09'),
+	(37, 1, 'soccer', 'f306f395644a42e09821253d13637d70_trn', '6aa902ed038b4e64b3905372a943c614_tms', NULL, NULL, 'Soccer', 'Premier League', 'Manchester United', NULL, NULL, 'team', 1, 3, 3, '2026-02-12 17:15:19', '2026-02-12 17:15:19'),
+	(38, 3, 'soccer', 'f306f395644a42e09821253d13637d70_trn', NULL, NULL, NULL, 'Soccer', 'Premier League', NULL, NULL, NULL, 'tournament', 1, 3, 3, '2026-02-12 17:15:33', '2026-02-12 17:15:33'),
+	(39, 1, 'soccer', 'f306f395644a42e09821253d13637d70_trn', NULL, NULL, NULL, 'Soccer', 'Premier League', NULL, NULL, NULL, 'tournament', 1, 3, 3, '2026-02-12 17:15:33', '2026-02-12 17:15:33'),
+	(40, 3, 'soccer', NULL, NULL, NULL, NULL, 'Soccer', NULL, NULL, NULL, NULL, 'sport', 1, 3, 3, '2026-02-12 17:15:41', '2026-02-12 17:15:41');
 
 -- Dumping structure for table rondo.markup_rules
 CREATE TABLE IF NOT EXISTS `markup_rules` (
@@ -1428,28 +1478,7 @@ CREATE TABLE IF NOT EXISTS `ticket_markups` (
   CONSTRAINT `fk_markup_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Event ticket markup pricing management';
 
--- Dumping data for table rondo.ticket_markups: ~20 rows (approximately)
-INSERT INTO `ticket_markups` (`id`, `event_id`, `ticket_id`, `markup_price_usd`, `markup_type`, `markup_percentage`, `base_price_usd`, `final_price_usd`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-	(1, '764dd883de654f60aadf5fe872cadd4a_gnr', '2149bc6a567c44358a0f81108be39ad6_spt', 48.02, 'percentage', 10.00, 480.17, 528.19, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(3, '764dd883de654f60aadf5fe872cadd4a_gnr', '51960c4d249c4c1dbc7149c326977b5c_spt', 87.92, 'percentage', 10.00, 879.19, 967.11, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(4, '764dd883de654f60aadf5fe872cadd4a_gnr', 'f7fa96ea0263456e8f56f4d02a6af3ff_spp', 111.32, 'percentage', 10.00, 1113.19, 1224.51, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(5, '764dd883de654f60aadf5fe872cadd4a_gnr', '599439e0b6d44d28bd859132125bd7d3_spp', 111.32, 'percentage', 10.00, 1113.19, 1224.51, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(6, '764dd883de654f60aadf5fe872cadd4a_gnr', '46b9e58f649c4059a7eb0557be162f5e_spp', 74.66, 'percentage', 10.00, 746.64, 821.30, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(7, '764dd883de654f60aadf5fe872cadd4a_gnr', '24261217d1c94e15b04b5c0f200bb391_spp', 59.65, 'percentage', 10.00, 596.50, 656.15, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(8, '764dd883de654f60aadf5fe872cadd4a_gnr', '86dc470a8baf42998ca8f887c60f1a35_spp', 56.81, 'percentage', 10.00, 568.09, 624.90, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(9, '764dd883de654f60aadf5fe872cadd4a_gnr', '64297d666d774066ae749b494307c76d_spp', 117.68, 'percentage', 10.00, 1176.76, 1294.44, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(10, '764dd883de654f60aadf5fe872cadd4a_gnr', 'ac9e6ad361cd483f86db316ac0cf9375_spt', 68.44, 'percentage', 10.00, 684.42, 752.86, 3, 3, '2026-01-19 11:59:29', '2026-01-26 06:00:02'),
-	(12, '764dd883de654f60aadf5fe872cadd4a_gnr', 'c4d8eba21b964f06bc5b80da69e3b8dc_spp', 53.29, 'percentage', 10.00, 532.92, 586.22, 3, 3, '2026-01-20 07:22:25', '2026-01-26 06:00:02'),
-	(31, '9b0856d9aa964f259999212d121ff006_gnr', '1c252f389cd54b38b9d7ecc86dcd8e51_spp', 35.00, 'fixed', NULL, 200.03, 235.03, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(32, '9b0856d9aa964f259999212d121ff006_gnr', '742952afd8104a92b857c13132066ee2_spp', 35.00, 'fixed', NULL, 442.67, 477.67, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(33, '9b0856d9aa964f259999212d121ff006_gnr', 'fac2023dfb03418897d25c706eb97e5b_spt', 35.00, 'fixed', NULL, 165.70, 200.70, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(34, '9b0856d9aa964f259999212d121ff006_gnr', '900a02e84f3344c2adbcc501775fe592_spt', 35.00, 'fixed', NULL, 414.26, 449.26, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(35, '9b0856d9aa964f259999212d121ff006_gnr', '1695aa67834d4288af0c87dc7814b24f_spp', 35.00, 'fixed', NULL, 472.26, 507.26, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(36, '9b0856d9aa964f259999212d121ff006_gnr', '04187ceeb2c34c2b9449b8162ba8d00c_spp', 35.00, 'fixed', NULL, 681.75, 716.75, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(37, '9b0856d9aa964f259999212d121ff006_gnr', '929bee1db37343d784cbacbe88b03cd9_spp', 35.00, 'fixed', NULL, 319.57, 354.57, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(38, '9b0856d9aa964f259999212d121ff006_gnr', '1b0d65dae9404e90808b4bf48a20d1f7_spp', 35.00, 'fixed', NULL, 260.39, 295.39, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(39, '9b0856d9aa964f259999212d121ff006_gnr', '2a26fb42e3e2484890584740989fceec_spp', 35.00, 'fixed', NULL, 391.77, 426.77, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31'),
-	(40, '9b0856d9aa964f259999212d121ff006_gnr', '82537d092c75451492f48ef7177c68e2_spt', 35.00, 'fixed', NULL, 249.74, 284.74, 3, 3, '2026-01-27 04:23:31', '2026-01-27 04:23:31');
+-- Dumping data for table rondo.ticket_markups: ~0 rows (approximately)
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
