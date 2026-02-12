@@ -27,6 +27,10 @@ const CurrencyManagement: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   
+  // Supported currencies from Frankfurter API
+  const [supportedCurrencies, setSupportedCurrencies] = useState<Record<string, string>>({});
+  const [loadingSupportedCurrencies, setLoadingSupportedCurrencies] = useState(false);
+  
   // Filters and pagination
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -79,6 +83,15 @@ const CurrencyManagement: React.FC = () => {
   useEffect(() => {
     fetchCurrencies();
     fetchStats();
+    // Fetch supported currencies from Frankfurter API
+    setLoadingSupportedCurrencies(true);
+    currencyService.getSupportedCurrencies()
+      .then(data => setSupportedCurrencies(data))
+      .catch(err => {
+        console.error('Failed to fetch supported currencies:', err);
+        error('Failed to load supported currencies from Frankfurter API');
+      })
+      .finally(() => setLoadingSupportedCurrencies(false));
   }, [fetchCurrencies, fetchStats]);
 
   // Handle search
@@ -151,9 +164,50 @@ const CurrencyManagement: React.FC = () => {
     }
   };
 
+  // Handle currency code selection from dropdown — auto-populate name
+  const handleCurrencyCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const code = e.target.value;
+    const name = supportedCurrencies[code] || '';
+    setFormData(prev => ({
+      ...prev,
+      code,
+      name
+    }));
+  };
+
+  // Get available currencies for the dropdown (supported minus already added, except current when editing)
+  const getAvailableCurrencies = (): { code: string; name: string }[] => {
+    const existingCodes = new Set(
+      currencies
+        .filter(c => !editingCurrency || c.id !== editingCurrency.id)
+        .map(c => c.code.toUpperCase())
+    );
+
+    return Object.entries(supportedCurrencies)
+      .filter(([code]) => !existingCodes.has(code.toUpperCase()))
+      .map(([code, name]) => ({ code, name }))
+      .sort((a, b) => a.code.localeCompare(b.code));
+  };
+
   // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate currency code is supported
+    if (!supportedCurrencies[formData.code]) {
+      error('Selected currency is not supported by the Frankfurter API');
+      return;
+    }
+
+    // Validate no duplicate (for new currencies, or if code changed during edit)
+    if (!editingCurrency || editingCurrency.code !== formData.code) {
+      const duplicate = currencies.find(c => c.code.toUpperCase() === formData.code.toUpperCase());
+      if (duplicate) {
+        error(`Currency ${formData.code} already exists`);
+        return;
+      }
+    }
+
     setSaving(true);
 
     try {
@@ -440,18 +494,34 @@ const CurrencyManagement: React.FC = () => {
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
                     <label htmlFor="code">Currency Code *</label>
-                    <input
-                      type="text"
-                      id="code"
-                      name="code"
-                      value={formData.code}
-                      onChange={handleInputChange}
-                      placeholder="USD"
-                      maxLength={3}
-                      required
-                      style={{ textTransform: 'uppercase' }}
-                    />
-                    <small>ISO 4217 code (3 letters)</small>
+                    {loadingSupportedCurrencies ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0' }}>
+                        <Loader2 size={16} className={styles.spinner} />
+                        <span>Loading currencies...</span>
+                      </div>
+                    ) : (
+                      <select
+                        id="code"
+                        name="code"
+                        value={formData.code}
+                        onChange={handleCurrencyCodeChange}
+                        required
+                        disabled={!!editingCurrency}
+                      >
+                        <option value="">Select a currency...</option>
+                        {editingCurrency && (
+                          <option value={editingCurrency.code}>
+                            {editingCurrency.code} — {supportedCurrencies[editingCurrency.code] || editingCurrency.name}
+                          </option>
+                        )}
+                        {getAvailableCurrencies().map(({ code, name }) => (
+                          <option key={code} value={code}>
+                            {code} — {name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                    <small>Only currencies supported by Frankfurter API</small>
                   </div>
                   <div className={styles.formGroup}>
                     <label htmlFor="symbol">Symbol *</label>
@@ -479,6 +549,7 @@ const CurrencyManagement: React.FC = () => {
                     placeholder="US Dollar"
                     required
                   />
+                  <small>Auto-filled from Frankfurter API — editable</small>
                 </div>
 
                 <div className={styles.formGroup}>

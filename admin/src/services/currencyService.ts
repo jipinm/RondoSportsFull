@@ -15,8 +15,39 @@ import type {
   CurrencyStatsResponse
 } from '../types/currencies';
 
+/** Frankfurter API supported currencies cache */
+let _supportedCurrenciesCache: Record<string, string> | null = null;
+
 class CurrencyService {
   private baseUrl = '/admin/currencies';
+
+  /**
+   * Fetch supported currencies from the Frankfurter API.
+   * Returns a map of currency code → currency name.
+   * Results are cached for the session.
+   */
+  async getSupportedCurrencies(): Promise<Record<string, string>> {
+    if (_supportedCurrenciesCache) {
+      return _supportedCurrenciesCache;
+    }
+
+    try {
+      console.log('🌐 Fetching supported currencies from Frankfurter API');
+      const response = await fetch('https://api.frankfurter.dev/v1/currencies');
+
+      if (!response.ok) {
+        throw new Error(`Frankfurter API error: ${response.status}`);
+      }
+
+      const data: Record<string, string> = await response.json();
+      _supportedCurrenciesCache = data;
+      console.log('✅ Supported currencies fetched:', Object.keys(data).length);
+      return data;
+    } catch (error: any) {
+      console.error('❌ Error fetching supported currencies:', error);
+      throw error;
+    }
+  }
 
   /**
    * Get all currencies with filtering and pagination
